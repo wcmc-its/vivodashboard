@@ -329,6 +329,11 @@ function vivodashboard_import_feeds_importer_default() {
             'importer' => 'vivo_types',
             'age' => '1440',
           ),
+          3 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
         ),
         'update_existing' => '2',
         'input_format' => 'plain_text',
