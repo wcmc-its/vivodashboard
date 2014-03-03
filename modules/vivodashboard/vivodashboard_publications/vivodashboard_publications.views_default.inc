@@ -46,6 +46,7 @@ function vivodashboard_publications_views_default_views() {
     'field_last_name' => 'field_last_name',
     'field_first_name' => 'field_first_name',
     'field_author_rank' => 'field_author_rank',
+    'field_author_position' => 'field_author_position',
     'field_rdf_type' => 'field_rdf_type',
     'field_department' => 'field_department',
     'name' => 'name',
@@ -57,7 +58,11 @@ function vivodashboard_publications_views_default_views() {
     'field_page_end' => 'field_page_end',
     'field_page_start' => 'field_page_start',
     'field_doi' => 'field_doi',
+    'field_pmid' => 'field_pmid',
+    'field_pmcid' => 'field_pmcid',
+    'field_funding' => 'field_funding',
     'field_uri' => 'field_uri',
+    'field_citations' => 'field_citations',
   );
   $handler->display->display_options['style_options']['default'] = '-1';
   $handler->display->display_options['style_options']['info'] = array(
@@ -72,6 +77,11 @@ function vivodashboard_publications_views_default_views() {
       'empty_column' => 0,
     ),
     'field_author_rank' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'field_author_position' => array(
       'align' => '',
       'separator' => '',
       'empty_column' => 0,
@@ -131,7 +141,27 @@ function vivodashboard_publications_views_default_views() {
       'separator' => '',
       'empty_column' => 0,
     ),
+    'field_pmid' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'field_pmcid' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'field_funding' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
     'field_uri' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'field_citations' => array(
       'align' => '',
       'separator' => '',
       'empty_column' => 0,
@@ -142,6 +172,13 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['header']['result']['id'] = 'result';
   $handler->display->display_options['header']['result']['table'] = 'views';
   $handler->display->display_options['header']['result']['field'] = 'result';
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Relationship: Indexed Relation: node (source endpoint) */
   $handler->display->display_options['relationships']['endpoints_source_node']['id'] = 'endpoints_source_node';
   $handler->display->display_options['relationships']['endpoints_source_node']['table'] = 'search_api_index_authorships';
@@ -428,6 +465,13 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['header']['result']['id'] = 'result';
   $handler->display->display_options['header']['result']['table'] = 'views';
   $handler->display->display_options['header']['result']['field'] = 'result';
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Indexed Node: Author Labels */
   $handler->display->display_options['fields']['author_labels']['id'] = 'author_labels';
   $handler->display->display_options['fields']['author_labels']['table'] = 'search_api_index_publications';
@@ -676,6 +720,13 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['header']['result']['table'] = 'views';
   $handler->display->display_options['header']['result']['field'] = 'result';
   $handler->display->display_options['header']['result']['content'] = 'Results @start - @end of @total';
+  /* No results behavior: Global: Text area */
+  $handler->display->display_options['empty']['area']['id'] = 'area';
+  $handler->display->display_options['empty']['area']['table'] = 'views';
+  $handler->display->display_options['empty']['area']['field'] = 'area';
+  $handler->display->display_options['empty']['area']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Indexed Node: Authorships */
   $handler->display->display_options['fields']['authorships']['id'] = 'authorships';
   $handler->display->display_options['fields']['authorships']['table'] = 'search_api_index_publications';
