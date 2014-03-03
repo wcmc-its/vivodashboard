@@ -1,6 +1,25 @@
 <?php
 
 /**
+ * Implements hook_install().
+ */
+function vivodashboard_publications_install() {
+  // The searcher for current_search blocks does not get exported. Need to
+  // manually insert searcher setting for blocks.
+  // @see https://drupal.org/node/1469002
+  if (db_table_exists('block_current_search')) {
+    db_merge('block_current_search')
+      ->key(array('delta' => 'authorships'))
+      ->fields(array('delta' => 'authorships', 'searcher' => 'search_api@authorships'))
+      ->execute();
+    db_merge('block_current_search')
+      ->key(array('delta' => 'publications'))
+      ->fields(array('delta' => 'publications', 'searcher' => 'search_api@publications'))
+      ->execute();
+  }
+}
+
+/**
  * Update all relations.
  */
 function vivodashboard_publications_update_7100(&$sandbox) {
