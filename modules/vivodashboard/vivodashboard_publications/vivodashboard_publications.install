@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * Update all relations.
+ */
+function vivodashboard_publications_update_7100(&$sandbox) {
+  if (!isset($sandbox['#progress'])) {
+    $sandbox['#progress'] = 0;
+    $sandbox['#total'] = db_select('relation', 'r')
+      ->condition('relation_type', 'authorship')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+  }
+
+  $start = $sandbox['#progress'];
+  $end = $sandbox['#progress'] + 100;
+
+  $rows = db_select('relation', 'r')
+    ->fields('r', array('rid'))
+    ->condition('relation_type', 'authorship')
+    ->orderBy('rid')
+    ->range($start, $end)
+    ->execute()
+    ->fetchAllAssoc('rid');
+
+  foreach (relation_load_multiple(array_keys($rows)) as $relation) {
+    list($source, $target) = field_get_items('relation', $relation, 'endpoints');
+
+    dd('Starting ' . $relation->rid);
+
+
+    $authorship = entity_metadata_wrapper('relation', $relation);
+    $author = entity_metadata_wrapper('node', $target['entity_id']);
+
+    $first_name = $author->field_first_name->value();
+    $last_name = $author->field_last_name->value();
+    $label = $last_name . ' ' . substr($first_name, 0, 1);
+    $authorship->field_author_label->set($label);
+
+    $result = relation_query('node', $source['entity_id'], 0)
+      ->entityCondition('bundle', 'authorship')
+      ->fieldOrderBy('field_author_rank', 'value', 'asc')
+      ->execute();
+
+    if ($result && count($result) > 1) {
+      reset($result);
+      if (key($result) == $relation->rid) {
+        $authorship->field_author_position->set('first');
+      }
+      end($result);
+      if (key($result) == $relation->rid) {
+       $authorship->field_author_position->set('last');
+      }
+    }
+
+
+    $authorship->save();
+    dd('Finished ' . $relation->rid);
+
+  }
+
+  $sandbox['#progress'] = $end;
+  $sandbox['#finished'] = $sandbox['#total'] - $sandbox['#progress'];
+}

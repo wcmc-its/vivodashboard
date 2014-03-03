@@ -1,0 +1,257 @@
+<?php
+
+define('FACETAPI_AUTOCOMPLETE_PATH', 'facetapi_autocomplete');
+
+/**
+ * Implements hook_menu().
+ */
+function facetapi_autocomplete_menu() {
+  $items[FACETAPI_AUTOCOMPLETE_PATH] = array(
+    'title' => 'Autocomplete',
+    'page callback' => 'facetapi_autocomplete_load_results',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Menu page callback.
+ *
+ * Triggers a Search API query and returns JSON results.
+ */
+function facetapi_autocomplete_load_results() {
+  $values = array();
+
+  if (empty($_GET['facet']) || empty($_GET['keywords']) || empty($_GET['path'])) {
+    return drupal_json_output($values);
+  }
+
+  $facet_name = $_GET['facet'];
+  $search_path = $_GET['path'];
+  $keywords = $_GET['keywords'];
+
+  // We need to keep track of the facet this request is targeting for
+  // some logic in facetapi_autocomplete_search_api_query_alter().
+  drupal_static('facetapi_autocomplete_active_facet', $facet_name);
+
+  $result = menu_execute_active_handler($search_path, FALSE);
+  $searchers = facetapi_get_active_searchers();
+
+  if ($result == MENU_ACCESS_DENIED || $result == MENU_NOT_FOUND || empty($searchers)) {
+    return drupal_json_output($values);
+  }
+
+  $searcher = reset($searchers);
+  $adapter = facetapi_adapter_load($searcher);
+  $build = $adapter->buildRealm('block');
+
+  $facet = facetapi_facet_load($facet_name, $searcher);
+  $build = $adapter->getFacet($facet)->getBuild();
+
+  $values = FacetapiAutocompleteWidget::getAutocompleteValues($keywords, $build);
+
+  // return '';
+  return drupal_json_output($values);
+}
+
+/**
+ * Implements hook_search_api_query_alter().
+ *
+ * Suppresses unnecessary facet queries from the main Search API query.
+ * This is purely to improve query performance.
+ */
+function facetapi_autocomplete_search_api_query_alter($query) {
+  $facets = $query->getOption('search_api_facets');
+
+  // For autocomplete requests, removes all facet queries except the one
+  // we care about from the main search query.
+  $autocomplete_facet = drupal_static('facetapi_autocomplete_active_facet');
+  if ($autocomplete_facet && $facets && isset($facets[$autocomplete_facet])) {
+    $facets[$autocomplete_facet]['limit'] = -1;
+    $facets = array($autocomplete_facet => $facets[$autocomplete_facet]);
+    $query->setOption('search_api_facets', $facets);
+  }
+
+  $searcher = ($searchers = facetapi_get_active_searchers()) ? reset($searchers) : FALSE;
+
+  // For normal requests, do the opposite, suppress all queries that retrieve
+  // values for autocomplete facet since the values are not displayed.
+  // Unfortunately Search API will hide the facet block if we actually remove
+  // the query, so the best we can do is set a low limit.
+  if (!$autocomplete_facet && !empty($searcher) && $adapter = facetapi_adapter_load($searcher)) {
+    foreach ($facets as $facet_name => $query_settings) {
+      $facet_info = facetapi_facet_load($facet_name, $searcher);
+      $realm_info = facetapi_realm_load('block');
+      $settings = $adapter->getFacet($facet_info)->getSettings($realm_info);
+      if (isset($settings->settings['widget']) && $settings->settings['widget'] == 'autocomplete') {
+        $facets[$facet_name]['limit'] = 1;
+      }
+    }
+    $query->setOption('search_api_facets', $facets);
+  }
+}
+
+/**
+ * Helper to get the facet definition for the active facet.
+ */
+// function facetapi_autocomplete_get_info($facet_name) {
+//   $info = array();
+//   if ($searchers = facetapi_get_active_searchers()) {
+//     $info = facetapi_facet_load($facet_name, reset($searchers));
+//   }
+//   return $info;
+// }
+
+/**
+ * Implements hook_query_alter().
+ */
+function facetapi_autocomplete_query_alter(QueryAlterableInterface $query) {
+  return;
+  if ($query->hasTag('search_api_db_facet')) {
+
+    // $facet_name = $query->getMetaData('facet_name');
+    // $autocomplete_facets = drupal_static('facetapi_autocomplete_facets');
+    // $active_autocomplete_facet = drupal_static('facetapi_autocomplete_active_facet');
+
+    // if ($active_autocomplete_facet || !in_array($facet_name, $autocomplete_facets, TRUE)) {
+    //   return;
+    // }
+    $query_facet = $query->getMetaData('facet_name');
+    $active_facet = drupal_static('facetapi_autocomplete_active_facet');
+
+    if (!$active_facet || $active_facet != $query_facet) {
+      return;
+    }
+
+    // $facet_info = facetapi_autocomplete_get_info($active_facet);
+    $conditions = $query->conditions();
+    $field = $conditions[0]['field'];
+
+    $keywords = !empty($_GET['keywords']) ? strtolower($_GET['keywords']) : 'EMPTY';
+
+    $query->addExpression("LOWER($field) = facet_text");
+    // $query->condition('facet_text', '%' . $keywords . '%', 'LIKE');
+    $query->condition('facet_text', '%' . db_like(strtolower($keywords)) . '%', 'LIKE');
+//
+    dd((string) $query);
+    return;
+
+    switch ($facet_info['field type']) {
+
+      case 'taxonomy_term':
+        $query->join('taxonomy_term_data', 'term', "$field = term.tid");
+        $query->condition('LOWER(term.name)', '%' . $keywords . '%', 'LIKE');
+        $query->range();
+        break;
+
+      case 'node':
+        $query->join('node', 'node', "$field = node.nid");
+        $query->condition('LOWER(node.title)', '%' . $keywords . '%', 'LIKE');
+        $query->range();
+        break;
+
+      default:
+        $query->condition('LOWER(' . $field . ')', '%' . $keywords . '%', 'LIKE');
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * Ensures that facetapi_autocomplete_search_api_query_alter() runs after
+ * other modules implementing the same hook, otherwise options will not yet
+ * be added to the query.
+ */
+function facetapi_autocomplete_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'search_api_query_alter') {
+    $group = $implementations['facetapi_autocomplete'];
+    unset($implementations['facetapi_autocomplete']);
+    $implementations['facetapi_autocomplete'] = $group;
+  }
+}
+
+/**
+ * Implements hook_forms().
+ *
+ * Consolidates multiple form IDs to use a single constructor.
+ */
+function facetapi_autocomplete_forms($form_id) {
+  $forms = array();
+  if (strpos($form_id, 'facetapi_autocomplete_form_') === 0) {
+    $forms[$form_id]['callback'] = 'facetapi_autocomplete_form';
+  }
+  return $forms;
+}
+
+/**
+ * Form constructor for the autocomplete widget.
+ */
+function facetapi_autocomplete_form($form, &$form_state, $widget, $build) {
+  $form['#widget'] = $widget;
+
+  // Select2 will take over this element. It expects a 'hidden' element type.
+  $form['keywords'] = array(
+    '#type' => 'hidden',
+    '#attributes' => array(
+      'data-url' => url(FACETAPI_AUTOCOMPLETE_PATH, array('absolute' => TRUE)),
+      'data-path' => current_path(),
+      'data-params' => json_encode((object) drupal_get_query_parameters()),
+      'data-facet' => $widget->getKey(),
+      'class' => array(
+        'facetapi-autocomplete',
+      ),
+    ),
+  );
+
+  // Form API seems to require a submit button.
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Submit'),
+    '#attributes' => array(
+      'class' => array('element-invisible'),
+    ),
+  );
+
+  // Load JS and CSS for Select to library.
+  $path = libraries_get_path('select2');
+  $form['#attached']['js'][] = $path . '/select2.js';
+  $form['#attached']['css'][] = $path . '/select2.css';
+  $form['#attached']['js'][] = drupal_get_path('module', 'facetapi_autocomplete') . '/plugins/facetapi/facetapi_autocomplete_widget.js';
+
+  return $form;
+}
+
+/**
+ * Form submit handler for facetapi_autocomplete_form().
+ */
+function facetapi_autocomplete_form_submit($form, &$form_state) {
+  $widget = $form['#widget'];
+
+  $query = drupal_get_query_parameters();
+  $query['f'] = isset($query['f']) ? $query['f'] : array();
+
+  if (!empty($form_state['values']['keywords'])) {
+    $query['f'][] = $widget->makeFacetValue($form_state['values']['keywords']);
+  }
+
+  // Redirect to the new URL, with the new active facet.
+  $form_state['redirect'] = array(current_path(), array('query' => $query));
+}
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_autocomplete_facetapi_widgets() {
+  return array(
+    'autocomplete' => array(
+      'handler' => array(
+        'label' => t('Autocomplete'),
+        'class' => 'FacetapiAutocompleteWidget',
+        'query types' => array('term'),
+      ),
+    ),
+  );
+}

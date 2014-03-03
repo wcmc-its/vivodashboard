@@ -1,0 +1,596 @@
+<?php
+/**
+ * @file
+ * vivodashboard_import.feeds_importer_default.inc
+ */
+
+/**
+ * Implements hook_feeds_importer_default().
+ */
+function vivodashboard_import_feeds_importer_default() {
+  $export = array();
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'journal_rankings';
+  $feeds_importer->config = array(
+    'name' => 'Journal Rankings',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'FeedsFileFetcher',
+      'config' => array(
+        'allowed_extensions' => 'txt csv tsv xml opml',
+        'direct' => FALSE,
+        'directory' => 'public://feeds',
+        'allowed_schemes' => array(
+          0 => 'public',
+        ),
+      ),
+    ),
+    'parser' => array(
+      'plugin_key' => 'FeedsCSVParser',
+      'config' => array(
+        'delimiter' => 'TAB',
+        'no_headers' => 1,
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => '2',
+            'target' => 'guid',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => '0',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => '1',
+            'target' => 'description',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 1,
+        'bundle' => 'journal_rankings',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['journal_rankings'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_authors';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Authors',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsNodeProcessor',
+      'config' => array(
+        'expire' => '-1',
+        'author' => 0,
+        'authorize' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'Label',
+            'target' => 'title',
+            'unique' => FALSE,
+          ),
+          3 => array(
+            'source' => 'http://xmlns.com/foaf/0.1/lastName',
+            'target' => 'field_last_name',
+            'unique' => FALSE,
+          ),
+          4 => array(
+            'source' => 'http://xmlns.com/foaf/0.1/firstName',
+            'target' => 'field_first_name',
+            'unique' => FALSE,
+          ),
+          5 => array(
+            'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'target' => 'import:node:field_rdf_type',
+            'importer' => 'vivo_types',
+            'age' => '2419200',
+          ),
+          6 => array(
+            'source' => 'http://vivoweb.org/ontology/core#personInPosition [] http://vivoweb.org/ontology/core#positionInOrganization',
+            'target' => 'import:node:field_department',
+            'importer' => 'vivo_departments',
+            'age' => '2419200',
+          ),
+          7 => array(
+            'source' => 'http://vivoweb.org/ontology/core#personInPosition',
+            'target' => 'primary_department',
+            'unique' => FALSE,
+          ),
+          8 => array(
+            'source' => 'http://vitro.mannlib.cornell.edu/ns/wcmc/people/person_CWID',
+            'target' => 'field_id',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'author',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => 1800,
+    'expire_period' => 3600,
+    'import_on_create' => TRUE,
+    'process_in_background' => FALSE,
+  );
+  $export['vivo_authors'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_departments';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Departments',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'Label',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+          3 => array(
+            'source' => 'http://vivoweb.org/ontology/core#subOrganizationWithin',
+            'target' => 'import:taxonomy_term:field_institution',
+            'importer' => 'vivo_institutions',
+            'age' => '1440',
+          ),
+          4 => array(
+            'source' => 'http://vivoweb.org/ontology/core#subOrganizationWithin [] http://vivoweb.org/ontology/core#subOrganizationWithin',
+            'target' => 'import:taxonomy_term:field_institution',
+            'importer' => 'vivo_institutions',
+            'age' => '1440',
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'departments',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_departments'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_funding_organizations';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Funding Organizations',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'Label',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'organizations',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_funding_organizations'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_institutions';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Institutions',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'Label',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'target' => 'import:taxonomy_term:field_rdf_type',
+            'importer' => 'vivo_types',
+            'age' => '1440',
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'institutions',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_institutions'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_journals';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Journals',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'Label',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+          3 => array(
+            'source' => 'http://purl.org/ontology/bibo/issn',
+            'target' => 'field_issn',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'journals',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_journals'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_publications';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Publications',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '5',
+        'pre_fetch' => 1,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsNodeProcessor',
+      'config' => array(
+        'expire' => '-1',
+        'author' => 0,
+        'authorize' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'Label',
+            'target' => 'title',
+            'unique' => FALSE,
+          ),
+          3 => array(
+            'source' => 'http://purl.org/ontology/bibo/pageStart',
+            'target' => 'field_page_start',
+            'unique' => FALSE,
+          ),
+          4 => array(
+            'source' => 'http://purl.org/ontology/bibo/pageEnd',
+            'target' => 'field_page_end',
+            'unique' => FALSE,
+          ),
+          5 => array(
+            'source' => 'http://vivoweb.org/ontology/core#dateTimeValue [] http://vivoweb.org/ontology/core#dateTime',
+            'target' => 'field_date:start',
+            'unique' => FALSE,
+          ),
+          6 => array(
+            'source' => 'http://purl.org/ontology/bibo/volume',
+            'target' => 'field_volume',
+            'unique' => FALSE,
+          ),
+          7 => array(
+            'source' => 'http://vivoweb.org/ontology/activity-insight#issue',
+            'target' => 'field_issue',
+            'unique' => FALSE,
+          ),
+          8 => array(
+            'source' => 'http://purl.org/ontology/bibo/doi',
+            'target' => 'field_doi',
+            'unique' => FALSE,
+          ),
+          9 => array(
+            'source' => 'http://purl.org/ontology/bibo/pmid',
+            'target' => 'field_pmid',
+            'unique' => FALSE,
+          ),
+          10 => array(
+            'source' => 'http://vivoweb.org/ontology/core#pmcid',
+            'target' => 'field_pmcid',
+            'unique' => FALSE,
+          ),
+          11 => array(
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#scopusDocId',
+            'target' => 'field_scopus_id',
+            'unique' => FALSE,
+          ),
+          12 => array(
+            'source' => 'http://vivoweb.org/ontology/core#hasPublicationVenue',
+            'target' => 'import:node:field_journal',
+            'importer' => 'vivo_journals',
+            'age' => '2419200',
+          ),
+          13 => array(
+            'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'target' => 'import:node:field_rdf_type',
+            'importer' => 'vivo_types',
+            'age' => '2419200',
+          ),
+          14 => array(
+            'source' => 'http://vivoweb.org/ontology/core#FundingOrganization',
+            'target' => 'import:node:field_funding',
+            'importer' => 'vivo_funding_organizations',
+            'age' => '2419200',
+          ),
+          15 => array(
+            'source' => 'http://purl.org/spar/c4o/hasGlobalCitationFrequency [] http://www.w3.org/2000/01/rdf-schema#label',
+            'target' => 'field_citations',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'publication',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_publications'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_types';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Types',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 0,
+        'batch_limit' => '100',
+        'pre_fetch' => 0,
+        'retries' => '3',
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsTermProcessor',
+      'config' => array(
+        'vocabulary' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'Label',
+            'target' => 'name',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '2',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'rdf_types',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_types'] = $feeds_importer;
+
+  return $export;
+}
