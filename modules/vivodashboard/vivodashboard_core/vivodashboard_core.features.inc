@@ -56,42 +56,180 @@ function vivodashboard_core_default_search_api_server() {
       "min_chars" : "1",
       "indexes" : {
         "authorships" : {
-          "field_author_rank" : {
-            "table" : "search_api_db_authorships",
-            "column" : "field_author_rank",
-            "type" : "integer",
-            "boost" : "1.0"
-          },
-          "endpoints_source_node" : {
-            "table" : "search_api_db_authorships_endpoints_source_node",
-            "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
-            "boost" : "1.0"
-          },
-          "endpoints_target_node" : {
-            "table" : "search_api_db_authorships_endpoints_target_node",
-            "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
-            "boost" : "1.0"
-          },
           "search_api_language" : {
             "table" : "search_api_db_authorships",
             "column" : "search_api_language",
             "type" : "string",
             "boost" : "1.0"
+          },
+          "publication_title" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_title",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_timestamp" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_timestamp",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_year" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_month" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_year" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_graph_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_month" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_graph_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_journal" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_journal",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_journal_ranking" : {
+            "table" : "search_api_db_authorships",
+            "column" : "publication_journal_ranking",
+            "type" : "decimal",
+            "boost" : "1.0"
+          },
+          "publication_types" : {
+            "table" : "search_api_db_authorships_publication_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_names" : {
+            "table" : "search_api_db_authorships_publication_author_names",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_types" : {
+            "table" : "search_api_db_authorships_publication_author_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_affiliations" : {
+            "table" : "search_api_db_authorships_publication_author_affiliations",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_firstlast_affiliations" : {
+            "table" : "search_api_db_authorships_publication_author_firstlast_affilia",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
           }
         },
-        "publications" : { "search_api_language" : {
+        "publications" : {
+          "search_api_language" : {
             "table" : "search_api_db_publications",
             "column" : "search_api_language",
             "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_title" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_title",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_timestamp" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_timestamp",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_year" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_month" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_year" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_graph_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_month" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_graph_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_journal" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_journal",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_journal_ranking" : {
+            "table" : "search_api_db_publications",
+            "column" : "publication_journal_ranking",
+            "type" : "decimal",
+            "boost" : "1.0"
+          },
+          "publication_types" : {
+            "table" : "search_api_db_publications_publication_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_names" : {
+            "table" : "search_api_db_publications_publication_author_names",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_types" : {
+            "table" : "search_api_db_publications_publication_author_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_affiliations" : {
+            "table" : "search_api_db_publications_publication_author_affiliations",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_firstlast_affiliations" : {
+            "table" : "search_api_db_publications_publication_author_firstlast_affili",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
             "boost" : "1.0"
           }
         }
       }
     },
-    "enabled" : "1",
-    "rdf_mapping" : []
+    "enabled" : "1"
   }');
   $items['solr'] = entity_import('search_api_server', '{
     "name" : "Solr",
@@ -112,8 +250,7 @@ function vivodashboard_core_default_search_api_server() {
       "highlight_data" : 0,
       "http_method" : "POST"
     },
-    "enabled" : "0",
-    "rdf_mapping" : []
+    "enabled" : "0"
   }');
   return $items;
 }
