@@ -6,3 +6,6 @@ files[] = pantheon.profile
 dependencies[] = vivodashboard_core
 dependencies[] = vivodashboard_import
 dependencies[] = vivodashboard_publications
+
+dependencies[] = entitycache
+dependencies[] = elysia_cron
