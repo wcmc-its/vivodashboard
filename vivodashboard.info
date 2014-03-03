@@ -11,6 +11,5 @@ dependencies[] = vivodashboard_publications
 ; Useful modules that are not actually required
 dependencies[] = admin_menu_toolbar
 dependencies[] = dblog
-dependencies[] = database
 dependencies[] = entitycache
 dependencies[] = elysia_cron
