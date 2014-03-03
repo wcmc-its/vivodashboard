@@ -1,6 +1,5 @@
 name = VIVO Dashboard
 description = Install the VIVO Dashboard profile
-version = VERSION
 core = 7.x
 
 files[] = pantheon.profile
