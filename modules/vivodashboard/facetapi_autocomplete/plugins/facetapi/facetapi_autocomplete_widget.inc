@@ -22,6 +22,10 @@ class FacetapiAutocompleteWidget extends FacetapiWidgetLinks {
     $form_id = 'facetapi_autocomplete_form_' . ++$count;
     $build = &$this->build[$this->facet['field alias']];
     $build = drupal_get_form($form_id, $this, $build);
+
+    // Suppressing notices due to FacetAPI expecting a #title attribute.
+    // @see facetapi_block_view()
+    $this->build['#title'] = '';
   }
 
   /**
