@@ -35,6 +35,8 @@ class VivoDasbhboardChartsgraphsFlot extends ChartsGraphsFlot {
       }
     }
 
+    $rowSize = 1;
+
     // Aim to have 6 rows on the yaxis (including 0).
     if ($largest/5 > 1) {
       $rowSize = ceil($largest/5);
