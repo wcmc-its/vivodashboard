@@ -126,7 +126,7 @@ function vivodashboard_core_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'date_default_timezone';
-  $strongarm->value = 'America/New_York';
+  $strongarm->value = 'Asia/Bangkok';
   $export['date_default_timezone'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -156,6 +156,13 @@ function vivodashboard_core_strongarm() {
   $strongarm->name = 'date_format_year';
   $strongarm->value = 'Y';
   $export['date_format_year'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'dblog_row_limit';
+  $strongarm->value = '10000';
+  $export['dblog_row_limit'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
@@ -221,6 +228,13 @@ function vivodashboard_core_strongarm() {
   $strongarm->name = 'disable_messages_page_filter_paths';
   $strongarm->value = '';
   $export['disable_messages_page_filter_paths'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'error_level';
+  $strongarm->value = '0';
+  $export['error_level'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
