@@ -40,6 +40,7 @@ dependencies[] = number
 dependencies[] = options
 dependencies[] = path
 dependencies[] = relation
+dependencies[] = relation_dummy_field
 dependencies[] = relation_ui
 dependencies[] = search_api
 dependencies[] = search_api_db
