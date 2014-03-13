@@ -43,6 +43,11 @@ h1, h2, h3, h4, h5, h6 {
   right: 4px;
 }
 
+.page-node .tasks-primary {
+  position: static;
+  margin: 2.5em 0;
+}
+
 .tasks-primary .links {
   font-size: 14px;
   font-weight: 600;
