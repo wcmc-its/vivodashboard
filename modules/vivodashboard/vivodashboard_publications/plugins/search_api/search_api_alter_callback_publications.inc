@@ -21,9 +21,23 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
   }
 
   public function alterNodeItems(array &$items, $target_author = NULL) {
-    foreach ($items as &$item) {
+    $ignored_types = isset($this->options['ignored_types']) ? explode(',', $this->options['ignored_types']) : array();
+    $ignored_types = array_map('trim', $ignored_types);
+
+    foreach ($items as $i => &$item) {
       $this->resetProperties($item);
       $wrapper = entity_metadata_wrapper('node', $item);
+
+      // Check the URIs for the publication types against the types we ignore
+      // and remove this item entirely if there is a match.
+      if ($ignored_types) {
+        foreach ($wrapper->rdf_types->value() as $uri) {
+          if (in_array($uri, $ignored_types, TRUE)) {
+            unset($items[$i]);
+            continue 2;
+          }
+        }
+      }
 
       $item->publication_title = $item->title;
 
@@ -149,7 +163,7 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
    *   typed as list<text>. These properties are used for autocomplete facets,
    *   where text values are more appropriate. In most cases, however, using
    *   list<taxonomy_term> instead of list<text> will lead to
-   *   more performant facet queries.
+   *   more performant facet queries when using a database backend.
    */
   public function propertyInfo() {
     return array(
@@ -214,5 +228,18 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
         // 'type' => 'list<text>',
       ),
     );
+  }
+
+  /**
+   * Implements SearchApiAbstractAlterCallback::configurationForm().
+   */
+  public function configurationForm() {
+    $form['ignored_types'] = array(
+      '#title' => 'Ignored publication types',
+      '#description' => t('Exclude certain publications from the search index based on their rdf:type values. Enter a comma-separated list of VIVO URIs. Publications with any of these types will be excluded.'),
+      '#type' => 'textarea',
+      '#default_value' => isset($this->options['ignored_types']) ? $this->options['ignored_types'] : '',
+    );
+    return $form;
   }
 }

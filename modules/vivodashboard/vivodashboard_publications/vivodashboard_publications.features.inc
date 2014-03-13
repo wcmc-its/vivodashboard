@@ -70,7 +70,11 @@ function vivodashboard_publications_default_search_api_index() {
         "search_api_alter_add_viewed_entity" : { "status" : 0, "weight" : "-46", "settings" : { "mode" : false } },
         "search_api_alter_add_url" : { "status" : 0, "weight" : "-45", "settings" : [] },
         "search_api_alter_add_aggregation" : { "status" : 0, "weight" : "-44", "settings" : [] },
-        "publications" : { "status" : 1, "weight" : "0", "settings" : [] }
+        "publications" : {
+          "status" : 1,
+          "weight" : "0",
+          "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum, http:\\/\\/purl.org\\/ontology\\/bibo\\/Book" }
+        }
       },
       "processors" : {
         "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
@@ -112,7 +116,8 @@ function vivodashboard_publications_default_search_api_index() {
       }
     },
     "enabled" : "1",
-    "read_only" : "0"
+    "read_only" : "0",
+    "rdf_mapping" : []
   }');
   $items['publications'] = entity_import('search_api_index', '{
     "name" : "Publications",
@@ -141,8 +146,7 @@ function vivodashboard_publications_default_search_api_index() {
       },
       "data_alter_callbacks" : {
         "search_api_alter_node_status" : { "status" : 1, "weight" : "-50", "settings" : [] },
-        "search_api_ranges_alter" : { "status" : 0, "weight" : "-50", "settings" : [] },
-        "publication_year" : { "status" : 0, "weight" : "-50", "settings" : [] },
+        "search_api_ranges_alter" : { "status" : 0, "weight" : "-50", "settings" : { "fields" : [] } },
         "search_api_alter_bundle_filter" : {
           "status" : 1,
           "weight" : "-49",
@@ -153,8 +157,11 @@ function vivodashboard_publications_default_search_api_index() {
         "search_api_alter_add_viewed_entity" : { "status" : 0, "weight" : "-46", "settings" : { "mode" : "full" } },
         "search_api_alter_add_url" : { "status" : 0, "weight" : "-45", "settings" : [] },
         "search_api_alter_add_aggregation" : { "status" : 0, "weight" : "-44", "settings" : [] },
-        "publications" : { "status" : 1, "weight" : "0", "settings" : [] },
-        "publication_author" : { "status" : 0, "weight" : "0", "settings" : [] }
+        "publications" : {
+          "status" : 1,
+          "weight" : "0",
+          "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum, http:\\/\\/purl.org\\/ontology\\/bibo\\/Book" }
+        }
       },
       "processors" : {
         "search_api_case_ignore" : { "status" : 1, "weight" : "0", "settings" : { "fields" : [] } },
@@ -196,7 +203,8 @@ function vivodashboard_publications_default_search_api_index() {
       }
     },
     "enabled" : "1",
-    "read_only" : "0"
+    "read_only" : "0",
+    "rdf_mapping" : []
   }');
   return $items;
 }

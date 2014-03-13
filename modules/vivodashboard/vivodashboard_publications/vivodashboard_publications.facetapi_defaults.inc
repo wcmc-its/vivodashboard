@@ -240,7 +240,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
   $facet->facet = 'publication_types';
   $facet->enabled = FALSE;
   $facet->settings = array(
-    'operator' => 'and',
+    'operator' => 'or',
     'hard_limit' => '50',
     'dependencies' => array(
       'enabled' => FALSE,
@@ -256,7 +256,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     ),
     'facet_mincount' => '1',
     'facet_missing' => '0',
-    'flatten' => 0,
+    'flatten' => '0',
     'query_type' => 'term',
     'default_true' => '1',
     'facet_search_ids' => array(),
@@ -815,6 +815,8 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'graphs_combobackground_colour' => '#fff',
     'graphs_comboseries_colours' => NULL,
     'graphs_comboshowlegend' => 1,
+    'slider-step' => '1',
+    'round-precision' => '0',
   );
   $export['search_api@authorships:block:publication_types'] = $facet;
 
@@ -1217,7 +1219,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
   $facet->facet = 'publication_types';
   $facet->enabled = FALSE;
   $facet->settings = array(
-    'operator' => 'and',
+    'operator' => 'or',
     'hard_limit' => '50',
     'dependencies' => array(
       'enabled' => FALSE,
@@ -1233,7 +1235,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     ),
     'facet_mincount' => '1',
     'facet_missing' => '0',
-    'flatten' => 0,
+    'flatten' => '0',
     'query_type' => 'term',
     'default_true' => '1',
     'facet_search_ids' => array(),
@@ -2052,6 +2054,8 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'graphs_combobackground_colour' => '#fff',
     'graphs_comboseries_colours' => NULL,
     'graphs_comboshowlegend' => 1,
+    'slider-step' => '1',
+    'round-precision' => '0',
   );
   $export['search_api@publications:block:publication_types'] = $facet;
 
@@ -2279,7 +2283,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-42',
       ),
       'year_limit' => array(
-        'status' => 1,
+        'status' => 0,
         'weight' => '-41',
       ),
       'convert_months' => array(
