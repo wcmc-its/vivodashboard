@@ -22,6 +22,7 @@ class VivoDasbhboardChartsgraphsFlot extends ChartsGraphsFlot {
     $options->grid->backgroundColor = '#fff';
     $options->grid->tickColor = '#fff';
     $options->grid->labelMargin = 5;
+    $options->grid->margin = (object) array('bottom' => 10);
 
     $options->yaxis->tickColor = '#f0f0f0';
     $options->yaxis->tickSize = 1;
@@ -61,6 +62,17 @@ class VivoDasbhboardChartsgraphsFlot extends ChartsGraphsFlot {
       $options->xaxis->min = -($num_spaces - $num_bars) / 2;
       $options->xaxis->max = $num_bars - 1 + ($num_spaces - $num_bars) / 2;
     }
+
+    if ($num_bars > 24) {
+      $options->xaxis->show = FALSE;
+    }
+    elseif ($num_bars > 12) {
+      $options->xaxis->rotateTicks = 135;
+      $options->grid->labelMargin = 1;
+    }
+
+    // Add Flot plugin for rotating labels.
+    drupal_add_js(libraries_get_path('flot-tickrotor') . '/jquery.flot.tickrotor.js', array('weight' => 10));
 
     // Attach JS for tooltips on hover.
     drupal_add_js(drupal_get_path('module', 'vivodashboard_core') . '/plugins/charts_graphs/vivodashboard_chartsgraphs_flot.js', array('weight' => 10));

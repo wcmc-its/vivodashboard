@@ -18,7 +18,16 @@
             // Data might be a small decimal, like 0.01, in order to show a
             // partial bar instead of a no bar. In that case, we want
             // to call it zero.
-            element.text(Math.floor(item.datapoint[1]));
+            var value = Math.floor(item.datapoint[1]);
+
+            // When ticks on the xaxis have been disabled, add the tick label
+            // to the tooltip.
+            var tick = item.series.xaxis.options.ticks[item.dataIndex];
+            if (item.series.xaxis.options.show === false && tick !== undefined) {
+              value = tick[1] + ': ' + value;
+            }
+
+            element.text(value);
 
             // Position the element at the exact top center of the bar.
             offsetX = element.outerWidth() / 2;
