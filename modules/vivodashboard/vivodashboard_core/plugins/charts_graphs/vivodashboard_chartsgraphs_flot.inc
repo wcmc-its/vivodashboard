@@ -63,8 +63,11 @@ class VivoDasbhboardChartsgraphsFlot extends ChartsGraphsFlot {
       $options->xaxis->max = $num_bars - 1 + ($num_spaces - $num_bars) / 2;
     }
 
+    // Hide labels and adjust left/right space when there are lots of bars.
     if ($num_bars > 24) {
       $options->xaxis->show = FALSE;
+      $options->yaxis->autoscaleMargin = 0.02;
+      $options->xaxis->autoscaleMargin = 0.02;
     }
     elseif ($num_bars > 12) {
       $options->xaxis->rotateTicks = 135;
