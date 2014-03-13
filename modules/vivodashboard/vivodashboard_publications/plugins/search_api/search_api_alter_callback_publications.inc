@@ -72,9 +72,12 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
       }
 
       // Attach author-related propereties.
-      if ($wrapper->authors->value()) {
-        $first = key($wrapper->authors);
-        $last = end($wrapper->authors);
+      if ($authors = $wrapper->authors->value()) {
+
+        reset($authors);
+        $first = key($authors);
+        end($authors);
+        $last = key($authors);
 
         foreach ($wrapper->authors as $delta => $author) {
 
@@ -92,16 +95,27 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
             // $item->publication_author_types[$term->name] = $term->name;
           }
 
-          // Add department values for author.
-          foreach ($author->field_department->value() as $k => $term) {
-            $item->publication_author_affiliations[$term->name] = $term->name;
+          // Add primary department.
+          if ($department = $author->field_primary_department->value()) {
+            $item->publication_author_affiliations[$department->name] = $department->name;
+          }
 
-            // Add the institutional affiliation if this is a first/last author.
-            $department = entity_metadata_wrapper('taxonomy_term', $term);
-            if (($delta == $first || $delta == $last) && !empty($department->field_institution[0])) {
-              $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->tid->value();
-              // $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->name->value();
-            }
+          // Add primary institution.
+          if (($delta == $first || $delta == $last) && $author->field_primary_institution->value()) {
+            $institution_name = $author->field_primary_institution->value();
+            $item->publication_author_firstlast_affiliations[$institution_name] = $institution_name;
+          }
+
+          // Add department values for author.
+          // foreach ($author->field_department->value() as $k => $term) {
+          //   $item->publication_author_affiliations[$term->name] = $term->name;
+
+          //   // Add the institutional affiliation if this is a first/last author.
+          //   $department = entity_metadata_wrapper('taxonomy_term', $term);
+          //   if (($delta == $first || $delta == $last) && !empty($department->field_institution[0])) {
+          //     $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->tid->value();
+          //     // $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->name->value();
+          //   }
 
             // Restrict to institutions typed as vivo:University.
             // if (($delta == $first || $delta == $last)) {
@@ -111,7 +125,7 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
             //     }
             //   }
             // }
-          }
+          // }
         }
       }
     }
@@ -146,7 +160,7 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
     $item->publication_graph_year = NULL;
     $item->publication_graph_month = NULL;
     $item->publication_journal = NULL;
-    $item->publication_journal_ranking = NULL;
+    $item->publication_journal_ranking = 0;
     $item->publication_types = array();
     $item->publication_author_names = array();
     $item->publication_author_types = array();
@@ -224,8 +238,8 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
       ),
       'publication_author_firstlast_affiliations' => array(
         'label' => t('Publication First/Last Author Institutional Affiliations'),
-        'type' => 'list<taxonomy_term>',
-        // 'type' => 'list<text>',
+        // 'type' => 'list<taxonomy_term>',
+        'type' => 'list<text>',
       ),
     );
   }

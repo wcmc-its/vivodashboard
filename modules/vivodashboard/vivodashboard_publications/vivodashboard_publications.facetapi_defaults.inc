@@ -1018,7 +1018,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
       'hide' => 1,
       'single_year' => '1',
     ),
-    'facet_mincount' => '0',
+    'facet_mincount' => '1',
     'facet_missing' => '0',
     'flatten' => 0,
     'query_type' => 'term',

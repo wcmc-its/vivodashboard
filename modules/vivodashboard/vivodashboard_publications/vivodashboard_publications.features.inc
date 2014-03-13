@@ -45,7 +45,7 @@ function vivodashboard_publications_default_search_api_index() {
       "cron_limit" : "50",
       "fields" : {
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
-        "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
+        "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_names" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_types" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
         "publication_graph_month" : { "type" : "integer" },
@@ -129,7 +129,7 @@ function vivodashboard_publications_default_search_api_index() {
       "cron_limit" : "50",
       "fields" : {
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
-        "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
+        "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_names" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_types" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
         "publication_graph_month" : { "type" : "integer" },
