@@ -1,7 +1,8 @@
 core = 7.x
 api = 2
 
-; Contrib Modules
+; Contrib modules
+
 projects[admin_menu][version] = "3.0-rc4"
 projects[ctools][version] = "1.3"
 projects[charts_graphs][version] = "2.0"
@@ -23,6 +24,7 @@ projects[libraries][version] = "2.1"
 projects[link][version] = "1.1"
 projects[search_api_solr][version] = "1.2"
 projects[strongarm][version] = "2.0"
+projects[title][version] = "1.0-alpha7"
 projects[uuid][version] = "1.0-alpha5"
 projects[views][version] = "3.7"
 projects[views_bulk_operations][version] = "3.2"
@@ -89,6 +91,7 @@ projects[ldimport_vivo][download][branch] = "master"
 projects[ldimport_vivo][download][revision] = "9ba223b2a388eb9d15bac8495523089921195ba3"
 
 ; Patches
+
 projects[feeds][patch][1470530] = "https://drupal.org/files/issues/unpublish-delete-entities-not-in-feed-1470530-134.patch"
 projects[facetapi_multiselect][patch][180634] = "https://drupal.org/files/issues/1806344.13.count_autosubmit_removeSelected_0.patch"
 projects[search_api_db][patch][1390586] = "https://drupal.org/files/issues/search_api_db_or_logic-38.patch"
@@ -97,6 +100,7 @@ projects[search_api_ranges][patch][2130349] = "https://drupal.org/files/issues/s
 projects[views_data_export][patch][1258390] = "https://drupal.org/files/views_data_export-solr_export-1258390-13.patch"
 
 ; Libraries
+
 libraries[ARC2][download][type] = "git"
 libraries[ARC2][download][url] = "https://github.com/semsol/arc2.git"
 libraries[ARC2][download][revision] = "bc67abee322edb0a38b304cc4695543c43ae735b"
