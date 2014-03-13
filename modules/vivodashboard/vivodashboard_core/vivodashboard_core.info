@@ -197,6 +197,7 @@ files[] = plugins/facetapi/facetapi_include_filter.inc
 files[] = plugins/facetapi/facetapi_year_limit_filter.inc
 files[] = plugins/facetapi/facetapi_months_filter.inc
 files[] = plugins/facetapi/facetapi_empty_years_filter.inc
+files[] = plugins/facetapi/facetapi_empty_months_filter.inc
 files[] = plugins/facetapi/facetapi_autocomplete_widget.inc
 files[] = plugins/charts_graphs/vivodashboard_chartsgraphs_flot.inc
 files[] = plugins/current_search/current_search_item_reset.inc

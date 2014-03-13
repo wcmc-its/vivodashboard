@@ -23,6 +23,7 @@ class VivodashboardCoreEmptyYearsFilter extends FacetapiFilter {
         $build[$year] = $build[$most_recent_year];
         $build[$year]['#markup'] = $year;
         $build[$year]['#indexed_value'] = $year;
+        // Give a small value so graphs will actually render something.
         $build[$year]['#count'] = 0.02;
       }
     }

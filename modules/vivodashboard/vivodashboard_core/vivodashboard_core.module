@@ -37,6 +37,12 @@ function vivodashboard_core_facetapi_filters() {
         'class' => 'VivodashboardCoreEmptyYearsFilter',
       ),
     ),
+    'empty_months' => array(
+      'handler' => array(
+        'label' => t('Fill in empty months'),
+        'class' => 'VivodashboardCoreEmptyMonthsFilter',
+      ),
+    ),
     'convert_months' => array(
       'handler' => array(
         'label' => t('Convert numbers to months'),

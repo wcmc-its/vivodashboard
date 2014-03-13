@@ -177,7 +177,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Relationship: Indexed Relation: node (source endpoint) */
   $handler->display->display_options['relationships']['endpoints_source_node']['id'] = 'endpoints_source_node';
@@ -470,7 +470,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Indexed Node: Author Labels */
   $handler->display->display_options['fields']['author_labels']['id'] = 'author_labels';
@@ -725,7 +725,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['empty']['area']['table'] = 'views';
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No publications to display.';
+  $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
   /* Field: Indexed Node: Authorships */
   $handler->display->display_options['fields']['authorships']['id'] = 'authorships';

@@ -121,7 +121,7 @@ function vivodashboard_publications_facetapi_facet_info_alter(&$facet_info, $sea
         $facet['label'] = 'Author Type'; break;
 
       case 'publication_author_affiliations':
-        $facet['label'] = 'Author Affiliation'; break;
+        $facet['label'] = 'Primary Department'; break;
 
       case 'publication_author_firstlast_affiliations':
         $facet['label'] = 'First/Last Author Affiliation'; break;
