@@ -49,6 +49,12 @@ function vivodashboard_core_current_search_items() {
         'class' => 'VivodashboardCurrentSearchReset',
       ),
     ),
+    'grouped_active_items' => array(
+      'handler' => array(
+        'label' => t('Grouped active items'),
+        'class' => 'VivodashboardCoreCurrentSearchItemGrouped',
+      ),
+    ),
   );
 }
 

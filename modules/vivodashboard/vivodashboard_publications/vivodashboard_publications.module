@@ -51,10 +51,10 @@ function vivodashboard_publications_menu_local_tasks_alter(&$data, $router_item,
 /**
  * Implements hook_block_view_alter().
  *
- * Overrides titles for facet blocks.
+ * Overrides default titles for facet blocks.
  */
 function vivodashboard_publications_block_view_alter(&$data, $block) {
-  if ($block->module == 'current_search') {
+  if ($block->module == 'current_search' && empty($block->title)) {
     switch ($block->delta) {
       case 'publications':
       case 'authorships':
@@ -62,55 +62,25 @@ function vivodashboard_publications_block_view_alter(&$data, $block) {
     }
   }
 
-  if ($block->module == 'facetapi') {
+  // Replace block titles such as "Filter by Journal Ranking:" to be
+  // simply "Journal Ranking".
+  if ($block->module == 'facetapi' && empty($block->title)) {
 
     // Facet API uses hashed deltas, so need to decode them first.
     $facet_map = facetapi_get_delta_map();
     $real_delta = isset($facet_map[$block->delta]) ? $facet_map[$block->delta] : NULL;
 
-    // Block is either "block" realm or "facetapi_graphs_graphs" realm.
+    // Realm is either "block" or "facetapi_graphs_graphs".
     if (strpos($real_delta, ':block:')) {
       list($searcher, $facet_name) = explode(':block:', $real_delta);
     }
-    elseif (strpos($real_delta, ':facetapi_graphs_graphs:')) {
+    else {
       list($searcher, $facet_name) = explode(':facetapi_graphs_graphs:', $real_delta);
     }
-    else {
-      return;
-    }
 
-    switch ($facet_name) {
-      case 'publication_year':
-        $data['subject'] = 'Year'; break;
-
-      case 'publication_month':
-        $data['subject'] = 'Month'; break;
-
-      case 'publication_journal':
-        $data['subject'] = 'Journal Name'; break;
-
-      case 'publication_journal_ranking':
-        $data['subject'] = 'Journal Ranking'; break;
-
-      case 'publication_types':
-        $data['subject'] = 'Publication Type'; break;
-
-      case 'publication_author_names':
-        $data['subject'] = 'Author Name'; break;
-
-      case 'publication_author_types':
-        $data['subject'] = 'Author Type'; break;
-
-      case 'publication_author_affiliations':
-        $data['subject'] = 'Author Affiliation'; break;
-
-      case 'publication_author_firstlast_affiliations':
-        $data['subject'] = 'First/Last Author Affiliation'; break;
-
-      case 'publication_graph_year':
-      case 'publication_graph_month':
-        $data['subject'] = ''; break;
-
+    // Pull the facet label out of the facet definition.
+    if ($searcher && $facet_name && ($info = facetapi_get_facet_info($searcher)) && !empty($info[$facet_name])) {
+      $data['subject'] = $info[$facet_name]['label'];
     }
   }
 }
@@ -119,9 +89,65 @@ function vivodashboard_publications_block_view_alter(&$data, $block) {
  * Implements hook_facetapi_facet_info_alter().
  */
 function vivodashboard_publications_facetapi_facet_info_alter(&$facet_info, $searcher_info) {
+  $facet_info['publication_month']['map options']['value callback'] = 'vivodashboard_publications_month_value_callback';
+
+  // Make dependency plugin available.
   foreach ($facet_info as &$facet) {
     $facet['dependency plugins'][] = 'publication_date';
   }
+
+  // Override facet labels.
+  foreach ($facet_info as $facet_name => &$facet) {
+    switch ($facet_name) {
+      case 'publication_year':
+        $facet['label'] = 'Year'; break;
+
+      case 'publication_month':
+        $facet['label'] = 'Month'; break;
+
+      case 'publication_journal':
+        $facet['label'] = 'Journal Name'; break;
+
+      case 'publication_journal_ranking':
+        $facet['label'] = 'Journal Ranking'; break;
+
+      case 'publication_types':
+        $facet['label'] = 'Publication Type'; break;
+
+      case 'publication_author_names':
+        $facet['label'] = 'Author Name'; break;
+
+      case 'publication_author_types':
+        $facet['label'] = 'Author Type'; break;
+
+      case 'publication_author_affiliations':
+        $facet['label'] = 'Author Affiliation'; break;
+
+      case 'publication_author_firstlast_affiliations':
+        $facet['label'] = 'First/Last Author Affiliation'; break;
+
+      case 'publication_graph_year':
+      case 'publication_graph_month':
+        $facet['label'] = ''; break;
+    }
+  }
+}
+
+/**
+ * Facet API 'value callback' for publication_month facet.
+ *
+ * Converts integers to months.
+ */
+function vivodashboard_publications_month_value_callback($values) {
+  $months = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+
+  $map = array();
+
+  foreach ($values as $value) {
+    $map[$value] = $months[$value - 1];
+  }
+
+  return $map;
 }
 
 /**
@@ -143,7 +169,7 @@ function vivodashboard_publications_facetapi_dependencies() {
  */
 function vivodashboard_publications_taxonomy_term_presave($term) {
   // Uppercases names for rdf:type terms. The name may have been derived from
-  // the URI local name if a label could not be found.
+  // the URI local name if a proper label was not found.
   if ($term->vocabulary_machine_name == 'rdf_types') {
     $term->name = ucwords($term->name);
   }

@@ -116,8 +116,7 @@ function vivodashboard_publications_default_search_api_index() {
       }
     },
     "enabled" : "1",
-    "read_only" : "0",
-    "rdf_mapping" : []
+    "read_only" : "0"
   }');
   $items['publications'] = entity_import('search_api_index', '{
     "name" : "Publications",
@@ -203,8 +202,7 @@ function vivodashboard_publications_default_search_api_index() {
       }
     },
     "enabled" : "1",
-    "read_only" : "0",
-    "rdf_mapping" : []
+    "read_only" : "0"
   }');
   return $items;
 }

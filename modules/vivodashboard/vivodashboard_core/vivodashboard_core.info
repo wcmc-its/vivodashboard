@@ -200,3 +200,4 @@ files[] = plugins/facetapi/facetapi_empty_years_filter.inc
 files[] = plugins/facetapi/facetapi_autocomplete_widget.inc
 files[] = plugins/charts_graphs/vivodashboard_chartsgraphs_flot.inc
 files[] = plugins/current_search/current_search_item_reset.inc
+files[] = plugins/current_search/current_search_item_grouped.inc

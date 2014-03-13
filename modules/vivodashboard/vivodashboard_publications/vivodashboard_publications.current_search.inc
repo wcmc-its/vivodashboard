@@ -17,15 +17,12 @@ function vivodashboard_publications_current_search_default_items() {
   $item->label = 'Authorships';
   $item->settings = array(
     'items' => array(
-      'active' => array(
-        'id' => 'active',
-        'label' => 'Active',
-        'pattern' => '[facetapi_active:active-value]',
-        'keys' => 0,
-        'css' => 0,
-        'classes' => '',
+      'groups' => array(
+        'id' => 'grouped_active_items',
+        'label' => 'Groups',
+        'field_pattern' => '[facetapi_facet:facet-label]:',
         'nofollow' => 1,
-        'weight' => '-49',
+        'weight' => '-50',
       ),
       'reset' => array(
         'id' => 'reset_link',
@@ -38,7 +35,7 @@ function vivodashboard_publications_current_search_default_items() {
         'element' => '0',
         'css' => 0,
         'classes' => '',
-        'weight' => '-48',
+        'weight' => '-49',
       ),
     ),
     'advanced' => array(
@@ -54,15 +51,12 @@ function vivodashboard_publications_current_search_default_items() {
   $item->label = 'Publications';
   $item->settings = array(
     'items' => array(
-      'active' => array(
-        'id' => 'active',
-        'label' => 'Active',
-        'pattern' => '[facetapi_active:active-value]',
-        'keys' => 0,
-        'css' => 0,
-        'classes' => '',
+      'grouped' => array(
+        'id' => 'grouped_active_items',
+        'label' => 'Grouped',
+        'field_pattern' => '[facetapi_facet:facet-label]:',
         'nofollow' => 1,
-        'weight' => '0',
+        'weight' => '-50',
       ),
       'reset' => array(
         'id' => 'reset_link',
@@ -75,7 +69,7 @@ function vivodashboard_publications_current_search_default_items() {
         'element' => '0',
         'css' => 0,
         'classes' => '',
-        'weight' => '0',
+        'weight' => '-49',
       ),
     ),
     'advanced' => array(
