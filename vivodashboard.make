@@ -79,12 +79,13 @@ projects[search_api_ranges][download][revision] = "05a372d7d216765cdb49b789602cf
 projects[ldimport][type] = "module"
 projects[ldimport][download][type] = "git"
 projects[ldimport][download][url] = "https://github.com/milesw/ldimport.git"
-projects[ldimport][download][branch] = "better_batching"
-projects[ldimport][download][revision] = "e78b44fb4a7b3a764b61411aafd5633a1a5edcec"
+projects[ldimport][download][branch] = "master"
+projects[ldimport][download][revision] = "e886358f66d1cae4ddf499846cafc8fdfa8afa04"
 
 projects[ldimport_vivo][type] = "module"
 projects[ldimport_vivo][download][type] = "git"
 projects[ldimport_vivo][download][url] = "https://github.com/milesw/ldimport_vivo.git"
+projects[ldimport_vivo][download][branch] = "master"
 projects[ldimport_vivo][download][revision] = "9ba223b2a388eb9d15bac8495523089921195ba3"
 
 ; Patches
