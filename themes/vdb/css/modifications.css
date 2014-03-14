@@ -262,7 +262,6 @@ h1, h2, h3, h4, h5, h6 {
  list-style: none;
 }
 
-
 ul.publication-list {
   margin: 0;
   padding: 0;
@@ -272,6 +271,28 @@ ul.publication-list li {
   list-style: none;
   margin: 2em 0;
   padding: 0;
+}
+
+ul.publication-list a {
+  border-bottom: 1px solid #ddd;
+}
+
+ul.publication-list a:hover {
+  text-decoration: none;
+}
+
+ul.publication-list .citations:before {
+  content: "\2022";
+  font-weight: bold;
+}
+
+ul.publication-list .publication-type {
+  background: #f0f0f0;
+  font-size: 11px;
+  line-height: 18px;
+  padding: 0 8px;
+  color: #888;
+  display: inline-block;
 }
 
 #content > .section {

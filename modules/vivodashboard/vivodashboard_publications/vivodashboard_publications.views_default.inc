@@ -362,11 +362,6 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['sorts']['field_author_rank']['id'] = 'field_author_rank';
   $handler->display->display_options['sorts']['field_author_rank']['table'] = 'search_api_index_authorships';
   $handler->display->display_options['sorts']['field_author_rank']['field'] = 'field_author_rank';
-  /* Filter criterion: Indexed Relation: Publication Author Types */
-  $handler->display->display_options['filters']['publication_author_types']['id'] = 'publication_author_types';
-  $handler->display->display_options['filters']['publication_author_types']['table'] = 'search_api_index_authorships';
-  $handler->display->display_options['filters']['publication_author_types']['field'] = 'publication_author_types';
-  $handler->display->display_options['filters']['publication_author_types']['operator'] = 'not empty';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -727,6 +722,10 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+  /* Relationship: Indexed Node: Authors */
+  $handler->display->display_options['relationships']['authors']['id'] = 'authors';
+  $handler->display->display_options['relationships']['authors']['table'] = 'search_api_index_publications';
+  $handler->display->display_options['relationships']['authors']['field'] = 'authors';
   /* Field: Indexed Node: Authorships */
   $handler->display->display_options['fields']['authorships']['id'] = 'authorships';
   $handler->display->display_options['fields']['authorships']['table'] = 'search_api_index_publications';
@@ -737,6 +736,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['authorships']['link_to_entity'] = 0;
   $handler->display->display_options['fields']['authorships']['bypass_access'] = 0;
   $handler->display->display_options['fields']['authorships']['vivo_link'] = 1;
+  $handler->display->display_options['fields']['authorships']['vivo_namespace'] = 'http://vivo.med.cornell.edu/individual/cwid-';
   $handler->display->display_options['fields']['authorships']['ending_period'] = 1;
   /* Field: Indexed Node: VIVO URI » The URL of the link. */
   $handler->display->display_options['fields']['field_uri_url']['id'] = 'field_uri_url';
@@ -847,6 +847,27 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['nothing']['element_wrapper_type'] = '0';
   $handler->display->display_options['fields']['nothing']['element_default_classes'] = FALSE;
+  /* Field: Indexed Node: RDF Type */
+  $handler->display->display_options['fields']['field_rdf_type']['id'] = 'field_rdf_type';
+  $handler->display->display_options['fields']['field_rdf_type']['table'] = 'search_api_index_publications';
+  $handler->display->display_options['fields']['field_rdf_type']['field'] = 'field_rdf_type';
+  $handler->display->display_options['fields']['field_rdf_type']['label'] = '';
+  $handler->display->display_options['fields']['field_rdf_type']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_rdf_type']['element_wrapper_type'] = 'span';
+  $handler->display->display_options['fields']['field_rdf_type']['element_wrapper_class'] = 'publication-type';
+  $handler->display->display_options['fields']['field_rdf_type']['element_default_classes'] = FALSE;
+  $handler->display->display_options['fields']['field_rdf_type']['list']['mode'] = 'first';
+  $handler->display->display_options['fields']['field_rdf_type']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['field_rdf_type']['view_mode'] = 'full';
+  $handler->display->display_options['fields']['field_rdf_type']['bypass_access'] = 0;
+  /* Field: Indexed Node: Citations */
+  $handler->display->display_options['fields']['field_citations']['id'] = 'field_citations';
+  $handler->display->display_options['fields']['field_citations']['table'] = 'search_api_index_publications';
+  $handler->display->display_options['fields']['field_citations']['field'] = 'field_citations';
+  $handler->display->display_options['fields']['field_citations']['label'] = 'Times cited';
+  $handler->display->display_options['fields']['field_citations']['element_wrapper_type'] = 'div';
+  $handler->display->display_options['fields']['field_citations']['element_wrapper_class'] = 'citations';
+  $handler->display->display_options['fields']['field_citations']['element_default_classes'] = FALSE;
   /* Sort criterion: Indexed Node: Publication Timestamp */
   $handler->display->display_options['sorts']['publication_timestamp']['id'] = 'publication_timestamp';
   $handler->display->display_options['sorts']['publication_timestamp']['table'] = 'search_api_index_publications';

@@ -128,6 +128,7 @@ function vivodashboard_publications_default_search_api_index() {
       "index_directly" : 0,
       "cron_limit" : "50",
       "fields" : {
+        "field_citations" : { "type" : "integer" },
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_names" : { "type" : "list\\u003Cstring\\u003E" },

@@ -32,8 +32,8 @@ class vivodashboard_publications_field_handler_authorship extends entity_views_h
     );
     $form['vivo_namespace'] = array(
       '#type' => 'textfield',
-      '#title' => 'Ignored VIVO namespace',
-      '#description' => 'Enter a namespace or domain. A link will be rendered when the VIVO URI does NOT match this string.',
+      '#title' => 'VIVO namespace',
+      '#description' => 'Optionally enter a namespace or domain. A link will be rendered only when the VIVO URI matches this string.',
       '#default_value' => $this->options['vivo_namespace'],
       '#states' => array(
         'visible' => array(
@@ -67,10 +67,23 @@ class vivodashboard_publications_field_handler_authorship extends entity_views_h
         $entity = entity_load_single($entity_type, $entity);
       }
 
+      // For authorship relations we need to get the VIVO URL from the node.
+      if ($entity_type == 'relation' && is_object($entity)) {
+        $authorship = entity_metadata_wrapper('relation', $entity);
+        try {
+          $author = $authorship->endpoints[1]->value();
+          $entity = $author;
+          $entity_type = 'node';
+        }
+        catch (Exception $e) {
+          // Do nothing, just fail to provide a link.
+        }
+      }
+
       if (is_object($entity) && ($items = field_get_items($entity_type, $entity, 'field_uri'))) {
         $uri = $items[0]['url'];
         $namespace = $this->options['vivo_namespace'];
-        if (!$namespace || ($namespace && !substr_count($uri, $namespace))) {
+        if (empty($namespace) || ($namespace && substr_count($uri, $namespace))) {
           return l($text, $uri, array('html' => TRUE, 'absolute' => TRUE));
         }
       }
