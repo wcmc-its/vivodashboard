@@ -1,5 +1,7 @@
 (function ($) {
 
+Drupal.facetapi = (Drupal.facetapi) ? Drupal.facetapi : {};
+
 /**
  * Overides Facet API's behavior to keep facets open when they're
  * specified in the URL fragment.
