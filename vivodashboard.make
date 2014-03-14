@@ -95,6 +95,7 @@ projects[ldimport_vivo][download][revision] = "9ba223b2a388eb9d15bac849552308992
 projects[feeds][patch][1470530] = "https://drupal.org/files/issues/unpublish-delete-entities-not-in-feed-1470530-134.patch"
 projects[facetapi_multiselect][patch][180634] = "https://drupal.org/files/issues/1806344.13.count_autosubmit_removeSelected_0.patch"
 projects[search_api_db][patch][1390586] = "https://drupal.org/files/issues/search_api_db_or_logic-38.patch"
+projects[search_api_ranges][patch][2217717] = "https://drupal.org/files/issues/search_api_ranges-2217717-1-cancel-autosubmit.patch"
 projects[search_api_ranges][patch][2051163] = "https://drupal.org/files/issues/search_api_ranges-2051163-9-decimal-support.patch"
 projects[search_api_ranges][patch][2130349] = "https://drupal.org/files/issues/search_api_ranges-error_locale_module_disabled-2130349-4.patch"
 projects[views_data_export][patch][1258390] = "https://drupal.org/files/views_data_export-solr_export-1258390-13.patch"
