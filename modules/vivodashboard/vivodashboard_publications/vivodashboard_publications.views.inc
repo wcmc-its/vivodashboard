@@ -22,9 +22,11 @@ function vivodashboard_publications_views_pre_render($view) {
       $max = (int) $_GET['items_per_page'];
     }
 
+    $single_page = FALSE;
     $total = !empty($view->total_rows) ? $view->total_rows : NULL;
     if ($total && $total < $max) {
       $max = $total;
+      $single_page = TRUE;
     }
 
     // Can't depend on current_path() because it might be shortened to
@@ -38,7 +40,7 @@ function vivodashboard_publications_views_pre_render($view) {
 
     $link1 = l("Download $max items", "$path/download", array('query' => $query, 'attributes' => array('class' => array('button', 'button-download'))));
     $link2 = l("Download all items", "$path/download/all", array('query' => $query, 'attributes' => array('class' => array('button', 'button-download'))));
-    $view->attachment_before = $link1 . ' ' . $link2;
+    $view->attachment_before = ($single_page) ? $link1 : $link1 . ' ' . $link2;
   }
 }
 
