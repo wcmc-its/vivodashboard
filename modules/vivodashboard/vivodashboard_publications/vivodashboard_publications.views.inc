@@ -74,4 +74,5 @@ function vivodashboard_publications_views_data_alter(&$data) {
   $data['search_api_index_publications']['authors']['field']['handler'] = 'vivodashboard_publications_field_handler_authorship';
   $data['search_api_index_publications']['title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['author_labels']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
+  $data['search_api_index_publications']['field_full_title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
 }

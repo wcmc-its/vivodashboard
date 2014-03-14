@@ -137,7 +137,7 @@ function vivodashboard_core_default_search_api_server() {
           "publication_author_firstlast_affiliations" : {
             "table" : "search_api_db_authorships_publication_author_firstlast_affilia",
             "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
+            "type" : "list\\u003Cstring\\u003E",
             "boost" : "1.0"
           }
         },
@@ -223,7 +223,13 @@ function vivodashboard_core_default_search_api_server() {
           "publication_author_firstlast_affiliations" : {
             "table" : "search_api_db_publications_publication_author_firstlast_affili",
             "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "field_citations" : {
+            "table" : "search_api_db_publications",
+            "column" : "field_citations",
+            "type" : "integer",
             "boost" : "1.0"
           }
         }

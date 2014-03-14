@@ -145,6 +145,11 @@ function vivodashboard_import_feeds_importer_default() {
             'target' => 'field_id',
             'unique' => FALSE,
           ),
+          9 => array(
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#primaryAffiliation',
+            'target' => 'field_primary_institution',
+            'unique' => FALSE,
+          ),
         ),
         'update_existing' => '2',
         'input_format' => 'plain_text',
@@ -456,69 +461,74 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           3 => array(
+            'source' => 'Label',
+            'target' => 'field_full_title',
+            'unique' => FALSE,
+          ),
+          4 => array(
             'source' => 'http://purl.org/ontology/bibo/pageStart',
             'target' => 'field_page_start',
             'unique' => FALSE,
           ),
-          4 => array(
+          5 => array(
             'source' => 'http://purl.org/ontology/bibo/pageEnd',
             'target' => 'field_page_end',
             'unique' => FALSE,
           ),
-          5 => array(
+          6 => array(
             'source' => 'http://vivoweb.org/ontology/core#dateTimeValue [] http://vivoweb.org/ontology/core#dateTime',
             'target' => 'field_date:start',
             'unique' => FALSE,
           ),
-          6 => array(
+          7 => array(
             'source' => 'http://purl.org/ontology/bibo/volume',
             'target' => 'field_volume',
             'unique' => FALSE,
           ),
-          7 => array(
+          8 => array(
             'source' => 'http://vivoweb.org/ontology/activity-insight#issue',
             'target' => 'field_issue',
             'unique' => FALSE,
           ),
-          8 => array(
+          9 => array(
             'source' => 'http://purl.org/ontology/bibo/doi',
             'target' => 'field_doi',
             'unique' => FALSE,
           ),
-          9 => array(
+          10 => array(
             'source' => 'http://purl.org/ontology/bibo/pmid',
             'target' => 'field_pmid',
             'unique' => FALSE,
           ),
-          10 => array(
+          11 => array(
             'source' => 'http://vivoweb.org/ontology/core#pmcid',
             'target' => 'field_pmcid',
             'unique' => FALSE,
           ),
-          11 => array(
+          12 => array(
             'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#scopusDocId',
             'target' => 'field_scopus_id',
             'unique' => FALSE,
           ),
-          12 => array(
+          13 => array(
             'source' => 'http://vivoweb.org/ontology/core#hasPublicationVenue',
             'target' => 'import:node:field_journal',
             'importer' => 'vivo_journals',
             'age' => '2419200',
           ),
-          13 => array(
+          14 => array(
             'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
             'target' => 'import:node:field_rdf_type',
             'importer' => 'vivo_types',
             'age' => '2419200',
           ),
-          14 => array(
+          15 => array(
             'source' => 'http://vivoweb.org/ontology/core#FundingOrganization',
             'target' => 'import:node:field_funding',
             'importer' => 'vivo_funding_organizations',
             'age' => '2419200',
           ),
-          15 => array(
+          16 => array(
             'source' => 'http://purl.org/spar/c4o/hasGlobalCitationFrequency [] http://www.w3.org/2000/01/rdf-schema#label',
             'target' => 'field_citations',
             'unique' => FALSE,
@@ -526,7 +536,7 @@ function vivodashboard_import_feeds_importer_default() {
         ),
         'update_existing' => '2',
         'input_format' => 'plain_text',
-        'skip_hash_check' => 0,
+        'skip_hash_check' => 1,
         'bundle' => 'publication',
         'update_non_existent' => 'skip',
       ),

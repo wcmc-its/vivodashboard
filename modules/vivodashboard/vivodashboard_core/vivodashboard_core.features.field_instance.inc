@@ -366,7 +366,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'relation_dummy_field',
       'settings' => array(),
       'type' => 'relation_default',
-      'weight' => 10,
+      'weight' => 11,
     ),
   );
 
@@ -401,7 +401,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 15,
+      'weight' => 16,
     ),
   );
 
@@ -461,7 +461,7 @@ function vivodashboard_core_field_default_field_instances() {
         'year_range' => '-3:+3',
       ),
       'type' => 'date_text',
-      'weight' => 1,
+      'weight' => 4,
     ),
   );
 
@@ -501,7 +501,41 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 5,
+      'weight' => 7,
+    ),
+  );
+
+  // Exported field_instance: 'node-publication-field_full_title'
+  $field_instances['node-publication-field_full_title'] = array(
+    'bundle' => 'publication',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 16,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_full_title',
+    'label' => 'Full Title',
+    'required' => 0,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 1,
     ),
   );
 
@@ -536,7 +570,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'taxonomy_autocomplete',
-      'weight' => 14,
+      'weight' => 15,
     ),
   );
 
@@ -577,7 +611,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 4,
+      'weight' => 6,
     ),
   );
 
@@ -615,7 +649,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 8,
+      'weight' => 10,
     ),
   );
 
@@ -667,7 +701,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'number',
       'settings' => array(),
       'type' => 'number',
-      'weight' => -2,
+      'weight' => 3,
     ),
   );
 
@@ -719,7 +753,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'number',
       'settings' => array(),
       'type' => 'number',
-      'weight' => -3,
+      'weight' => 2,
     ),
   );
 
@@ -754,7 +788,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 12,
+      'weight' => 13,
     ),
   );
 
@@ -789,7 +823,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 11,
+      'weight' => 12,
     ),
   );
 
@@ -830,7 +864,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'options',
       'settings' => array(),
       'type' => 'options_select',
-      'weight' => 6,
+      'weight' => 8,
     ),
   );
 
@@ -865,7 +899,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 13,
+      'weight' => 14,
     ),
   );
 
@@ -919,7 +953,7 @@ function vivodashboard_core_field_default_field_instances() {
       'module' => 'link',
       'settings' => array(),
       'type' => 'link_field',
-      'weight' => 7,
+      'weight' => 9,
     ),
   );
 
@@ -960,7 +994,7 @@ function vivodashboard_core_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 3,
+      'weight' => 5,
     ),
   );
 
@@ -1494,6 +1528,7 @@ function vivodashboard_core_field_default_field_instances() {
   t('Department');
   t('Do not display this term even when it is associated with a node.');
   t('First name');
+  t('Full Title');
   t('Funding');
   t('Hidden');
   t('ID');

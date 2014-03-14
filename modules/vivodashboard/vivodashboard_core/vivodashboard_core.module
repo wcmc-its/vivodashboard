@@ -345,3 +345,14 @@ function vivodashboard_core_preprocess_facetapi_link_inactive(&$vars) {
     }
   }
 }
+
+/**
+ * Implements hook_node_presave().
+ *
+ * Ensure that we don't try and save node titles that are too long.
+ */
+function vivodashboard_core_node_presave($node) {
+  if (strlen($node->title) >= 255) {
+    $node->title = substr($node->title, 0, 250) . ' ...';
+  }
+}

@@ -194,6 +194,12 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['relationships']['field_journal']['table'] = 'entity_node';
   $handler->display->display_options['relationships']['field_journal']['field'] = 'field_journal';
   $handler->display->display_options['relationships']['field_journal']['relationship'] = 'endpoints_source_node';
+  /* Field: Node: ID */
+  $handler->display->display_options['fields']['field_id']['id'] = 'field_id';
+  $handler->display->display_options['fields']['field_id']['table'] = 'entity_node';
+  $handler->display->display_options['fields']['field_id']['field'] = 'field_id';
+  $handler->display->display_options['fields']['field_id']['relationship'] = 'endpoints_target_node';
+  $handler->display->display_options['fields']['field_id']['label'] = 'Author CWID';
   /* Field: Node: Last name */
   $handler->display->display_options['fields']['field_last_name']['id'] = 'field_last_name';
   $handler->display->display_options['fields']['field_last_name']['table'] = 'entity_node';
@@ -228,17 +234,21 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['field_rdf_type']['link_to_entity'] = 0;
   $handler->display->display_options['fields']['field_rdf_type']['view_mode'] = 'full';
   $handler->display->display_options['fields']['field_rdf_type']['bypass_access'] = 0;
-  /* Field: Node: Department */
-  $handler->display->display_options['fields']['field_department']['id'] = 'field_department';
-  $handler->display->display_options['fields']['field_department']['table'] = 'entity_node';
-  $handler->display->display_options['fields']['field_department']['field'] = 'field_department';
-  $handler->display->display_options['fields']['field_department']['relationship'] = 'endpoints_target_node';
-  $handler->display->display_options['fields']['field_department']['label'] = 'Department with primary affiliation';
-  $handler->display->display_options['fields']['field_department']['list']['mode'] = 'first';
-  $handler->display->display_options['fields']['field_department']['list']['separator'] = ';';
-  $handler->display->display_options['fields']['field_department']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['field_department']['view_mode'] = 'full';
-  $handler->display->display_options['fields']['field_department']['bypass_access'] = 0;
+  /* Field: Node: Primary Department */
+  $handler->display->display_options['fields']['field_primary_department']['id'] = 'field_primary_department';
+  $handler->display->display_options['fields']['field_primary_department']['table'] = 'entity_node';
+  $handler->display->display_options['fields']['field_primary_department']['field'] = 'field_primary_department';
+  $handler->display->display_options['fields']['field_primary_department']['relationship'] = 'endpoints_target_node';
+  $handler->display->display_options['fields']['field_primary_department']['label'] = 'Department with primary affiliation';
+  $handler->display->display_options['fields']['field_primary_department']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['field_primary_department']['view_mode'] = 'full';
+  $handler->display->display_options['fields']['field_primary_department']['bypass_access'] = 0;
+  /* Field: Node: Primary Institution */
+  $handler->display->display_options['fields']['field_primary_institution']['id'] = 'field_primary_institution';
+  $handler->display->display_options['fields']['field_primary_institution']['table'] = 'entity_node';
+  $handler->display->display_options['fields']['field_primary_institution']['field'] = 'field_primary_institution';
+  $handler->display->display_options['fields']['field_primary_institution']['relationship'] = 'endpoints_target_node';
+  $handler->display->display_options['fields']['field_primary_institution']['label'] = 'Primary institutional affiliation';
   /* Field: Taxonomy term: Name */
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'entity_taxonomy_term';
@@ -258,13 +268,12 @@ function vivodashboard_publications_views_default_views() {
     'multiple_from' => '',
     'multiple_to' => '',
   );
-  /* Field: Node: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'entity_node';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['relationship'] = 'endpoints_source_node';
-  $handler->display->display_options['fields']['title']['label'] = 'Article title';
-  $handler->display->display_options['fields']['title']['link_to_entity'] = 0;
+  /* Field: Node: Full Title */
+  $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['table'] = 'entity_node';
+  $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['relationship'] = 'endpoints_source_node';
+  $handler->display->display_options['fields']['field_full_title']['label'] = 'Article title';
   /* Field: Node: Volume */
   $handler->display->display_options['fields']['field_volume']['id'] = 'field_volume';
   $handler->display->display_options['fields']['field_volume']['table'] = 'entity_node';
@@ -362,6 +371,10 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['sorts']['field_author_rank']['id'] = 'field_author_rank';
   $handler->display->display_options['sorts']['field_author_rank']['table'] = 'search_api_index_authorships';
   $handler->display->display_options['sorts']['field_author_rank']['field'] = 'field_author_rank';
+  /* Filter criterion: Indexed Relation: Publication Author Types */
+  $handler->display->display_options['filters']['publication_author_types']['id'] = 'publication_author_types';
+  $handler->display->display_options['filters']['publication_author_types']['table'] = 'search_api_index_authorships';
+  $handler->display->display_options['filters']['publication_author_types']['field'] = 'publication_author_types';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');
@@ -485,18 +498,15 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['field_uri_url']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_uri_url']['display_as_link'] = FALSE;
   $handler->display->display_options['fields']['field_uri_url']['link_to_entity'] = 0;
-  /* Field: Indexed Node: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['title']['alter']['text'] = '[title].';
-  $handler->display->display_options['fields']['title']['alter']['path'] = '[field_uri_url]';
-  $handler->display->display_options['fields']['title']['alter']['external'] = TRUE;
-  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['title']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['title']['ending_period'] = 1;
+  /* Field: Indexed Node: Full Title */
+  $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
+  $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['label'] = '';
+  $handler->display->display_options['fields']['field_full_title']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_full_title']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_full_title']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['field_full_title']['ending_period'] = 1;
   /* Field: Indexed Node: Journal */
   $handler->display->display_options['fields']['field_journal']['id'] = 'field_journal';
   $handler->display->display_options['fields']['field_journal']['table'] = 'search_api_index_publications';
@@ -578,7 +588,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['nothing']['table'] = 'views';
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = '';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[author_labels] [title] [field_journal] [field_date][field_page_start].';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[author_labels] [field_full_title] [field_journal] [field_date][field_page_start].';
   $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
   /* Sort criterion: Indexed Node: Publication Timestamp */
   $handler->display->display_options['sorts']['publication_timestamp']['id'] = 'publication_timestamp';
@@ -760,6 +770,18 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['title']['link_to_entity'] = 0;
   $handler->display->display_options['fields']['title']['ending_period'] = 1;
+  /* Field: Indexed Node: Full Title */
+  $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
+  $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
+  $handler->display->display_options['fields']['field_full_title']['label'] = '';
+  $handler->display->display_options['fields']['field_full_title']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['field_full_title']['alter']['make_link'] = TRUE;
+  $handler->display->display_options['fields']['field_full_title']['alter']['path'] = '[field_uri_url]';
+  $handler->display->display_options['fields']['field_full_title']['alter']['external'] = TRUE;
+  $handler->display->display_options['fields']['field_full_title']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['field_full_title']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['field_full_title']['ending_period'] = 1;
   /* Field: Indexed Node: Journal */
   $handler->display->display_options['fields']['field_journal']['id'] = 'field_journal';
   $handler->display->display_options['fields']['field_journal']['table'] = 'search_api_index_publications';
@@ -841,7 +863,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['nothing']['table'] = 'views';
   $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
   $handler->display->display_options['fields']['nothing']['label'] = '';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[authorships] [title] [field_journal] [field_date][field_page_start].';
+  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[authorships] [field_full_title] [field_journal] [field_date][field_page_start].';
   $handler->display->display_options['fields']['nothing']['element_type'] = '0';
   $handler->display->display_options['fields']['nothing']['element_label_type'] = '0';
   $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;

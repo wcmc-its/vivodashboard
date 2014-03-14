@@ -105,7 +105,7 @@ function vivodashboard_import_status_block() {
 
   $source = feeds_source('vivo_publications');
   $date = new DateObject($source->imported);
-  $date_formatted = !empty($source->imported) ? $date->format('F n, Y') : 'Still incomplete';
+  $date_formatted = !empty($source->imported) ? $date->format('F n, Y') : 'still incomplete';
   $progress = ($source->progressImporting() < FEEDS_BATCH_COMPLETE) ? round($source->progressImporting() * 100) : NULL;
 
   $render['date'] = array(
