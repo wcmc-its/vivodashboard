@@ -701,7 +701,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'name' => '',
     'prefix' => '',
     'suffix' => '',
-    'auto-submit-delay' => '1000',
+    'auto-submit-delay' => '2000',
     'range_simple' => 10,
     'range_advanced' => '',
     'empty_text' => array(
@@ -919,7 +919,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'name' => '',
     'prefix' => '',
     'suffix' => '',
-    'auto-submit-delay' => '1500',
+    'auto-submit-delay' => '2000',
     'range_simple' => '10',
     'range_advanced' => '',
     'empty_text' => array(
@@ -1863,7 +1863,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'name' => '',
     'prefix' => '',
     'suffix' => '',
-    'auto-submit-delay' => '1000',
+    'auto-submit-delay' => '2000',
     'range_simple' => 10,
     'range_advanced' => '',
     'empty_text' => array(
@@ -2175,7 +2175,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'name' => '',
     'prefix' => '',
     'suffix' => '',
-    'auto-submit-delay' => '1500',
+    'auto-submit-delay' => '2000',
     'range_simple' => '10',
     'range_advanced' => '',
     'empty_text' => array(
