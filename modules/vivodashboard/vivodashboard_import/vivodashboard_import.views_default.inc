@@ -76,7 +76,7 @@ function vivodashboard_import_views_default_views() {
   $handler->display->display_options['header']['area']['id'] = 'area';
   $handler->display->display_options['header']['area']['table'] = 'views';
   $handler->display->display_options['header']['area']['field'] = 'area';
-  $handler->display->display_options['header']['area']['content'] = 'This page lets you update journal rankings in bulk after new <a href="/admin/journal-rankings/imported">ranking data</a> has been imported.
+  $handler->display->display_options['header']['area']['content'] = 'This page lets you update journal rankings for journal taxonomy terms in bulk after new <a href="/admin/structure/taxonomy/journal_rankings/imported">ranking data</a> has been imported.
 
 After updating the journals, you must re-index <a href="/admin/config/search/search_api/index/publications">publications</a> and <a href="/admin/config/search/search_api/index/authorships">authorships</a> before facets will show the new rankings.';
   $handler->display->display_options['header']['area']['format'] = 'filtered_html';
@@ -91,7 +91,7 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
   $handler->display->display_options['fields']['views_bulk_operations_1']['id'] = 'views_bulk_operations_1';
   $handler->display->display_options['fields']['views_bulk_operations_1']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['views_bulk_operations_1']['field'] = 'views_bulk_operations';
-  $handler->display->display_options['fields']['views_bulk_operations_1']['vbo_settings']['display_type'] = '0';
+  $handler->display->display_options['fields']['views_bulk_operations_1']['vbo_settings']['display_type'] = '1';
   $handler->display->display_options['fields']['views_bulk_operations_1']['vbo_settings']['enable_select_all_pages'] = 0;
   $handler->display->display_options['fields']['views_bulk_operations_1']['vbo_settings']['force_single'] = 0;
   $handler->display->display_options['fields']['views_bulk_operations_1']['vbo_settings']['entity_load_capacity'] = '10';
@@ -158,7 +158,7 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
   $handler->display->display_options['fields']['name']['id'] = 'name';
   $handler->display->display_options['fields']['name']['table'] = 'taxonomy_term_data';
   $handler->display->display_options['fields']['name']['field'] = 'name';
-  $handler->display->display_options['fields']['name']['label'] = 'Journal';
+  $handler->display->display_options['fields']['name']['label'] = 'Journal term';
   $handler->display->display_options['fields']['name']['alter']['word_boundary'] = FALSE;
   $handler->display->display_options['fields']['name']['alter']['ellipsis'] = FALSE;
   /* Field: Taxonomy term: ISSN */
@@ -175,6 +175,16 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
     'scale' => '2',
     'prefix_suffix' => 1,
   );
+  /* Contextual filter: Global: Null */
+  $handler->display->display_options['arguments']['null']['id'] = 'null';
+  $handler->display->display_options['arguments']['null']['table'] = 'views';
+  $handler->display->display_options['arguments']['null']['field'] = 'null';
+  $handler->display->display_options['arguments']['null']['default_action'] = 'default';
+  $handler->display->display_options['arguments']['null']['default_argument_type'] = 'fixed';
+  $handler->display->display_options['arguments']['null']['default_argument_options']['argument'] = 'journal_rankings';
+  $handler->display->display_options['arguments']['null']['summary']['number_of_records'] = '0';
+  $handler->display->display_options['arguments']['null']['summary']['format'] = 'default_summary';
+  $handler->display->display_options['arguments']['null']['summary_options']['items_per_page'] = '25';
   /* Filter criterion: Taxonomy vocabulary: Machine name */
   $handler->display->display_options['filters']['machine_name']['id'] = 'machine_name';
   $handler->display->display_options['filters']['machine_name']['table'] = 'taxonomy_vocabulary';
@@ -197,7 +207,6 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
   $handler->display->display_options['filters']['field_issn_value_1']['group_info']['label'] = 'Has ISSN';
   $handler->display->display_options['filters']['field_issn_value_1']['group_info']['identifier'] = 'issn';
   $handler->display->display_options['filters']['field_issn_value_1']['group_info']['widget'] = 'radios';
-  $handler->display->display_options['filters']['field_issn_value_1']['group_info']['default_group'] = '1';
   $handler->display->display_options['filters']['field_issn_value_1']['group_info']['group_items'] = array(
     1 => array(
       'title' => 'Yes',
@@ -218,7 +227,13 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
 
   /* Display: Publication Journals */
   $handler = $view->new_display('page', 'Publication Journals', 'page');
-  $handler->display->display_options['path'] = 'admin/journal-rankings';
+  $handler->display->display_options['path'] = 'admin/structure/taxonomy/%/update';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Bulk update';
+  $handler->display->display_options['menu']['weight'] = '-30';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
 
   /* Display: Ranking Data */
   $handler = $view->new_display('page', 'Ranking Data', 'page_1');
@@ -289,7 +304,16 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
     1 => 0,
     3 => 0,
   );
-  $handler->display->display_options['path'] = 'admin/journal-rankings/imported';
+  $handler->display->display_options['path'] = 'admin/structure/taxonomy/%/imported';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Imported';
+  $handler->display->display_options['menu']['weight'] = '-40';
+  $handler->display->display_options['menu']['name'] = 'management';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
+  $handler->display->display_options['tab_options']['title'] = 'Imported';
+  $handler->display->display_options['tab_options']['weight'] = '0';
+  $handler->display->display_options['tab_options']['name'] = 'management';
   $export['journal_rankings'] = $view;
 
   return $export;
