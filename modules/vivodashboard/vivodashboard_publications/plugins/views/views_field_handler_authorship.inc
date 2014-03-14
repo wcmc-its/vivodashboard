@@ -68,6 +68,7 @@ class vivodashboard_publications_field_handler_authorship extends entity_views_h
       }
 
       // For authorship relations we need to get the VIVO URL from the node.
+      // @todo - Optimize this; we shouldn't be doing single loads here.
       if ($entity_type == 'relation' && is_object($entity)) {
         $authorship = entity_metadata_wrapper('relation', $entity);
         try {

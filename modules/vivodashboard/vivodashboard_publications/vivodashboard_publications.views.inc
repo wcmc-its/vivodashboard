@@ -42,6 +42,10 @@ function vivodashboard_publications_views_pre_render($view) {
     $link2 = l("Download all items", "$path/download/all", array('query' => $query, 'attributes' => array('class' => array('button', 'button-download'))));
     $view->attachment_before = ($single_page) ? $link1 : $link1 . ' ' . $link2;
   }
+
+  if ($view->name == 'publications_list') {
+    vivodashboard_publications_preload_authors($view);
+  }
 }
 
 /**
@@ -75,4 +79,40 @@ function vivodashboard_publications_views_data_alter(&$data) {
   $data['search_api_index_publications']['title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['author_labels']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['field_full_title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
+}
+
+/**
+ * Helper for vivodashboard_publications_views_pre_render().
+ *
+ * Pre-loads author nodes for the publications list view to dramatically
+ * improve performance. The performance issue mainly comes from needing to
+ * load relations and then author nodes inside the field handler.
+ *
+ * @see views_field_handler_authorship::render_entity_link()
+ */
+function vivodashboard_publications_preload_authors($view) {
+
+  // Gather publication results.
+  $publication_nids = array();
+  foreach ($view->result as $result) {
+    if (isset($result->entity) && is_numeric($result->entity)) {
+      $publication_nids[] = $result->entity;
+    }
+  }
+
+  if (!$publication_nids) {
+    return;
+  }
+
+  // Load all authorships.
+  $rids = relation_query('node', $publication_nids, 0)->entityCondition('bundle', 'authorship')->execute();
+  $relations = relation_load_multiple(array_keys($rids));
+
+  // Load all authors.
+  $author_nids = array();
+  foreach ($relations as $relation) {
+    list($source, $target) = field_get_items('relation', $relation, 'endpoints');
+    $author_nids[] = $target['entity_id'];
+  }
+  node_load_multiple($author_nids);
 }
