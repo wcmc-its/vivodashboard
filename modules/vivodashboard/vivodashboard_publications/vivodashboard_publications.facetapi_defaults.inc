@@ -365,7 +365,56 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
   $facet->settings = array(
     'weight' => 0,
     'widget' => 'facetapi_checkbox_links',
-    'filters' => array(),
+    'filters' => array(
+      'active_items' => array(
+        'status' => 0,
+        'weight' => '-50',
+      ),
+      'exclude_items' => array(
+        'status' => 0,
+        'weight' => '-49',
+      ),
+      'rewrite_items' => array(
+        'status' => 0,
+        'weight' => '-48',
+      ),
+      'narrow_results' => array(
+        'status' => 0,
+        'weight' => '-47',
+      ),
+      'show_if_minimum_items' => array(
+        'status' => 0,
+        'weight' => '-46',
+      ),
+      'deepest_level_items' => array(
+        'status' => 0,
+        'weight' => '-45',
+      ),
+      'graph_combo_filter' => array(
+        'status' => 0,
+        'weight' => '-44',
+      ),
+      'include_items' => array(
+        'status' => 0,
+        'weight' => '-43',
+      ),
+      'year_limit' => array(
+        'status' => 0,
+        'weight' => '-42',
+      ),
+      'empty_years' => array(
+        'status' => 0,
+        'weight' => '-41',
+      ),
+      'empty_months' => array(
+        'status' => 0,
+        'weight' => '-40',
+      ),
+      'convert_months' => array(
+        'status' => 0,
+        'weight' => '-39',
+      ),
+    ),
     'active_sorts' => array(
       'active' => 'active',
       'count' => 'count',
@@ -418,6 +467,12 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'graphs_combobackground_colour' => '#fff',
     'graphs_comboseries_colours' => NULL,
     'graphs_comboshowlegend' => 1,
+    'exclude' => '',
+    'regex' => 0,
+    'show_minimum_items' => 2,
+    'yfacet' => '',
+    'include' => '',
+    'limit' => 12,
   );
   $export['search_api@authorships:block:publication_author_firstlast_affiliations'] = $facet;
 
@@ -1411,7 +1466,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-44',
       ),
       'include_items' => array(
-        'status' => 1,
+        'status' => 0,
         'weight' => '-43',
       ),
       'year_limit' => array(
@@ -1423,6 +1478,10 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-41',
       ),
       'convert_months' => array(
+        'status' => 0,
+        'weight' => '-40',
+      ),
+      'empty_months' => array(
         'status' => 0,
         'weight' => '-40',
       ),
@@ -1453,7 +1512,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
     'regex' => 0,
     'show_minimum_items' => 2,
     'yfacet' => '',
-    'include' => 'Cornell University',
+    'include' => '',
     'limit' => 12,
     'graphs_combotitle' => NULL,
     'graphs_comboshowzoom' => 0,
