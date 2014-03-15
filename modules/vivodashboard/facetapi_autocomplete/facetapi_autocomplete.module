@@ -51,7 +51,6 @@ function facetapi_autocomplete_load_results() {
 
   $values = FacetapiAutocompleteWidget::getAutocompleteValues($keywords, $build);
 
-  // return '';
   return drupal_json_output($values);
 }
 
@@ -89,87 +88,6 @@ function facetapi_autocomplete_search_api_query_alter($query) {
       }
     }
     $query->setOption('search_api_facets', $facets);
-  }
-}
-
-/**
- * Helper to get the facet definition for the active facet.
- */
-// function facetapi_autocomplete_get_info($facet_name) {
-//   $info = array();
-//   if ($searchers = facetapi_get_active_searchers()) {
-//     $info = facetapi_facet_load($facet_name, reset($searchers));
-//   }
-//   return $info;
-// }
-
-/**
- * Implements hook_query_alter().
- */
-function facetapi_autocomplete_query_alter(QueryAlterableInterface $query) {
-  return;
-  if ($query->hasTag('search_api_db_facet')) {
-
-    // $facet_name = $query->getMetaData('facet_name');
-    // $autocomplete_facets = drupal_static('facetapi_autocomplete_facets');
-    // $active_autocomplete_facet = drupal_static('facetapi_autocomplete_active_facet');
-
-    // if ($active_autocomplete_facet || !in_array($facet_name, $autocomplete_facets, TRUE)) {
-    //   return;
-    // }
-    $query_facet = $query->getMetaData('facet_name');
-    $active_facet = drupal_static('facetapi_autocomplete_active_facet');
-
-    if (!$active_facet || $active_facet != $query_facet) {
-      return;
-    }
-
-    // $facet_info = facetapi_autocomplete_get_info($active_facet);
-    $conditions = $query->conditions();
-    $field = $conditions[0]['field'];
-
-    $keywords = !empty($_GET['keywords']) ? strtolower($_GET['keywords']) : 'EMPTY';
-
-    $query->addExpression("LOWER($field) = facet_text");
-    // $query->condition('facet_text', '%' . $keywords . '%', 'LIKE');
-    $query->condition('facet_text', '%' . db_like(strtolower($keywords)) . '%', 'LIKE');
-//
-    dd((string) $query);
-    return;
-
-    switch ($facet_info['field type']) {
-
-      case 'taxonomy_term':
-        $query->join('taxonomy_term_data', 'term', "$field = term.tid");
-        $query->condition('LOWER(term.name)', '%' . $keywords . '%', 'LIKE');
-        $query->range();
-        break;
-
-      case 'node':
-        $query->join('node', 'node', "$field = node.nid");
-        $query->condition('LOWER(node.title)', '%' . $keywords . '%', 'LIKE');
-        $query->range();
-        break;
-
-      default:
-        $query->condition('LOWER(' . $field . ')', '%' . $keywords . '%', 'LIKE');
-        break;
-    }
-  }
-}
-
-/**
- * Implements hook_module_implements_alter().
- *
- * Ensures that facetapi_autocomplete_search_api_query_alter() runs after
- * other modules implementing the same hook, otherwise options will not yet
- * be added to the query.
- */
-function facetapi_autocomplete_module_implements_alter(&$implementations, $hook) {
-  if ($hook == 'search_api_query_alter') {
-    $group = $implementations['facetapi_autocomplete'];
-    unset($implementations['facetapi_autocomplete']);
-    $implementations['facetapi_autocomplete'] = $group;
   }
 }
 
