@@ -16,7 +16,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'journal_rankings';
   $feeds_importer->config = array(
     'name' => 'Journal Rankings',
-    'description' => '',
+    'description' => 'Imports SCImago journal rankings from TSV file into a taxonomy vocabulary.',
     'fetcher' => array(
       'plugin_key' => 'FeedsFileFetcher',
       'config' => array(
@@ -60,6 +60,7 @@ function vivodashboard_import_feeds_importer_default() {
         'input_format' => 'plain_text',
         'skip_hash_check' => 1,
         'bundle' => 'journal_rankings',
+        'update_non_existent' => 'skip',
       ),
     ),
     'content_type' => '',
@@ -77,7 +78,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_authors';
   $feeds_importer->config = array(
     'name' => 'VIVO Authors',
-    'description' => '',
+    'description' => 'Used by vivo_publications importer to import authors as nodes. See vivodashboard_import.feeds.inc',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -174,7 +175,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_departments';
   $feeds_importer->config = array(
     'name' => 'VIVO Departments',
-    'description' => '',
+    'description' => 'Used by vivo_authors importer to import departments as taxonomy terms.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -186,6 +187,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '100',
         'pre_fetch' => 1,
         'retries' => '3',
+        'timeout' => 30,
       ),
     ),
     'processor' => array(
@@ -243,7 +245,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_funding_organizations';
   $feeds_importer->config = array(
     'name' => 'VIVO Funding Organizations',
-    'description' => '',
+    'description' => 'Used by vivo_publications importer to import organizations as taxonomy terms.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -255,6 +257,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '100',
         'pre_fetch' => 1,
         'retries' => '3',
+        'timeout' => 30,
       ),
     ),
     'processor' => array(
@@ -300,7 +303,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_institutions';
   $feeds_importer->config = array(
     'name' => 'VIVO Institutions',
-    'description' => '',
+    'description' => 'Used by vivo_departments importer to import institutions as taxonomy terms.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -312,6 +315,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '100',
         'pre_fetch' => 1,
         'retries' => '3',
+        'timeout' => 30,
       ),
     ),
     'processor' => array(
@@ -363,7 +367,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_journals';
   $feeds_importer->config = array(
     'name' => 'VIVO Journals',
-    'description' => '',
+    'description' => 'Used by vivo_publications importer to import journal taxonomy terms.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -375,6 +379,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '100',
         'pre_fetch' => 1,
         'retries' => '3',
+        'timeout' => 30,
       ),
     ),
     'processor' => array(
@@ -425,9 +430,9 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_publications';
   $feeds_importer->config = array(
     'name' => 'VIVO Publications',
-    'description' => '',
+    'description' => 'Imports publications and their related individuals from VIVO via linked data requests.',
     'fetcher' => array(
-      'plugin_key' => 'LdImportFetcher',
+      'plugin_key' => 'LdImportVivoClassFetcher',
       'config' => array(),
     ),
     'parser' => array(
@@ -545,9 +550,9 @@ function vivodashboard_import_feeds_importer_default() {
     ),
     'content_type' => '',
     'update' => 0,
-    'import_period' => '-1',
+    'import_period' => '604800',
     'expire_period' => 3600,
-    'import_on_create' => 1,
+    'import_on_create' => 0,
     'process_in_background' => 0,
   );
   $export['vivo_publications'] = $feeds_importer;
@@ -558,7 +563,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_types';
   $feeds_importer->config = array(
     'name' => 'VIVO Types',
-    'description' => '',
+    'description' => 'Used by multiple importers to import rdf:type items as taxonomy terms.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -570,6 +575,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '100',
         'pre_fetch' => 0,
         'retries' => '3',
+        'timeout' => 30,
       ),
     ),
     'processor' => array(
