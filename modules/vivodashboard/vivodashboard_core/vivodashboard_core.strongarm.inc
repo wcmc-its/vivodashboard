@@ -239,13 +239,6 @@ function vivodashboard_core_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm->name = 'elysia_cron_debug_messages';
-  $strongarm->value = '1';
-  $export['elysia_cron_debug_messages'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'elysia_cron_default_rules';
   $strongarm->value = array(
     '*/1 * * * *' => 'Every 1 minutes',
@@ -260,20 +253,6 @@ function vivodashboard_core_strongarm() {
     '4 0 1 * *' => 'Once a month',
   );
   $export['elysia_cron_default_rules'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'elysia_cron_last_context';
-  $strongarm->value = 'feeds';
-  $export['elysia_cron_last_context'] = $strongarm;
-
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
-  $strongarm->name = 'elysia_cron_last_run';
-  $strongarm->value = 1394688601;
-  $export['elysia_cron_last_run'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
