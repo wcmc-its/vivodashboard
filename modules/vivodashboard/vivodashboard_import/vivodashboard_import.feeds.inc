@@ -284,6 +284,9 @@ function vivodashboard_import_feeds_after_save($source, $node, $item) {
 
     relation_save($relation);
   }
+
+  // Clear cache for the node since we just added relation data.
+  entity_get_controller('node')->resetCache(array($node->nid));
 }
 
 /**
