@@ -1,6 +1,0 @@
-.DS_Store
-modules/*
-!modules/vivodashboard
-themes/*
-!themes/vdb
-libraries/*
