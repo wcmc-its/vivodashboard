@@ -353,6 +353,17 @@ function vivodashboard_core_preprocess_facetapi_link_inactive(&$vars) {
  */
 function vivodashboard_core_node_presave($node) {
   if (strlen($node->title) >= 255) {
-    $node->title = substr($node->title, 0, 250) . ' ...';
+    $node->title = substr($node->title, 0, 251) . '...';
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ *
+ * Ensure that we don't try and save term names that are too long.
+ */
+function vivodashboard_core_taxonomy_term_presave($term) {
+  if (strlen($term->name) >= 255) {
+    $term->name = substr($term->name, 0, 251) . '...';
   }
 }
