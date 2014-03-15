@@ -13,7 +13,10 @@ function vivodashboard_core_user_default_permissions() {
   // Exported permission: 'access content'.
   $permissions['access content'] = array(
     'name' => 'access content',
-    'roles' => array(),
+    'roles' => array(
+      'anonymous user' => 'anonymous user',
+      'authenticated user' => 'authenticated user',
+    ),
     'module' => 'node',
   );
 
