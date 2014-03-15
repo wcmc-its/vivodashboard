@@ -29,7 +29,7 @@ class vivodashboard_publications_field_handler_title extends entity_views_handle
   public function render($values) {
     $output = parent::render($values);
     if (!empty($output) && $this->options['ending_period'] && !preg_match("/[0-9.!?,;:\"\']$/", $output)) {
-      $output .= '. ';
+      $output .= '.';
     }
     return $output;
   }
