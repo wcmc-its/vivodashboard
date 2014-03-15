@@ -274,6 +274,11 @@ function vivodashboard_import_feeds_after_save($source, $node, $item) {
     if ($authorships[$uri]['label']) {
       $wrapper->field_author_label->set($authorships[$uri]['label']);
     }
+    else {
+      $author_node = node_load($nid);
+      $title = ($author_node) ? $author_node->title : 'Unknown author';
+      $wrapper->field_author_label->set($title);
+    }
 
     if ($uri == $first) {
       $wrapper->field_author_position->set('first');
