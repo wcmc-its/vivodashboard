@@ -371,10 +371,6 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['sorts']['field_author_rank']['id'] = 'field_author_rank';
   $handler->display->display_options['sorts']['field_author_rank']['table'] = 'search_api_index_authorships';
   $handler->display->display_options['sorts']['field_author_rank']['field'] = 'field_author_rank';
-  /* Filter criterion: Indexed Relation: Publication Author Types */
-  $handler->display->display_options['filters']['publication_author_types']['id'] = 'publication_author_types';
-  $handler->display->display_options['filters']['publication_author_types']['table'] = 'search_api_index_authorships';
-  $handler->display->display_options['filters']['publication_author_types']['field'] = 'publication_author_types';
 
   /* Display: Page */
   $handler = $view->new_display('page', 'Page', 'page');

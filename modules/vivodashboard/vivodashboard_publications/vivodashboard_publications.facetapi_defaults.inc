@@ -1692,7 +1692,11 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-50',
       ),
       'exclude_items' => array(
-        'status' => 1,
+        'status' => 0,
+        'weight' => '-49',
+      ),
+      'current_depth' => array(
+        'status' => 0,
         'weight' => '-49',
       ),
       'rewrite_items' => array(
@@ -1723,13 +1727,17 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'status' => 0,
         'weight' => '-42',
       ),
+      'empty_years' => array(
+        'status' => 0,
+        'weight' => '-41',
+      ),
       'convert_months' => array(
         'status' => 0,
         'weight' => '-41',
       ),
-      'empty_years' => array(
+      'empty_months' => array(
         'status' => 0,
-        'weight' => '-41',
+        'weight' => '-39',
       ),
     ),
     'active_sorts' => array(
@@ -2076,7 +2084,11 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-50',
       ),
       'exclude_items' => array(
-        'status' => 1,
+        'status' => 0,
+        'weight' => '-49',
+      ),
+      'current_depth' => array(
+        'status' => 0,
         'weight' => '-49',
       ),
       'rewrite_items' => array(
@@ -2107,13 +2119,17 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'status' => 0,
         'weight' => '-42',
       ),
+      'empty_years' => array(
+        'status' => 0,
+        'weight' => '-41',
+      ),
       'convert_months' => array(
         'status' => 0,
         'weight' => '-41',
       ),
-      'empty_years' => array(
+      'empty_months' => array(
         'status' => 0,
-        'weight' => '-41',
+        'weight' => '-39',
       ),
     ),
     'active_sorts' => array(
