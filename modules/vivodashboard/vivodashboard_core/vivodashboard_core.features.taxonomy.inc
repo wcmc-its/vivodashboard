@@ -12,7 +12,7 @@ function vivodashboard_core_taxonomy_default_vocabularies() {
     'departments' => array(
       'name' => 'Departments',
       'machine_name' => 'departments',
-      'description' => '',
+      'description' => 'VIVO departments related to publication authors',
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
@@ -20,7 +20,7 @@ function vivodashboard_core_taxonomy_default_vocabularies() {
     'institutions' => array(
       'name' => 'Institutions',
       'machine_name' => 'institutions',
-      'description' => '',
+      'description' => 'VIVO institutions related to departments',
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
@@ -36,7 +36,7 @@ function vivodashboard_core_taxonomy_default_vocabularies() {
     'journals' => array(
       'name' => 'Journals',
       'machine_name' => 'journals',
-      'description' => '',
+      'description' => 'VIVO journals related to publications',
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
@@ -44,7 +44,7 @@ function vivodashboard_core_taxonomy_default_vocabularies() {
     'organizations' => array(
       'name' => 'Organizations',
       'machine_name' => 'organizations',
-      'description' => '',
+      'description' => 'VIVO organizations related to publications',
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
@@ -52,7 +52,7 @@ function vivodashboard_core_taxonomy_default_vocabularies() {
     'rdf_types' => array(
       'name' => 'RDF Types',
       'machine_name' => 'rdf_types',
-      'description' => 'VIVO rdf:type labels',
+      'description' => 'VIVO rdf:type items',
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
