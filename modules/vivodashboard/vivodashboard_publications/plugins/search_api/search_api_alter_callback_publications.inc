@@ -160,7 +160,7 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
     $item->publication_graph_year = NULL;
     $item->publication_graph_month = NULL;
     $item->publication_journal = NULL;
-    $item->publication_journal_ranking = 0;
+    $item->publication_journal_ranking = NULL;
     $item->publication_types = array();
     $item->publication_author_names = array();
     $item->publication_author_types = array();
