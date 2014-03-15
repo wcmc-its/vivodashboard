@@ -114,13 +114,13 @@ function vivodashboard_import_status_block() {
     '#suffix' => '</div>',
   );
 
-  // if ($progress !== NULL) {
-  //   $render['progress'] = array(
-  //     '#prefix' => '<div>',
-  //     '#markup' => t('Current import: @progress%', array('@progress' => $progress)),
-  //     '#suffix' => '</div>',
-  //   );
-  // }
+  if ($progress !== NULL) {
+    $render['progress'] = array(
+      '#prefix' => '<div>',
+      '#markup' => t('Current import: @progress%', array('@progress' => $progress)),
+      '#suffix' => '</div>',
+    );
+  }
 
   return $render;
 }
