@@ -728,10 +728,6 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
   $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
   $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
-  /* Relationship: Indexed Node: Authors */
-  $handler->display->display_options['relationships']['authors']['id'] = 'authors';
-  $handler->display->display_options['relationships']['authors']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['relationships']['authors']['field'] = 'authors';
   /* Field: Indexed Node: Authorships */
   $handler->display->display_options['fields']['authorships']['id'] = 'authorships';
   $handler->display->display_options['fields']['authorships']['table'] = 'search_api_index_publications';
@@ -742,7 +738,7 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['authorships']['link_to_entity'] = 0;
   $handler->display->display_options['fields']['authorships']['bypass_access'] = 0;
   $handler->display->display_options['fields']['authorships']['vivo_link'] = 1;
-  $handler->display->display_options['fields']['authorships']['vivo_namespace'] = 'http://vivo.med.cornell.edu/individual/cwid-';
+  $handler->display->display_options['fields']['authorships']['vivo_namespace'] = '';
   $handler->display->display_options['fields']['authorships']['ending_period'] = 1;
   /* Field: Indexed Node: VIVO URI » The URL of the link. */
   $handler->display->display_options['fields']['field_uri_url']['id'] = 'field_uri_url';
@@ -753,19 +749,6 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['fields']['field_uri_url']['element_label_colon'] = FALSE;
   $handler->display->display_options['fields']['field_uri_url']['display_as_link'] = FALSE;
   $handler->display->display_options['fields']['field_uri_url']['link_to_entity'] = 0;
-  /* Field: Indexed Node: Title */
-  $handler->display->display_options['fields']['title']['id'] = 'title';
-  $handler->display->display_options['fields']['title']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['title']['field'] = 'title';
-  $handler->display->display_options['fields']['title']['label'] = '';
-  $handler->display->display_options['fields']['title']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['title']['alter']['text'] = '[title].';
-  $handler->display->display_options['fields']['title']['alter']['make_link'] = TRUE;
-  $handler->display->display_options['fields']['title']['alter']['path'] = '[field_uri_url]';
-  $handler->display->display_options['fields']['title']['alter']['external'] = TRUE;
-  $handler->display->display_options['fields']['title']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['title']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['title']['ending_period'] = 1;
   /* Field: Indexed Node: Full Title */
   $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
   $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
