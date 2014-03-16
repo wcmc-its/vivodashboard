@@ -160,6 +160,20 @@ function vivodashboard_core_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'date_format_year_month';
+  $strongarm->value = 'Y M';
+  $export['date_format_year_month'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'date_format_year_month_day';
+  $strongarm->value = 'Y-m-d';
+  $export['date_format_year_month_day'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'dblog_row_limit';
   $strongarm->value = '10000';
   $export['dblog_row_limit'] = $strongarm;
