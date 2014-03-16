@@ -32,6 +32,14 @@ function vivodashboard_core_node_info() {
       'title_label' => t('Label'),
       'help' => '',
     ),
+    'page' => array(
+      'name' => t('Page'),
+      'base' => 'node_content',
+      'description' => t('General informational pages such as "About this site". '),
+      'has_title' => '1',
+      'title_label' => t('Title'),
+      'help' => '',
+    ),
     'publication' => array(
       'name' => t('Publication'),
       'base' => 'node_content',
