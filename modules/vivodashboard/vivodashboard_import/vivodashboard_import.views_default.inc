@@ -175,16 +175,6 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
     'scale' => '2',
     'prefix_suffix' => 1,
   );
-  /* Contextual filter: Global: Null */
-  $handler->display->display_options['arguments']['null']['id'] = 'null';
-  $handler->display->display_options['arguments']['null']['table'] = 'views';
-  $handler->display->display_options['arguments']['null']['field'] = 'null';
-  $handler->display->display_options['arguments']['null']['default_action'] = 'default';
-  $handler->display->display_options['arguments']['null']['default_argument_type'] = 'fixed';
-  $handler->display->display_options['arguments']['null']['default_argument_options']['argument'] = 'journal_rankings';
-  $handler->display->display_options['arguments']['null']['summary']['number_of_records'] = '0';
-  $handler->display->display_options['arguments']['null']['summary']['format'] = 'default_summary';
-  $handler->display->display_options['arguments']['null']['summary_options']['items_per_page'] = '25';
   /* Filter criterion: Taxonomy vocabulary: Machine name */
   $handler->display->display_options['filters']['machine_name']['id'] = 'machine_name';
   $handler->display->display_options['filters']['machine_name']['table'] = 'taxonomy_vocabulary';
@@ -227,9 +217,9 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
 
   /* Display: Publication Journals */
   $handler = $view->new_display('page', 'Publication Journals', 'page');
-  $handler->display->display_options['path'] = 'admin/structure/taxonomy/%/update';
+  $handler->display->display_options['path'] = 'admin/structure/taxonomy/journal_rankings/update';
   $handler->display->display_options['menu']['type'] = 'tab';
-  $handler->display->display_options['menu']['title'] = 'Bulk update';
+  $handler->display->display_options['menu']['title'] = 'Journal Rankings: Bulk Update';
   $handler->display->display_options['menu']['weight'] = '-30';
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
@@ -304,9 +294,9 @@ After updating the journals, you must re-index <a href="/admin/config/search/sea
     1 => 0,
     3 => 0,
   );
-  $handler->display->display_options['path'] = 'admin/structure/taxonomy/%/imported';
+  $handler->display->display_options['path'] = 'admin/structure/taxonomy/journal_rankings/imported';
   $handler->display->display_options['menu']['type'] = 'tab';
-  $handler->display->display_options['menu']['title'] = 'Imported';
+  $handler->display->display_options['menu']['title'] = 'Journal Rankings: Imported';
   $handler->display->display_options['menu']['weight'] = '-40';
   $handler->display->display_options['menu']['name'] = 'management';
   $handler->display->display_options['menu']['context'] = 0;
