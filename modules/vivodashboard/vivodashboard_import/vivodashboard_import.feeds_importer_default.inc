@@ -493,7 +493,7 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           8 => array(
-            'source' => 'http://vivoweb.org/ontology/activity-insight#issue',
+            'source' => 'http://purl.org/ontology/bibo/number',
             'target' => 'field_issue',
             'unique' => FALSE,
           ),
