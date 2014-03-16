@@ -211,7 +211,7 @@ function vivodashboard_publications_taxonomy_term_update($term) {
   }
 
   $link = l('reindexed', 'admin/config/search/search_api');
-  drupal_set_message("Content must be $link before it will be updated in lists / facets.");
+  drupal_set_message("Cache must be cleared and content must be $link before term visibility will be updated in lists and facets.");
 
   // This is causing Pantheon to WSOD - disabling for now.
   return;
