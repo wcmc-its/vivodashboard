@@ -14,10 +14,10 @@ VIVO Dashboard is a Drupal-based application for analyzing publication metadata 
 
 
 HOW IT WORKS
-=============
+============
 
 Import process
---------------------
+--------------
 
 All VIVO sites expose their data as RDF. VIVO Dashboard routinely retrieves batches of RDF data from VIVO and turns it into Drupal content using Drupal's "Feeds" module.
 
@@ -25,8 +25,8 @@ VIVO's index pages contain links to RDF files listing all individuals in a parti
 
 The import process is quite slow. Tens of thousands of publications will typically take between a few days and week to import, depending on the performance of the VIVO site.
 
-Drupal Interface
-----------------------
+Drupal interface
+----------------
 
 VIVO Dashboard saves imported data as standard Drupal content.  
 
@@ -50,7 +50,7 @@ INSTALLATION
 VIVO Dashboard is made available as a Drupal install profile and does not actually include all the required packages. Before installing, the codebase must be "built" using Drush. 
 
 Building with Drush
---------------------------
+-------------------
 
 Install Drush by following the instructions at: https://github.com/drush-ops/drush
 
@@ -60,8 +60,8 @@ Then run:
 
 If no errors were reported, you should should have a complete VIVO Dashboard codebase inside the "vivo-dashboard" directory.
 
-Drupal Hosting
---------------------
+Drupal hosting
+--------------
 
 If you have your own hosting, or want to install VIVO Dashboard in your own local development environment, review the documentation on installing Drupal here : https://drupal.org/documentation/install (Step 1 is already done).
 
@@ -70,7 +70,7 @@ If you have don't have a preference for hosting, Pantheon is an excellent option
 If you want to get up and running quickly on your local machine, Acquia Dev Desktop is a great self-contained LAMP environment for Windows and Mac, designed for Drupal.
 
 Installing on Pantheon
-------------------------------
+----------------------
 
 1. Create a new site on Pantheon and proceed through the Drupal installation. Info you enter does not matter at this point.
 2. Put the Pantheon site in SFTP mode.
@@ -84,7 +84,7 @@ Installing on Pantheon
 Note: If you're comfortable using Git, steps 2-4 can be done with Pantheon's Git repository for the site. You'll need to add an SSH key in the Pantheon dashboard.
 
 Installing with Acquia Dev Desktop
-----------------------------------------------
+----------------------------------
 
 1. Install the Acquia Dev Desktop application
 2. Open the Acquia Dev Desktop Control Panel, go to Settings, then Sites, then Import.
@@ -96,10 +96,10 @@ Installing with Acquia Dev Desktop
 8. When the installation is finished you will be taken to VIVO Dashboard's main page.
 
 SETUP
-======
+=====
 
 Starting an Import
-------------------------
+------------------
 
 Once installed, the first thing to do is start the import.
 
@@ -116,8 +116,8 @@ If you see a status message reporting "There are no new nodes" your class URI is
 
 If you see an error message, your VIVO site URL might be incorrect or VIVO could be failing to produce the RDF list for the specified class. Some VIVO sites seem to have trouble when RDF lists containing a large number of individuals. You can test this by instead trying a class that contains a smaller number of individuals (hundreds instead of thousands). See the Troubleshooting section for more information.
 
-Configuring Cron
------------------------
+Configuring cron
+----------------
 
 Most VIVO sites contain thousands of publications, and a complete publication import may take anywhere from a few days to over a week. Because PHP has limits on the execution time for a request, Drupal must import one small chunk of data at a time via cron runs.
 
@@ -131,8 +131,8 @@ A typical crontab entry looks like this:
 
 Note: The cron_key is unique for each site. You can find this URL on the Status Report (Reports -> Status report).
 
-More Cron
---------------
+More cron
+---------
 
 Cron runs are used to keep Drupal working. The two main jobs that VIVO Dashboard performs during a cron run are:
 
@@ -144,17 +144,17 @@ VIVO Dashboard comes with a module called Elysia Cron. This module acts as a man
 Elysia Cron can be configured at: Configuration -> System -> Cron Settings (/admin/config/system/cron/settings)
 
 CUSTOMIZATION
-==============
+=============
 
 Journal rankings
-----------------------
+----------------
 
 SCImago journal ranking data can be imported using the Journal Rankings importer (/import/journal_rankings), which expects a TSV file. Column 1 should contain the journal name, column 2 should contain the rank, and column 3 should contain the ISSN.
 
 Once these are imported you'll need to do a bulk update to add ranking data to previously-imported journals (/admin/structure/taxonomy/journal_rankings/update), and run a search reindex (/admin/config/search/search_api/index/authorships and /admin/config/search/search_api/index/publications). Journals imported after ranking data is imported will automatically pick up ranking.
 
 Institution-specific data
--------------------------------
+-------------------------
 
 Chances are you will want to adjust the existing data mapping or perhaps add new data specific to your institution. All the mapping from VIVO to Drupal happens in the Feeds importer configurations under Structure -> Feeds importers, then under Processor -> Mapping.
 
@@ -165,22 +165,22 @@ Chances are you will want to adjust the existing data mapping or perhaps add new
 It should be fairly easy to add new data properties and map them to Drupal fields. Object properties (relationships), however, are a bit more complex and mapping for these has yet to be streamlined.
 
 Hiding rdf:type items
-----------------------------
+---------------------
 
 You will often get not-so-useful superclasses, such as "Thing" or "Agent", appearing in facets and lists. To hide those, edit the corresponding taxonomy term (/admin/structure/taxonomy/rdf_types) and click the "Hidden" option at the bottom. You will need to reindex before the change takes effect.
 
 Including/excluding facet items
------------------------------------------
+-------------------------------
 
 When logged in you can edit configuration for facets by hovering over them and clicking the gear icon. Select "Configure facet filters", where you can enable either "Include" or "Exclude" filters..
 
 TROUBLESHOOTING
-=================
+===============
 
 The first thing to try when troubleshooting Drupal is clearing caches. You can find "Flush all caches" under the Home icon in the toolbar. 
 
 Database log
-------------------
+------------
 
 Drupal maintains a comprehensive system log at: Reports -> Recent log messages (/admin/reports/dblog)
 
@@ -194,29 +194,29 @@ Per-importer logs can also be found on import pages. For example, the "VIVO Publ
 Problems during a VIVO import, such as failed linked data requests, are usually logged with a severity of "warning".
 
 Failed linked data requests
-------------------------------------
+---------------------------
 
 If you see warnings in the Feeds log indicating that certain VIVO URIs returned no data, the requests are likely timing out. This typically happens with VIVO individuals containing very large amounts of data. You can try increasing the timeout for the importer in the parser settings (e.g. /admin/structure/feeds/vivo_publications/settings/LdImportParser).
 
 VIVO RDF list errors
----------------------------
+--------------------
 
 If you get error messages such as "500 Internal Server Error" after submitting the Import form, the VIVO site is likely failing to produce the RDF list for the class you specified. You can verify this by visiting the index page on the VIVO site, choosing the respective class, and trying the RDF link at the top.
 
 One way to work around this is by manually creating a text file containing all the publication URIs to be imported, with one URI per line. This can be done using VIVO's internal SPARQL endpoint. You'll then need to change the Fetcher plugin for the importer (/admin/structure/feeds/vivo_publications/fetcher) to either "File upload" or "HTTP Fetcher". Then you can specify this text file on the import form (/import/vivo_publications). 
 
 PERFORMANCE
-=============
+===========
 
 Drupal's great flexibility often comes at the expense of performance. As the amount of data increases, VIVO Dashboard will become slower. There are some things you can do to give Drupal a boost.
 
 Entity Cache
------------------
+------------
 
 VIVO Dashboard comes with a module called Entity Cache that is intended to reduce the load on the database. This module is disabled by default only because it has not had enough testing. Enabling it is perfectly safe and should lead to noticeable performance gains. However, it should be suspect if pieces of data start disappearing.
 
 Apache Solr
------------------
+-----------
 
 The primary module behind VIVO Dashboard's faceted search is Search API. Search API relies on a "backend" module and clever indexing to do its magic. Out of the box the database backend (search_api_db) is used for VIVO Dashboard in order to minimize hosting requirements. While this is the most convenient backend, it's not the most performant.
 
