@@ -22,7 +22,7 @@ All VIVO sites expose their data as RDF. VIVO Dashboard routinely retrieves batc
 
 VIVO's index pages contain links to RDF files listing all individuals in a particular class. VIVO Dashboard uses these RDF lists as feeds, similar to RSS feeds, periodically checking the lists to see if publications have been added or removed. Individuals linked to publications, such as authors and journals, are imported on demand.
 
-The import process is quite slow. Tens of thousands of publications will typically take between a few days and week to import, depending on the performance of the VIVO site.
+The import process is quite slow. Tens of thousands of publications will typically take between a few days and a week to import, depending on the performance of the VIVO site.
 
 ### Drupal interface
 
@@ -107,7 +107,7 @@ Note: VIVO importers other than "VIVO Publications" can be ignored. These get tr
 
 If you see a status message reporting "There are no new nodes" your class URI is likely incorrect. 
 
-If you see an error message, your VIVO site URL might be incorrect or VIVO could be failing to produce the RDF list for the specified class. Some VIVO sites seem to have trouble when RDF lists containing a large number of individuals. You can test this by instead trying a class that contains a smaller number of individuals (hundreds instead of thousands). See the Troubleshooting section for more information.
+If you see an error message, your VIVO site URL might be incorrect or VIVO could be failing to produce the RDF list for the specified class. Some VIVO sites seem to have trouble with RDF lists containing a large number of individuals. You can test this by instead trying a class that contains a smaller number of individuals (hundreds instead of thousands). See the Troubleshooting section for more information.
 
 ### Configuring cron
 
@@ -141,11 +141,11 @@ Customization
 
 SCImago journal ranking data can be imported using the Journal Rankings importer (/import/journal_rankings), which expects a TSV file. Column 1 should contain the journal name, column 2 should contain the rank, and column 3 should contain the ISSN.
 
-Once these are imported you'll need to do a bulk update to add ranking data to previously-imported journals (/admin/structure/taxonomy/journal_rankings/update), and run a search reindex (/admin/config/search/search_api/index/authorships and /admin/config/search/search_api/index/publications). Journals imported after ranking data is imported will automatically pick up ranking.
+Once these are imported you'll need to do a bulk update to add ranking data to previously-imported journals (/admin/structure/taxonomy/journal_rankings/update), and run a search reindex (/admin/config/search/search_api/index/authorships and /admin/config/search/search_api/index/publications). Journals added after ranking data has been imported will automatically pick up rankings based on ISSN.
 
 ### Institution-specific data
 
-Chances are you will want to adjust the existing data mapping or perhaps add new data specific to your institution. All the mapping from VIVO to Drupal happens in the Feeds importer configurations under Structure -> Feeds importers, then under Processor -> Mapping.
+Chances are you will want to adjust the existing data mappings or add new data specific to your institution. All the mapping from VIVO to Drupal happens in the Feeds importer configurations under Structure -> Feeds importers, then under Processor -> Mapping.
 
 - VIVO Publications: /admin/structure/feeds/vivo_publications/mapping
 - VIVO Authors: /admin/structure/feeds/vivo_authors/mapping
