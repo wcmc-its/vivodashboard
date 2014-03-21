@@ -1,0 +1,450 @@
+<?php
+/**
+ * @file
+ * Code for the VIVO Dashboard Publications feature.
+ */
+
+// AUTO LOADED: vivodashboard_publication.views.inc
+
+include_once 'vivodashboard_publications.features.inc';
+
+/**
+ * Implements hook_search_api_alter_callback_info().
+ */
+function vivodashboard_publications_search_api_alter_callback_info() {
+  $callbacks['publications'] = array(
+    'name' => t('Publication content'),
+    'description' => t('Attach publication content used for facets.'),
+    'class' => 'VivodashboardPublicationsAlterCallback',
+  );
+  return $callbacks;
+}
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ *
+ * Adds active facet parameters to tab links pointing to other result formats.
+ */
+function vivodashboard_publications_menu_local_tasks_alter(&$data, $router_item, $root_path) {
+
+  // Primary tabs.
+  if (!empty($data['tabs'][0]['output'])) {
+    foreach ($data['tabs'][0]['output'] as &$tab) {
+      // Do not add to the root/active tab, allowing the user to click the tab
+      // to remove active search filters.
+      if ($tab['#link']['tab_root'] == 'publications' && $tab['#link']['path'] != current_path() && empty($tab['#active'])) {
+        $tab['#link']['localized_options']['query'] = drupal_get_query_parameters();
+      }
+    }
+  }
+
+  // Secondary tabs.
+  if (!empty($data['tabs'][1]['output'])) {
+    foreach ($data['tabs'][1]['output'] as &$tab) {
+      if ($tab['#link']['tab_root'] == 'publications' && $tab['#link']['path'] != current_path()) {
+        $tab['#link']['localized_options']['query'] = drupal_get_query_parameters();
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_block_view_alter().
+ *
+ * Overrides default titles for facet blocks.
+ */
+function vivodashboard_publications_block_view_alter(&$data, $block) {
+  if ($block->module == 'current_search' && empty($block->title)) {
+    switch ($block->delta) {
+      case 'publications':
+      case 'authorships':
+        $data['subject'] = 'Current Filters'; break;
+    }
+  }
+
+  // Replace block titles such as "Filter by Journal Ranking:" to be
+  // simply "Journal Ranking".
+  if ($block->module == 'facetapi' && empty($block->title)) {
+
+    // Facet API uses hashed deltas, so need to decode them first.
+    $facet_map = facetapi_get_delta_map();
+    $real_delta = isset($facet_map[$block->delta]) ? $facet_map[$block->delta] : NULL;
+
+    // Realm is either "block" or "facetapi_graphs_graphs".
+    if (strpos($real_delta, ':block:')) {
+      list($searcher, $facet_name) = explode(':block:', $real_delta);
+    }
+    else {
+      list($searcher, $facet_name) = explode(':facetapi_graphs_graphs:', $real_delta);
+    }
+
+    // Pull the facet label out of the facet definition.
+    if ($searcher && $facet_name && ($info = facetapi_get_facet_info($searcher)) && !empty($info[$facet_name])) {
+      $data['subject'] = $info[$facet_name]['label'];
+    }
+  }
+}
+
+/**
+ * Implements hook_facetapi_facet_info_alter().
+ */
+function vivodashboard_publications_facetapi_facet_info_alter(&$facet_info, $searcher_info) {
+  $facet_info['publication_month']['map options']['value callback'] = 'vivodashboard_publications_month_value_callback';
+
+  // Make dependency plugin available.
+  foreach ($facet_info as &$facet) {
+    $facet['dependency plugins'][] = 'publication_date';
+  }
+
+  // Override facet labels.
+  foreach ($facet_info as $facet_name => &$facet) {
+    switch ($facet_name) {
+      case 'publication_year':
+        $facet['label'] = 'Year'; break;
+
+      case 'publication_month':
+        $facet['label'] = 'Month'; break;
+
+      case 'publication_journal':
+        $facet['label'] = 'Journal Name'; break;
+
+      case 'publication_journal_ranking':
+        $facet['label'] = 'Journal Ranking'; break;
+
+      case 'publication_types':
+        $facet['label'] = 'Publication Type'; break;
+
+      case 'publication_author_names':
+        $facet['label'] = 'Author Name'; break;
+
+      case 'publication_author_types':
+        $facet['label'] = 'Author Type'; break;
+
+      case 'publication_author_affiliations':
+        $facet['label'] = 'Primary Department'; break;
+
+      case 'publication_author_firstlast_affiliations':
+        $facet['label'] = 'First/Last Author Affiliation'; break;
+
+      case 'publication_graph_year':
+      case 'publication_graph_month':
+        $facet['label'] = ''; break;
+    }
+  }
+}
+
+/**
+ * Facet API 'value callback' for publication_month facet.
+ *
+ * Converts integers to months.
+ */
+function vivodashboard_publications_month_value_callback($values) {
+  $months = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
+
+  $map = array();
+
+  foreach ($values as $value) {
+    $map[$value] = $months[$value - 1];
+  }
+
+  return $map;
+}
+
+/**
+ * Implements hook_facetapi_dependencies().
+ */
+function vivodashboard_publications_facetapi_dependencies() {
+  return array(
+    'publication_date' => array(
+      'handler' => array(
+        'label' => t('Publication Year'),
+        'class' => 'VivodashboardPublicationsYearFacetDependency',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ */
+function vivodashboard_publications_taxonomy_term_presave($term) {
+  // Uppercases names for rdf:type terms. The name may have been derived from
+  // the URI local name if a proper label was not found.
+  if ($term->vocabulary_machine_name == 'rdf_types') {
+    $term->name = ucwords($term->name);
+  }
+
+  // Populates field_ranking on journals by looking up the journal's ISSN
+  // in the Feeds table. The Feeds table has ISSNs for items imported
+  // into the journal_rankings vocabulary.
+  if ($term->vocabulary_machine_name == 'journals') {
+    $wrapper = entity_metadata_wrapper('taxonomy_term', $term);
+    if ($issn = $wrapper->field_issn->value()) {
+      $tid = db_select('feeds_item')
+          ->fields('feeds_item', array('entity_id'))
+          ->condition('entity_type', 'taxonomy_term')
+          ->condition('id', 'journal_rankings')
+          ->condition('guid', $issn)
+          ->execute()
+          ->fetchField();
+      if ($tid && $ranking_term = taxonomy_term_load($tid)) {
+        $wrapper->field_ranking->set($ranking_term->description);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_update().
+ *
+ * Marks nodes and relations for reindexing when field_hidden changes on
+ * rdf_type taxonomy terms.
+ *
+ * @see vivodashboard_core_update_hidden_types()
+ */
+function vivodashboard_publications_taxonomy_term_update($term) {
+  // Only act here if the field_hidden value has changed.
+  if ($term->vocabulary_machine_name != 'rdf_types'
+    || (entity_metadata_wrapper('taxonomy_term', $term)->field_hidden->value()
+        == entity_metadata_wrapper('taxonomy_term', $term->original)->field_hidden->value())) {
+    return;
+  }
+
+  $link = l('reindexed', 'admin/config/search/search_api');
+  drupal_set_message("Cache must be cleared and content must be $link before term visibility will be updated in lists and facets.");
+
+  // This is causing Pantheon to WSOD - disabling for now.
+  return;
+
+  // Query for nodes that use this term.
+  // $node_query = new EntityFieldQuery();
+  $node_query = db_select('field_data_field_rdf_type', 'f')
+    ->fields('f', array('entity_id'))
+    ->condition('field_rdf_type_tid', $term->tid)
+    ->condition('entity_type', 'node');
+
+  $result = $node_query->execute()->fetchAllKeyed(0,0);
+
+  // Mark nodes for reindexing.
+  if (!empty($result)) {
+    search_api_track_item_change('node', $result);
+    $count = count($result);
+    $link = l('reindex manually', 'admin/config/search/search_api/index/publications');
+    drupal_set_message("The $count publications or authors using this RDF Type term have been marked for reindexing. You can wait for cron to reindex these items or $link.");
+
+    // Query for relations that involve these nodes.
+    $relation_query = new EntityFieldQuery();
+    $relation_query->entityCondition('entity_type', 'relation')->entityCondition('bundle', 'authorship');
+    $relation_query->fieldCondition('endpoints', 'entity_id', $node_query, 'IN');
+    $result = $relation_query->execute();
+
+    // Mark relations for reindexing.
+    if (!empty($result['relation'])) {
+      search_api_track_item_change('relation', array_keys($result['relation']));
+      $count = count($result['relation']);
+      $link = l('reindex manually', 'admin/config/search/search_api/index/authorships');
+      drupal_set_message("The $count authorships involving this RDF Type term have been marked for reindexing. You can wait for cron to reindex these items or $link.");
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Attaches a submit handler to the Facet API widget form.
+ */
+function vivodashboard_publications_form_facetapi_facet_display_form_alter(&$form, $form_state) {
+  array_unshift($form['#submit'],'vivodashboard_publications_facet_settings_sync');
+}
+
+/**
+ * Form #submit callback for facetapi_facet_display_form.
+ *
+ * Because we have duplicates of all facets -- one for publications one for
+ * authorships -- the display settings can inadvertently end up different.
+ * This submit handler synchronizes display settings for both copies.
+ * This only affects display settings, not general facet configuration.
+ */
+function vivodashboard_publications_facet_settings_sync($form, $form_state) {
+  $adapter = $form['#facetapi']['adapter'];
+  $facet = $form['#facetapi']['facet'];
+
+  $searcher = $adapter->getSearcher();
+  if ($searcher != 'search_api@authorships' && $searcher != 'search_api@publications') {
+    return;
+  }
+
+  $other_searcher = ($searcher == 'search_api@authorships') ? 'search_api@publications' : 'search_api@authorships';
+
+  if ($other_adapter = facetapi_adapter_load($other_searcher)) {
+    drupal_set_message(t('Synchronizing facet configuration with @searcher', array('@searcher' => $other_searcher)));
+
+    // Save all the same data for the other searcher.
+    $form['#facetapi']['adapter'] = $other_adapter;
+    facetapi_facet_display_form_submit($form, $form_state);
+
+    // Reset things to how they were before. For some strange reason $form
+    // is being passed by reference when it's not supposed to be.
+    $form['#facetapi']['adapter'] = $adapter;
+  }
+}
+
+/**
+ * Implements hook_entity_property_info_alter().
+ *
+ * Adds some custom entity properties to simplify data access.
+ */
+function vivodashboard_publications_entity_property_info_alter(&$info) {
+  $publication = &$info['node']['bundles']['publication']['properties'];
+  $publication['authors'] = array(
+    'label' => t('Authors'),
+    'description' => t('The authors of the publication, ordered by author rank.'),
+    'type' => 'list<node>',
+    'getter callback' => 'vivodashboard_publications_get_property',
+  );
+  $publication['author_labels'] = array(
+    'label' => t('Author Labels'),
+    'description' => t('The authors of the publication, ordered by author rank, formatted using authorship label.'),
+    'type' => 'list<text>',
+    'getter callback' => 'vivodashboard_publications_get_property',
+  );
+  $publication['authorships'] = array(
+    'label' => t('Authorships'),
+    'description' => t('The authorship relations of the publication, ordered by author rank.'),
+    'type' => 'list<relation>',
+    'getter callback' => 'vivodashboard_publications_get_property',
+  );
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * Specifies a label callback for Relation entities.
+ */
+function vivodashboard_publications_entity_info_alter(&$entity_info) {
+  $entity_info['relation']['label callback'] = 'vivodashboard_publications_get_authorship_label';
+}
+
+/**
+ * Property "getter callback" for authors property on publications.
+ *
+ * Exposes publication authors to Entity API.
+ *
+ * @see vivodashboard_publications_node_load().
+ */
+function vivodashboard_publications_get_property($publication_node, $options, $property_name) {
+  return isset($publication_node->$property_name) ? $publication_node->$property_name : array();
+}
+
+/**
+ * Entity "label callback" for Relation entities.
+ */
+function vivodashboard_publications_get_authorship_label($relation) {
+  $items = field_get_items('relation', $relation, 'field_author_label');
+  $label = !empty($items[0]) ? $items[0]['value'] : $relation->rid;
+  return $label;
+}
+
+/**
+ * Implements hook_node_load().
+ *
+ * Pre-loads authorship relation data when nodes are loaded in order to save
+ * a boatload of database queries when using in views.
+ */
+function vivodashboard_publications_node_load($nodes, $types) {
+  if (!in_array('publication', $types)) {
+    return;
+  }
+
+  $rids = relation_query('node', array_keys($nodes), 0)->entityCondition('bundle', 'authorship')->execute();
+  $relations = relation_load_multiple(array_keys($rids));
+
+  $data = array();
+
+  // Gather data from relations before attaching to nodes.
+  foreach ($relations as $relation) {
+    list($source, $target) = field_get_items('relation', $relation, 'endpoints');
+    $publication_nid = $source['entity_id'];
+    $author_nid = $target['entity_id'];
+
+    if (!isset($nodes[$publication_nid])) {
+      continue;
+    }
+
+    $author_rank = field_get_items('relation', $relation, 'field_author_rank');
+    $author_rank = !empty($author_rank[0]) && is_numeric($author_rank[0]['value']) ? (int) $author_rank[0]['value'] : ($author_nid * 100);
+    $data[$publication_nid][$author_nid]['weight'] = $author_rank;
+
+    $author_label = field_get_items('relation', $relation, 'field_author_label');
+    $author_label = !empty($author_label[0]) ? $author_label[0]['value'] : '';
+    $data[$publication_nid][$author_nid]['label'] = $author_label;
+
+    $data[$publication_nid][$author_nid]['rid'] = $relation->rid;
+  }
+
+  // Attach data to nodes, sorting everything by rank.
+  foreach ($nodes as $node) {
+
+    $publication_nid = $node->nid;
+
+    // Make sure nodes at least have empty values.
+    if (!isset($node->authors)) {
+      $node->authors = array();
+      $node->authorships = array();
+      $node->author_labels = array();
+    }
+
+    if (isset($data[$publication_nid])) {
+      $items = $data[$publication_nid];
+
+      // Sort by rank.
+      uasort($items, 'drupal_sort_weight');
+
+      foreach ($items as $author_nid => $item) {
+        $node->authors[] = $author_nid;
+        $node->authorships[] = $item['rid'];
+        $node->author_labels[] = $item['label'];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_registry_alter().
+ *
+ * Replaces theme implementation from views_data_export with our own.
+ */
+function vivodashboard_publications_theme_registry_alter(&$registry) {
+  $registry['views_data_export_complete_page']['function'] = 'vivodashboard_publications_views_data_export_complete_page';
+  $registry['views_data_export_complete_page']['theme path'] = drupal_get_path('module', 'vivodashboard_publications');
+  $registry['views_data_export_complete_page']['file'] = '';
+  $registry['views_data_export_complete_page']['includes'] = array();
+}
+
+/**
+ * Overrides theme_views_data_export_complete_page().
+ *
+ * The is exactly the same function except we parse and restructure the
+ * return_url in order to retain query parameters.
+ *
+ * @see vivodashboard_publications_views_pre_view()
+ */
+function vivodashboard_publications_views_data_export_complete_page($variables) {
+  extract($variables, EXTR_SKIP);
+  drupal_set_title(t('Data export successful'));
+  drupal_add_html_head(array('#tag' => 'meta', '#attributes' => array('http-equiv' =>"Refresh", 'content' => '3;url='. $file)), 'views_data_export_download');
+  $output = '';
+  $output .= '<p>';
+  $output .= t('Your export has been created. View/download the file <a href="@link">here</a> (will automatically download in 3 seconds.)', array('@link' => $file));
+  $output .= '</p>';
+
+  if (!empty($return_url)) {
+    // CHANGED: Parse out query parameters from the return URL.
+    $parts = drupal_parse_url($return_url);
+    $output .= '<p>';
+    $output .= l(t('Return to previous page'), $parts['path'], $parts);
+    $output .= '</p>';
+  }
+  return $output;
+}
+
