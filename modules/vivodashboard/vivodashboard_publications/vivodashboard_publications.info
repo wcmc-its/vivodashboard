@@ -77,5 +77,6 @@ features[views_view][] = publications_graph
 features[views_view][] = publications_list
 files[] = plugins/search_api/search_api_alter_callback_publications.inc
 files[] = plugins/facetapi/facetapi_dependency_publication_year.inc
+files[] = plugins/facetapi/facetapi_filter_force_date_range.inc
 files[] = plugins/views/views_field_handler_authorship.inc
 files[] = plugins/views/views_field_handler_title.inc
