@@ -34,40 +34,4 @@ class FacetapiAutocompleteWidget extends FacetapiWidgetLinks {
   public function makeFacetValue($string) {
     return $this->facet['field alias'] . ':' . $string;
   }
-
-  /**
-   * Produce an array of values structured for the Select2 plugin.
-   */
-  public static function getAutocompleteValues($keywords, $build) {
-    $values = array();
-    $keywords = strtoupper(trim($keywords));
-
-    if (empty($keywords)) {
-      return $values;
-    }
-
-    foreach ($build as $item) {
-
-      // Do not include active facet items.
-      if (!empty($item['#active'])) {
-        continue;
-      }
-
-      $indexed = strtoupper($item['#indexed_value']);
-      $markup = strtoupper($item['#markup']);
-
-      // Perform a very basic string match on the indexed and rendered values.
-      if (strpos($indexed, $keywords) !== FALSE || strpos($markup, $keywords) !== FALSE) {
-        $values[] = array(
-          'id' => $item['#indexed_value'],
-          'text' => $item['#markup'] . ' (' . $item['#count'] . ')',
-        );
-      }
-    }
-
-    // @todo - Use soft limit from facet settings.
-    $values = array_slice($values, 0, 20);
-
-    return $values;
-  }
 }
