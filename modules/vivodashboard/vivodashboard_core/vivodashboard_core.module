@@ -348,12 +348,25 @@ function vivodashboard_core_preprocess_facetapi_link_inactive(&$vars) {
 
 /**
  * Implements hook_node_presave().
- *
- * Ensure that we don't try and save node titles that are too long.
  */
 function vivodashboard_core_node_presave($node) {
+  // Ensure that we don't try and save node titles that are too long.
   if (strlen($node->title) >= 255) {
     $node->title = substr($node->title, 0, 251) . '...';
+  }
+
+  // Ensure that we don't try and save non-integer page numbers.
+  if ($node->type == 'publication') {
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    if ($page_start = $wrapper->field_page_start->value()) {
+      $page_start = ($integer = (int) $page_start) ? $integer : NULL;
+      $wrapper->field_page_start->set($page_start);
+    }
+    if ($page_end = $wrapper->field_page_end->value()) {
+      $page_end = ($integer = (int) $page_end) ? $integer : NULL;
+      $wrapper->field_page_end->set($page_end);
+    }
   }
 }
 
