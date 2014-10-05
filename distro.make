@@ -2,10 +2,7 @@ core = 7.x
 api = 2
 
 ; Drupal core
-projects[drupal][version] = 7.x
-
-; Patch core to fix poor EntityFieldQuery performance with Relation
-projects[drupal][patch][1859084] = "https://drupal.org/files/issues/multicolumn-1859084-30.patch"
+projects[drupal][version] = 7.31
 
 ; Install profile
 projects[vivodashboard][type] = "profile"
