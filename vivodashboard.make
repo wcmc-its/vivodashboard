@@ -116,7 +116,7 @@ libraries[ARC2][type] = "library"
 libraries[Graphite][download][type] = "git"
 libraries[Graphite][download][url] = "https://github.com/cgutteridge/Graphite.git"
 libraries[Graphite][download][revision] = "c3442ca9f3ca46e1f037aef8cbc89cb415186f01"
-libraries[Graphite][directory_name] = "graphite"
+libraries[Graphite][directory_name] = "Graphite"
 libraries[Graphite][type] = "library"
 
 libraries[chosen][download][type] = "get"
