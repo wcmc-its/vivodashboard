@@ -41,6 +41,7 @@ dependencies[] = number
 dependencies[] = options
 dependencies[] = relation
 dependencies[] = relation_dummy_field
+dependencies[] = relation_feeds
 dependencies[] = relation_ui
 dependencies[] = search_api
 dependencies[] = search_api_db
