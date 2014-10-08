@@ -85,8 +85,8 @@ projects[search_api_ranges][download][revision] = "05a372d7d216765cdb49b789602cf
 projects[ldimport][type] = "module"
 projects[ldimport][download][type] = "git"
 projects[ldimport][download][url] = "https://github.com/milesw/ldimport.git"
-projects[ldimport][download][branch] = "master"
-projects[ldimport][download][revision] = "03fa1811f4e10d81c03490e5c1fc44d3510d29d2"
+projects[ldimport][download][branch] = "graphite"
+projects[ldimport][download][revision] = "b3df46043de33ceb4749b69d1dd3e2a2505dbe21"
 
 projects[ldimport_vivo][type] = "module"
 projects[ldimport_vivo][download][type] = "git"
@@ -112,6 +112,12 @@ libraries[ARC2][download][revision] = "bc67abee322edb0a38b304cc4695543c43ae735b"
 libraries[ARC2][directory_name] = "arc"
 libraries[ARC2][subdir] = "ARC2"
 libraries[ARC2][type] = "library"
+
+libraries[Graphite][download][type] = "git"
+libraries[Graphite][download][url] = "https://github.com/cgutteridge/Graphite.git"
+libraries[Graphite][download][revision] = "c3442ca9f3ca46e1f037aef8cbc89cb415186f01"
+libraries[Graphite][directory_name] = "graphite"
+libraries[Graphite][type] = "library"
 
 libraries[chosen][download][type] = "get"
 libraries[chosen][download][url] = "https://github.com/harvesthq/chosen/releases/download/1.0.0/chosen_v1.0.0.zip"
