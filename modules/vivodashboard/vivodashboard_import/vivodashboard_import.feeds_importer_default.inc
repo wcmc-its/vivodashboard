@@ -293,38 +293,33 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => 1,
           ),
           1 => array(
-            'source' => 'URI',
-            'target' => 'field_author_label',
-            'unique' => FALSE,
-          ),
-          2 => array(
             'source' => 'http://vivoweb.org/ontology/core#rank',
             'target' => 'field_author_rank',
             'unique' => FALSE,
           ),
-          3 => array(
+          2 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
             'target' => 'import:relation:authors',
             'importer' => 'vivo_authors_vcard',
             'age' => 'last',
           ),
-          4 => array(
+          3 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
             'target' => 'import:relation:authors',
             'importer' => 'vivo_authors',
             'age' => 'last',
           ),
-          5 => array(
+          4 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://purl.org/ontology/bibo/Article] URI',
             'target' => 'authorship:endpoint:0',
             'unique' => FALSE,
           ),
-          6 => array(
+          5 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
             'target' => 'authorship:endpoint:1',
             'unique' => FALSE,
           ),
-          7 => array(
+          6 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
             'target' => 'authorship:endpoint:1',
             'unique' => FALSE,
