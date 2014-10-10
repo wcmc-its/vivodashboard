@@ -221,22 +221,17 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           3 => array(
-            'source' => 'URI',
-            'target' => 'title',
-            'unique' => FALSE,
-          ),
-          4 => array(
             'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
             'target' => 'import:node:field_rdf_type',
             'importer' => 'vivo_types',
             'age' => '2419200',
           ),
-          5 => array(
+          4 => array(
             'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#givenName',
             'target' => 'field_first_name',
             'unique' => FALSE,
           ),
-          6 => array(
+          5 => array(
             'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#familyName',
             'target' => 'field_last_name',
             'unique' => FALSE,

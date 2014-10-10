@@ -266,7 +266,7 @@ function vivodashboard_import_mapping_form_callback($config, $target, $form, $fo
  */
 function vivodashboard_feeds_presave($source, $entity, $item) {
   // Ensure authors always have titles.
-  if ($source->id == 'vivo_authors' && empty($entity->title)) {
+  if (($source->id == 'vivo_authors' || $source->id == 'vivo_authors_vcard') && empty($entity->title)) {
     $wrapper = entity_metadata_wrapper('node', $entity);
 
     $first_name = $wrapper->field_first_name->value();
