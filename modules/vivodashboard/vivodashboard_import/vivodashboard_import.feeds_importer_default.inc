@@ -122,45 +122,45 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           4 => array(
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#primaryAffiliation',
+            'target' => 'field_primary_institution',
+            'unique' => FALSE,
+          ),
+          5 => array(
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#cwid',
+            'target' => 'field_id',
+            'unique' => FALSE,
+          ),
+          6 => array(
             'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
             'target' => 'import:node:field_rdf_type',
             'importer' => 'vivo_types',
             'age' => '2419200',
           ),
-          5 => array(
-            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#primaryAffiliation',
-            'target' => 'field_primary_institution',
-            'unique' => FALSE,
-          ),
-          6 => array(
+          7 => array(
             'source' => 'http://vivoweb.org/ontology/core#relatedBy [http://vivoweb.org/ontology/core#PrimaryPosition] http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Organization] URI',
             'target' => 'import:node:field_primary_department',
             'importer' => 'vivo_departments',
             'age' => '2419200',
           ),
-          7 => array(
+          8 => array(
             'source' => 'http://vivoweb.org/ontology/core#relatedBy [http://vivoweb.org/ontology/core#Position] http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Organization] URI',
             'target' => 'import:node:field_department',
             'importer' => 'vivo_departments',
             'age' => '2419200',
           ),
-          8 => array(
+          9 => array(
             'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#givenName',
             'target' => 'field_first_name',
             'unique' => FALSE,
           ),
-          9 => array(
+          10 => array(
             'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#familyName',
             'target' => 'field_last_name',
             'unique' => FALSE,
           ),
-          10 => array(
-            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#cwid',
-            'target' => 'field_id',
-            'unique' => FALSE,
-          ),
         ),
-        'update_existing' => '2',
+        'update_existing' => '1',
         'input_format' => 'plain_text',
         'skip_hash_check' => 0,
         'bundle' => 'author',
@@ -175,6 +175,88 @@ function vivodashboard_import_feeds_importer_default() {
     'process_in_background' => 0,
   );
   $export['vivo_authors'] = $feeds_importer;
+
+  $feeds_importer = new stdClass();
+  $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
+  $feeds_importer->api_version = 1;
+  $feeds_importer->id = 'vivo_authors_vcard';
+  $feeds_importer->config = array(
+    'name' => 'VIVO Authors (Vcard)',
+    'description' => '',
+    'fetcher' => array(
+      'plugin_key' => 'LdImportFetcher',
+      'config' => array(),
+    ),
+    'parser' => array(
+      'plugin_key' => 'LdImportParser',
+      'config' => array(
+        'use_caching' => 1,
+        'batch_limit' => '100',
+        'pre_fetch' => 1,
+        'retries' => '3',
+        'timeout' => '60',
+        'cache_time' => 1209600,
+      ),
+    ),
+    'processor' => array(
+      'plugin_key' => 'FeedsNodeProcessor',
+      'config' => array(
+        'expire' => '-1',
+        'author' => 0,
+        'authorize' => 0,
+        'mappings' => array(
+          0 => array(
+            'source' => 'URI',
+            'target' => 'url',
+            'unique' => 1,
+          ),
+          1 => array(
+            'source' => 'URI',
+            'target' => 'guid',
+            'unique' => FALSE,
+          ),
+          2 => array(
+            'source' => 'URI',
+            'target' => 'field_uri:url',
+            'unique' => FALSE,
+          ),
+          3 => array(
+            'source' => 'URI',
+            'target' => 'title',
+            'unique' => FALSE,
+          ),
+          4 => array(
+            'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
+            'target' => 'import:node:field_rdf_type',
+            'importer' => 'vivo_types',
+            'age' => '2419200',
+          ),
+          5 => array(
+            'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#givenName',
+            'target' => 'field_first_name',
+            'unique' => FALSE,
+          ),
+          6 => array(
+            'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#familyName',
+            'target' => 'field_last_name',
+            'unique' => FALSE,
+          ),
+        ),
+        'update_existing' => '1',
+        'input_format' => 'plain_text',
+        'skip_hash_check' => 0,
+        'bundle' => 'author',
+        'update_non_existent' => 'skip',
+      ),
+    ),
+    'content_type' => '',
+    'update' => 0,
+    'import_period' => '-1',
+    'expire_period' => 3600,
+    'import_on_create' => 1,
+    'process_in_background' => 0,
+  );
+  $export['vivo_authors_vcard'] = $feeds_importer;
 
   $feeds_importer = new stdClass();
   $feeds_importer->disabled = FALSE; /* Edit this to true to make a default feeds_importer disabled initially */
@@ -211,29 +293,40 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => 1,
           ),
           1 => array(
+            'source' => 'URI',
+            'target' => 'field_author_label',
+            'unique' => FALSE,
+          ),
+          2 => array(
             'source' => 'http://vivoweb.org/ontology/core#rank',
             'target' => 'field_author_rank',
             'unique' => FALSE,
           ),
-          2 => array(
-            'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] Label',
-            'target' => 'field_author_label',
-            'unique' => FALSE,
-          ),
           3 => array(
+            'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
+            'target' => 'import:relation:authors',
+            'importer' => 'vivo_authors_vcard',
+            'age' => 'last',
+          ),
+          4 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
             'target' => 'import:relation:authors',
             'importer' => 'vivo_authors',
             'age' => 'last',
           ),
-          4 => array(
+          5 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://purl.org/ontology/bibo/Article] URI',
-            'target' => 'source_bundles:node:publication:guid',
+            'target' => 'authorship:endpoint:0',
             'unique' => FALSE,
           ),
-          5 => array(
+          6 => array(
+            'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
+            'target' => 'authorship:endpoint:1',
+            'unique' => FALSE,
+          ),
+          7 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
-            'target' => 'target_bundles:node:author:guid',
+            'target' => 'authorship:endpoint:1',
             'unique' => FALSE,
           ),
         ),
@@ -531,6 +624,7 @@ function vivodashboard_import_feeds_importer_default() {
         'pre_fetch' => 1,
         'retries' => '3',
         'timeout' => '60',
+        'cache_time' => 1209600,
       ),
     ),
     'processor' => array(
@@ -639,7 +733,7 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
         ),
-        'update_existing' => '2',
+        'update_existing' => '1',
         'input_format' => 'plain_text',
         'skip_hash_check' => 0,
         'bundle' => 'publication',

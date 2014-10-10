@@ -15,6 +15,7 @@ features[ctools][] = views:views_default:3.0
 features[features_api][] = api:2
 features[feeds_importer][] = journal_rankings
 features[feeds_importer][] = vivo_authors
+features[feeds_importer][] = vivo_authors_vcard
 features[feeds_importer][] = vivo_authorships
 features[feeds_importer][] = vivo_departments
 features[feeds_importer][] = vivo_funding_organizations

@@ -30,16 +30,16 @@ function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_t
     }
   }
 
-  // Special mapping to attach authorship URIs to publication nodes.
+  // Special mapper to attach authorship URIs to publication nodes.
   // These get handled later in hook_feeds_after_save().
   if ($entity_type == 'node' && $bundle_name == 'publication') {
     $targets['publication_authorships'] = array(
-      'name' => t('Authorships (created programmatically)'),
+      'name' => t('Authorships'),
       'callback' => 'vivodashboard_import_map_verbatim',
     );
   }
 
-  // Special mapping to import authors while importing authorships.
+  // Special mapper to import authors while importing authorships.
   if ($entity_type == 'relation' && $bundle_name == 'authorship') {
     $targets["import:relation:authors"] = array(
       'name' => t("Import: Authors"),
@@ -47,6 +47,44 @@ function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_t
       'summary_callback' => 'vivodashboard_import_mapping_summary_callback',
       'form_callback' => 'vivodashboard_import_mapping_form_callback',
     );
+    $targets["authorship:endpoint:0"] = array(
+      'name' => t("Authorship: Publication"),
+      'callback' => 'vivodashboard_import_authorship_endpoint_callback',
+    );
+    $targets["authorship:endpoint:1"] = array(
+      'name' => t("Authorship: Author"),
+      'callback' => 'vivodashboard_import_authorship_endpoint_callback',
+    );
+  }
+}
+
+/**
+ * Feeds mapping callback.
+ *
+ * Populates Relation endpoints.
+ *
+ * This is used because the built-in endpoint mapping isn't so flexible.
+ *
+ * @see https://www.drupal.org/node/2354019
+ */
+function vivodashboard_import_authorship_endpoint_callback($source, $relation, $target, $values) {
+  if (empty($values)) {
+    return;
+  }
+
+  list(,,$endpoint) = explode(':', $target);
+  $guids = is_array($values) ? $values : array($values);
+
+  $matches = db_select('feeds_item', 'f')
+    ->condition('guid', $guids, 'IN')
+    ->condition('entity_type', 'node')
+    ->fields('f', array('guid', 'entity_id', 'entity_type'))
+    ->execute()
+    ->fetchAllAssoc('guid');
+
+  if ($matches) {
+    $match = reset($matches);
+    $relation->endpoints[LANGUAGE_NONE][$endpoint] = array('entity_type' => $match->entity_type, 'entity_id' => $match->entity_id);
   }
 }
 
@@ -224,6 +262,37 @@ function vivodashboard_import_mapping_form_callback($config, $target, $form, $fo
 }
 
 /**
+ * Implements hook_feeds_presave().
+ */
+function vivodashboard_feeds_presave($source, $entity, $item) {
+  // Ensure authors always have titles.
+  if ($source->id == 'vivo_authors' && empty($entity->title)) {
+    $wrapper = entity_metadata_wrapper('node', $entity);
+
+    $first_name = $wrapper->field_first_name->value();
+    $last_name = $wrapper->field_last_name->value();
+    if ($first_name && $last_name) {
+      $entity->title = "{$last_name}, {$first_name}";
+    }
+    else {
+      $entity->title = 'Unknown';
+    }
+  }
+
+  // Ensure authorships always default to the title of the author.
+  if ($source->id == 'vivo_authorships') {
+    $wrapper = entity_metadata_wrapper('relation', $entity);
+
+    if (!$wrapper->field_author_label->value()) {
+      list($source, $target) = field_get_items('relation', $entity, 'endpoints');
+      if ($author = node_load($target['entity_id'])) {
+        $wrapper->field_author_label->set($author->title);
+      }
+    }
+  }
+}
+
+/**
  * Implements hook_feeds_after_save().
  */
 function vivodashboard_import_feeds_after_save($source, $entity, $item) {
@@ -304,10 +373,10 @@ function vivodashboard_import_sort_authorships($a, $b) {
   $b_rank = entity_metadata_wrapper('relation', $b)->field_author_rank->value();
 
   if (!$a_rank && $a_rank !== 0) {
-    $a['rank'] = 9999;
+    $a_rank = 9999;
   }
   if (!$b_rank && $b_rank !== 0) {
-    $b['rank'] = 9999;
+    $b_rank = 9999;
   }
 
   if ($a_rank < $b_rank) {
