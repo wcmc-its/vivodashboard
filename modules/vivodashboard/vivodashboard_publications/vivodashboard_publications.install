@@ -46,9 +46,6 @@ function vivodashboard_publications_update_7100(&$sandbox) {
   foreach (relation_load_multiple(array_keys($rows)) as $relation) {
     list($source, $target) = field_get_items('relation', $relation, 'endpoints');
 
-    dd('Starting ' . $relation->rid);
-
-
     $authorship = entity_metadata_wrapper('relation', $relation);
     $author = entity_metadata_wrapper('node', $target['entity_id']);
 
@@ -75,8 +72,6 @@ function vivodashboard_publications_update_7100(&$sandbox) {
 
 
     $authorship->save();
-    dd('Finished ' . $relation->rid);
-
   }
 
   $sandbox['#progress'] = $end;

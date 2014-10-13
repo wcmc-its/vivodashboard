@@ -78,7 +78,7 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->id = 'vivo_authors';
   $feeds_importer->config = array(
     'name' => 'VIVO Authors',
-    'description' => 'Used by vivo_authorships importer to import authors as nodes.',
+    'description' => 'Used by vivo_publications importer to import authors as nodes.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -87,10 +87,10 @@ function vivodashboard_import_feeds_importer_default() {
       'plugin_key' => 'LdImportParser',
       'config' => array(
         'use_caching' => 1,
-        'batch_limit' => '100',
+        'batch_limit' => '1000',
         'pre_fetch' => 1,
         'retries' => '3',
-        'timeout' => '60',
+        'timeout' => '30',
         'cache_time' => 1209600,
       ),
     ),
@@ -122,13 +122,13 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           4 => array(
-            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#primaryAffiliation',
-            'target' => 'field_primary_institution',
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#cwid',
+            'target' => 'field_id',
             'unique' => FALSE,
           ),
           5 => array(
-            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#cwid',
-            'target' => 'field_id',
+            'source' => 'http://weill.cornell.edu/vivo/ontology/wcmc#primaryAffiliation',
+            'target' => 'field_primary_institution',
             'unique' => FALSE,
           ),
           6 => array(
@@ -181,8 +181,8 @@ function vivodashboard_import_feeds_importer_default() {
   $feeds_importer->api_version = 1;
   $feeds_importer->id = 'vivo_authors_vcard';
   $feeds_importer->config = array(
-    'name' => 'VIVO Authors (Vcard)',
-    'description' => '',
+    'name' => 'VIVO Authors (VCard)',
+    'description' => 'Used by vivo_publications importer to import author vcards as nodes, for cases where a person entity is unavailable.',
     'fetcher' => array(
       'plugin_key' => 'LdImportFetcher',
       'config' => array(),
@@ -191,10 +191,10 @@ function vivodashboard_import_feeds_importer_default() {
       'plugin_key' => 'LdImportParser',
       'config' => array(
         'use_caching' => 1,
-        'batch_limit' => '100',
+        'batch_limit' => '1000',
         'pre_fetch' => 1,
         'retries' => '3',
-        'timeout' => '60',
+        'timeout' => '30',
         'cache_time' => 1209600,
       ),
     ),
@@ -227,12 +227,12 @@ function vivodashboard_import_feeds_importer_default() {
             'age' => '2419200',
           ),
           4 => array(
-            'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#givenName',
+            'source' => 'http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#givenName',
             'target' => 'field_first_name',
             'unique' => FALSE,
           ),
           5 => array(
-            'source' => 'http://purl.obolibrary.org/obo/ARG_2000028 [] http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#familyName',
+            'source' => 'http://www.w3.org/2006/vcard/ns#hasName [] http://www.w3.org/2006/vcard/ns#familyName',
             'target' => 'field_last_name',
             'unique' => FALSE,
           ),
@@ -268,7 +268,7 @@ function vivodashboard_import_feeds_importer_default() {
       'plugin_key' => 'LdImportParser',
       'config' => array(
         'use_caching' => 1,
-        'batch_limit' => '10',
+        'batch_limit' => '1000',
         'pre_fetch' => 1,
         'retries' => '3',
         'timeout' => '30',
@@ -288,33 +288,26 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => 1,
           ),
           1 => array(
+            'source' => 'URI',
+            'target' => 'guid',
+            'unique' => FALSE,
+          ),
+          2 => array(
             'source' => 'http://vivoweb.org/ontology/core#rank',
             'target' => 'field_author_rank',
             'unique' => FALSE,
           ),
-          2 => array(
-            'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
-            'target' => 'import:relation:authors',
-            'importer' => 'vivo_authors_vcard',
-            'age' => 'last',
-          ),
           3 => array(
-            'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
-            'target' => 'import:relation:authors',
-            'importer' => 'vivo_authors',
-            'age' => 'last',
-          ),
-          4 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://purl.org/ontology/bibo/Article] URI',
             'target' => 'authorship:endpoint:0',
             'unique' => FALSE,
           ),
-          5 => array(
+          4 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
             'target' => 'authorship:endpoint:1',
             'unique' => FALSE,
           ),
-          6 => array(
+          5 => array(
             'source' => 'http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
             'target' => 'authorship:endpoint:1',
             'unique' => FALSE,
@@ -322,7 +315,7 @@ function vivodashboard_import_feeds_importer_default() {
         ),
         'update_existing' => '1',
         'input_format' => 'plain_text',
-        'skip_hash_check' => 1,
+        'skip_hash_check' => 0,
         'bundle' => 'authorship',
         'update_non_existent' => 'skip',
       ),
@@ -604,7 +597,11 @@ function vivodashboard_import_feeds_importer_default() {
     'description' => 'Imports publications and their related individuals from VIVO via linked data requests.',
     'fetcher' => array(
       'plugin_key' => 'LdImportVivoClassFetcher',
-      'config' => array(),
+      'config' => array(
+        'use_caching' => 1,
+        'cache_time' => 604800,
+        'timeout' => 60,
+      ),
     ),
     'parser' => array(
       'plugin_key' => 'LdImportParser',
@@ -613,7 +610,7 @@ function vivodashboard_import_feeds_importer_default() {
         'batch_limit' => '5',
         'pre_fetch' => 1,
         'retries' => '3',
-        'timeout' => '60',
+        'timeout' => '30',
         'cache_time' => 1209600,
       ),
     ),
@@ -695,29 +692,41 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
           14 => array(
+            'source' => 'http://purl.org/spar/c4o/hasGlobalCitationFrequency [] http://www.w3.org/2000/01/rdf-schema#label',
+            'target' => 'field_citations',
+            'unique' => FALSE,
+          ),
+          15 => array(
             'source' => 'http://vivoweb.org/ontology/core#hasPublicationVenue',
             'target' => 'import:node:field_journal',
             'importer' => 'vivo_journals',
             'age' => '2419200',
           ),
-          15 => array(
+          16 => array(
             'source' => 'http://www.w3.org/1999/02/22-rdf-syntax-ns#type',
             'target' => 'import:node:field_rdf_type',
             'importer' => 'vivo_types',
             'age' => '2419200',
           ),
-          16 => array(
+          17 => array(
             'source' => 'http://vivoweb.org/ontology/core#FundingOrganization',
             'target' => 'import:node:field_funding',
             'importer' => 'vivo_funding_organizations',
             'age' => '2419200',
           ),
-          17 => array(
-            'source' => 'http://purl.org/spar/c4o/hasGlobalCitationFrequency [] http://www.w3.org/2000/01/rdf-schema#label',
-            'target' => 'field_citations',
-            'unique' => FALSE,
-          ),
           18 => array(
+            'source' => 'http://vivoweb.org/ontology/core#relatedBy [http://vivoweb.org/ontology/core#Authorship] http://vivoweb.org/ontology/core#relates [http://xmlns.com/foaf/0.1/Person] URI',
+            'target' => 'import:node:authors',
+            'importer' => 'vivo_authors',
+            'age' => 'last',
+          ),
+          19 => array(
+            'source' => 'http://vivoweb.org/ontology/core#relatedBy [http://vivoweb.org/ontology/core#Authorship] http://vivoweb.org/ontology/core#relates [http://www.w3.org/2006/vcard/ns#Kind] URI',
+            'target' => 'import:node:authors',
+            'importer' => 'vivo_authors_vcard',
+            'age' => 'last',
+          ),
+          20 => array(
             'source' => 'http://vivoweb.org/ontology/core#relatedBy [http://vivoweb.org/ontology/core#Authorship] URI',
             'target' => 'publication_authorships',
             'unique' => FALSE,

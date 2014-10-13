@@ -37,10 +37,17 @@ function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_t
       'name' => t('Authorships'),
       'callback' => 'vivodashboard_import_map_verbatim',
     );
+    $targets["import:node:authors"] = array(
+      'name' => t("Import: Authors"),
+      'callback' => 'vivodashboard_import_mapping_callback',
+      'summary_callback' => 'vivodashboard_import_mapping_summary_callback',
+      'form_callback' => 'vivodashboard_import_mapping_form_callback',
+    );
   }
 
-  // Special mapper to import authors while importing authorships.
+  // Authorship mappers.
   if ($entity_type == 'relation' && $bundle_name == 'authorship') {
+    // Special mapper to import authors while importing authorships.
     $targets["import:relation:authors"] = array(
       'name' => t("Import: Authors"),
       'callback' => 'vivodashboard_import_mapping_callback',
@@ -63,28 +70,31 @@ function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_t
  *
  * Populates Relation endpoints.
  *
- * This is used because the built-in endpoint mapping isn't so flexible.
+ * This is used because the built-in endpoint mapping isn't flexible enough.
  *
  * @see https://www.drupal.org/node/2354019
  */
 function vivodashboard_import_authorship_endpoint_callback($source, $relation, $target, $values) {
-  if (empty($values)) {
-    return;
-  }
-
   list(,,$endpoint) = explode(':', $target);
   $guids = is_array($values) ? $values : array($values);
 
-  $matches = db_select('feeds_item', 'f')
-    ->condition('guid', $guids, 'IN')
-    ->condition('entity_type', 'node')
-    ->fields('f', array('guid', 'entity_id', 'entity_type'))
-    ->execute()
-    ->fetchAllAssoc('guid');
+  foreach ($guids as $guid) {
 
-  if ($matches) {
-    $match = reset($matches);
-    $relation->endpoints[LANGUAGE_NONE][$endpoint] = array('entity_type' => $match->entity_type, 'entity_id' => $match->entity_id);
+    $guid = trim($guid);
+    if (empty($guid) || !valid_url($guid, TRUE)) {
+      continue;
+    }
+
+    $match = db_select('feeds_item', 'f')
+      ->condition('guid', $guid)
+      ->fields('f', array('guid', 'entity_id', 'entity_type'))
+      ->execute()
+      ->fetchObject();
+
+    if ($match) {
+      $relation->endpoints[LANGUAGE_NONE][$endpoint] = array('entity_type' => $match->entity_type, 'entity_id' => $match->entity_id);
+      return $relation;
+    }
   }
 }
 
@@ -96,7 +106,9 @@ function vivodashboard_import_authorship_endpoint_callback($source, $relation, $
  * @see vivodashboard_import_feeds_after_save().
  */
 function vivodashboard_import_map_verbatim($source, $node, $target, $values, $config = array()) {
-  $node->{$target} = !is_array($values) ? array($values) : $values;
+  $uri_list = !is_array($values) ? array($values) : $values;
+  $uri_list = array_filter(array_map('trim', $uri_list));
+  $node->{$target} = $uri_list;
 }
 
 /**
@@ -190,9 +202,14 @@ function vivodashboard_import_run_importer($uri_list, $importer_id, $suppress_me
     return;
   }
 
-  $fetcher_result = new LdImportFetcherResult($uri_list);
-  $parser_result = $source->importer->parser->parse($source, $fetcher_result);
-  $source->importer->processor->process($source, $parser_result);
+  try {
+    $fetcher_result = new LdImportFetcherResult($uri_list);
+    $parser_result = $source->importer->parser->parse($source, $fetcher_result);
+    $source->importer->processor->process($source, $parser_result);
+  }
+  catch (Exception $e) {
+    watchdog('vivodashboard_import', t('Error while running @id importer: @error', array('@id' => $importer_id, '@error' => $e->getMessage())));
+  }
 
   // Clear any messages set by Feeds.
   if ($suppress_messages) {
