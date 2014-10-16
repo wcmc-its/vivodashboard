@@ -301,8 +301,8 @@ function vivodashboard_feeds_presave($source, $entity, $item) {
     $wrapper = entity_metadata_wrapper('relation', $entity);
 
     if (!$wrapper->field_author_label->value()) {
-      list($source, $target) = field_get_items('relation', $entity, 'endpoints');
-      if ($author = node_load($target['entity_id'])) {
+      $values = field_get_items('relation', $entity, 'endpoints');
+      if (!empty($values[1]) && ($author = node_load($values[1]['entity_id']))) {
         $wrapper->field_author_label->set($author->title);
       }
     }
