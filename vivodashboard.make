@@ -1,38 +1,37 @@
 core = 7.x
 api = 2
 
+;-------------------------------------------------------------------------------
 ; Contrib modules
+;-------------------------------------------------------------------------------
 
 projects[admin_menu][version] = "3.0-rc4"
-projects[ctools][version] = "1.3"
+projects[ctools][version] = "1.4"
 projects[charts_graphs][version] = "2.0"
 projects[charts_graphs_flot][version] = "1.0"
-projects[context][version] = "3.1"
-projects[facetapi][version] = "1.3"
-projects[date][version] = "2.7"
-projects[devel][version] = "1.3"
+projects[context][version] = "3.3"
+projects[date][version] = "2.8"
+projects[devel][version] = "1.5"
 projects[diff][version] = "3.2"
 projects[disable_messages][version] = "1.1"
+projects[entity][version] = "1.5"
 projects[entitycache][version] = "1.2"
 projects[elysia_cron][version] = "2.1"
+projects[facetapi][version] = "1.5"
 projects[facetapi_bonus][version] = "1.1"
 projects[facetapi_multiselect][version] = "1.0-beta1"
-projects[features][version] = "2.0"
-projects[jquery_update][version] = "2.3"
+projects[features][version] = "2.2"
+projects[jquery_update][version] = "2.4"
 projects[libraries][version] = "2.1"
-projects[link][version] = "1.1"
-projects[search_api_solr][version] = "1.2"
+projects[link][version] = "1.2"
+projects[search_api][version] = "1.13"
+projects[search_api_db][version] = "1.4"
+projects[search_api_solr][version] = "1.6"
 projects[strongarm][version] = "2.0"
-projects[uuid][version] = "1.0-alpha5"
-projects[views][version] = "3.7"
+projects[uuid][version] = "1.0-alpha6"
+projects[views][version] = "3.8"
 projects[views_bulk_operations][version] = "3.2"
 projects[views_data_export][version] = "3.0-beta7"
-
-projects[entity][type] = "module"
-projects[entity][download][type] = "git"
-projects[entity][download][url] = "http://git.drupal.org/project/entity.git"
-projects[entity][download][branch] = "7.x-1.x"
-projects[entity][download][revision] = "d9baed7a573f00c959a376305a1d19d6e337ad09"
 
 projects[facetapi_graphs][type] = "module"
 projects[facetapi_graphs][download][type] = "git"
@@ -64,18 +63,6 @@ projects[relation][download][url] = "http://git.drupal.org/project/relation.git"
 projects[relation][download][branch] = "7.x-1.x"
 projects[relation][download][revision] = "2ca9fe24c12c24c6f9fc7dab631ae5a24999b84c"
 
-projects[search_api][type] = "module"
-projects[search_api][download][type] = "git"
-projects[search_api][download][url] = "http://git.drupal.org/project/search_api.git"
-projects[search_api][download][branch] = "7.x-1.x"
-projects[search_api][download][revision] = "fcb64742e9fd38e7fe0729c7835acbf0c4c6312c"
-
-projects[search_api_db][type] = "module"
-projects[search_api_db][download][type] = "git"
-projects[search_api_db][download][url] = "http://git.drupal.org/project/search_api_db.git"
-projects[search_api_db][download][branch] = "7.x-1.x"
-projects[search_api_db][download][revision] = "f5ea533e363260114a7e6c4d4d59c7d813f03e39"
-
 projects[search_api_ranges][type] = "module"
 projects[search_api_ranges][download][type] = "git"
 projects[search_api_ranges][download][url] = "http://git.drupal.org/project/search_api_ranges.git"
@@ -94,19 +81,22 @@ projects[ldimport_vivo][download][url] = "https://github.com/milesw/ldimport_viv
 projects[ldimport_vivo][download][branch] = "graphite"
 projects[ldimport_vivo][download][revision] = "5ee8582a42a8e59e726a67d2eeddd6fa2e6748e1"
 
+;-------------------------------------------------------------------------------
 ; Patches
+;-------------------------------------------------------------------------------
 
 projects[feeds][patch][955236] = "https://www.drupal.org/files/issues/feeds-error-handler-955236-14.patch"
 projects[facetapi_multiselect][patch][180634] = "https://drupal.org/files/issues/1806344.13.count_autosubmit_removeSelected_0.patch"
 projects[relation][patch][2354019] = "https://www.drupal.org/files/issues/relation-2354019-1-custom-feeds-mappers.patch"
 projects[relation][patch][2349385] = "https://www.drupal.org/files/issues/chasing_feeds_head-2349385-1.patch"
-projects[search_api_db][patch][1390586] = "https://drupal.org/files/issues/search_api_db_or_logic-38.patch"
 projects[search_api_ranges][patch][2217717] = "https://drupal.org/files/issues/search_api_ranges-2217717-1-cancel-autosubmit.patch"
 projects[search_api_ranges][patch][2051163] = "https://drupal.org/files/issues/search_api_ranges-2051163-9-decimal-support.patch"
 projects[search_api_ranges][patch][2130349] = "https://drupal.org/files/issues/search_api_ranges-error_locale_module_disabled-2130349-4.patch"
 projects[views_data_export][patch][1258390] = "https://drupal.org/files/views_data_export-solr_export-1258390-13.patch"
 
+;-------------------------------------------------------------------------------
 ; Libraries
+;-------------------------------------------------------------------------------
 
 libraries[ARC2][download][type] = "git"
 libraries[ARC2][download][url] = "https://github.com/semsol/arc2.git"
