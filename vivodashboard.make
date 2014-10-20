@@ -28,6 +28,7 @@ projects[search_api][version] = "1.13"
 projects[search_api_db][version] = "1.4"
 projects[search_api_solr][version] = "1.6"
 projects[strongarm][version] = "2.0"
+projects[ultimate_cron][version] = "2.0-beta7"
 projects[uuid][version] = "1.0-alpha6"
 projects[views][version] = "3.8"
 projects[views_bulk_operations][version] = "3.2"
@@ -85,7 +86,7 @@ projects[ldimport_vivo][download][revision] = "5ee8582a42a8e59e726a67d2eeddd6fa2
 ; Patches
 ;-------------------------------------------------------------------------------
 
-projects[feeds][patch][955236] = "https://www.drupal.org/files/issues/feeds-error-handler-955236-14.patch"
+; projects[feeds][patch][955236] = "https://www.drupal.org/files/issues/feeds-error-handler-955236-14.patch"
 projects[facetapi_multiselect][patch][180634] = "https://drupal.org/files/issues/1806344.13.count_autosubmit_removeSelected_0.patch"
 projects[relation][patch][2354019] = "https://www.drupal.org/files/issues/relation-2354019-1-custom-feeds-mappers.patch"
 projects[relation][patch][2349385] = "https://www.drupal.org/files/issues/chasing_feeds_head-2349385-1.patch"

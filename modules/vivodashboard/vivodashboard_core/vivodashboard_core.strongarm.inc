@@ -126,7 +126,7 @@ function vivodashboard_core_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'date_default_timezone';
-  $strongarm->value = 'Asia/Bangkok';
+  $strongarm->value = 'America/New_York';
   $export['date_default_timezone'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -491,7 +491,7 @@ function vivodashboard_core_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'site_name';
-  $strongarm->value = 'VIVO Dashboard';
+  $strongarm->value = 'Cornell VIVO Dashboard';
   $export['site_name'] = $strongarm;
 
   $strongarm = new stdClass();
