@@ -51,6 +51,12 @@ By storing imported data as Drupal content it becomes possible to leverage the t
 
 The main interface included with the application is highly customizable. These modules allow for great flexibility, and administrators can adjust the interface to suit their institution's needs.
 
+VIVO version compatibility
+--------------------------
+
+VIVO Dashboard has been updated to work with the new VIVO-ISF ontology structure introduced in VIVO 1.6. The import system has been upgraded with better caching and more configurability. The Ultimate Cron module has been added as a more reliable replacement to Elysia Cron. 
+
+To install a version of VIVO Dashboard compatible with VIVO 1.5 and below, simply use the distro-1.5.make file when building the codebase, as described the "Installation" section. Note that, after building the codebase, the README for that particular version of VIVO Dashboard can be found in DRUPAL_ROOT/profiles/vivodashboard.
 
 Installation
 ------------
@@ -61,11 +67,15 @@ VIVO Dashboard is made available as a Drupal install profile and does not actual
 
 Install Drush by following the instructions at: https://github.com/drush-ops/drush
 
-Then run:
+For VIVO 1.6+ run:
 
-    drush make https://raw.githubusercontent.com/milesw/vivodashboard/master/distro.make
+    drush make https://raw.githubusercontent.com/milesw/vivodashboard/master/distro.make vivodashboard
+    
+For VIVO 1.5 and below run:
 
-If no errors were reported, you should should have a complete VIVO Dashboard codebase inside the "vivo-dashboard" directory.
+    drush make https://raw.githubusercontent.com/milesw/vivodashboard/master/distro-1.5.make vivodashboard
+
+If no errors were reported, you should should have a complete VIVO Dashboard codebase inside the "vivodashboard" directory.
 
 ### Drupal hosting
 
@@ -141,9 +151,9 @@ Cron runs are used to keep Drupal working. The two main jobs that VIVO Dashboard
 1. Importing data from VIVO
 2. Indexing imported content for search 
 
-VIVO Dashboard comes with a module called Elysia Cron. This module acts as a manager responsible for delegating work. Elysia Cron knows how frequently jobs should be performed and will trigger them accordingly. It also collects statistics on job execution and can globally disable jobs.
+VIVO Dashboard comes with a module called Ultimate Cron. This module acts as a manager responsible for delegating work. Ultimate Cron knows how frequently jobs should be performed and will trigger them accordingly. 
 
-Elysia Cron can be configured at: Configuration -> System -> Cron Settings (/admin/config/system/cron/settings)
+Ultimate Cron can be configured at: Configuration -> System -> Cron Settings (/admin/config/system/cron)
 
 
 Customization
