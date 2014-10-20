@@ -1181,11 +1181,11 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
       'single_year' => '0',
       'reverse_dependency' => FALSE,
     ),
-    'facet_mincount' => '0',
+    'facet_mincount' => '1',
     'facet_missing' => '0',
     'flatten' => 0,
     'query_type' => 'term',
-    'default_true' => '1',
+    'default_true' => TRUE,
     'facet_search_ids' => array(),
     'exclude' => 0,
   );
