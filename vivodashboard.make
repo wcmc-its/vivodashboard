@@ -74,7 +74,7 @@ projects[ldimport][type] = "module"
 projects[ldimport][download][type] = "git"
 projects[ldimport][download][url] = "https://github.com/milesw/ldimport.git"
 projects[ldimport][download][branch] = "graphite"
-projects[ldimport][download][revision] = "ca72efaa59f6b4201861b2ac365ee515e1a2dbd0"
+projects[ldimport][download][revision] = "4d6cb76c8b30e04004313dcbde37ca4df8329d85"
 
 projects[ldimport_vivo][type] = "module"
 projects[ldimport_vivo][download][type] = "git"
