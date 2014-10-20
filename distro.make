@@ -1,3 +1,5 @@
+; This will build a VIVO Dashboard codebase compatible with VIVO 1.6 and above.
+
 core = 7.x
 api = 2
 
