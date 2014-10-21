@@ -221,6 +221,10 @@ Performance
 
 Drupal's great flexibility often comes at the expense of performance. As the amount of data increases, VIVO Dashboard will become slower. There are some things you can do to give Drupal a boost.
 
+### Built-in caching (enabled by default)
+
+The Graphite library is now used for all RDF handling. Graphite will optionally cache all linked data responses to the filesystem. This saves a tremendous number of HTTP requests when importing VIVO data, so this caching is enabled by default. The cache location is inside Drupal's configured temporary directory, in a "graphite-HASH" directory. Be aware this directory can grow quite large. 
+
 ### Entity Cache
 
 VIVO Dashboard comes with a module called Entity Cache that is intended to reduce the load on the database. This module is disabled by default only because it has not had enough testing. Enabling it is perfectly safe and should lead to noticeable performance gains. However, it should be suspect if pieces of data start disappearing.
