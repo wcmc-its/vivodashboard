@@ -24,6 +24,9 @@ function vivodashboard_import_menu() {
   return $items;
 }
 
+/**
+ * Menu access callback.
+ */
 function vivodashboard_import_single_access($node) {
   if (empty($node->log) || !strpos($node->log, 'FeedsNodeProcessor')) {
     return FALSE;
@@ -32,7 +35,9 @@ function vivodashboard_import_single_access($node) {
 }
 
 /**
- * Implements hook_menu_alter().
+ * Form constructor.
+ *
+ * Allows single items that were imported via Feeds to be reimported.
  */
 function vivodashboard_import_single_form($form, $form_state, $node) {
   $feeds_item = db_select('feeds_item')
@@ -65,6 +70,9 @@ function vivodashboard_import_single_form($form, $form_state, $node) {
   return $form;
 }
 
+/**
+ * Form submit handler.
+ */
 function vivodashboard_import_single_form_submit($form, &$form_state) {
   $item = $form['feeds_item']['#value'];
   module_load_include('inc', 'vivodashboard_import', 'vivodashboard_import.feeds');
@@ -104,7 +112,7 @@ function vivodashboard_import_status_block() {
   $render = array();
 
   $source = feeds_source('vivo_publications');
-  $date = ($source->imported) ? date('F j, Y', $source->imported) : 'still incomplete';
+  $date = ($source->imported) ? date('F j, Y', $source->imported) : 'Still incomplete';
   $progress = ($source->progressImporting() < FEEDS_BATCH_COMPLETE) ? round($source->progressImporting() * 100) : NULL;
 
   $render['date'] = array(

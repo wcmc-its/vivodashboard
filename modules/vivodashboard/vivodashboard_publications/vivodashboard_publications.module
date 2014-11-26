@@ -164,6 +164,21 @@ function vivodashboard_publications_facetapi_dependencies() {
   );
 }
 
+
+/**
+ * Implements hook_facetapi_filters().
+ */
+function vivodashboard_publications_facetapi_filters() {
+  return array(
+    'force_date_range' => array(
+      'handler' => array(
+        'label' => t('Force a default date range'),
+        'class' => 'VivodashboardPublicationsForceDateRange',
+      ),
+    ),
+  );
+}
+
 /**
  * Implements hook_taxonomy_term_presave().
  */

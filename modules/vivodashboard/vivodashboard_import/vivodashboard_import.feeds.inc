@@ -1,4 +1,8 @@
 <?php
+/**
+ * @file
+ * Feeds integration for the vivodashboard_import module.
+ */
 
 /**
  * Implements hook_feeds_processor_targets_alter().
@@ -9,6 +13,9 @@
  * one importer to the next.
  */
 function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_type, $bundle_name) {
+
+  // Define importers for reference fields.
+  field_info_instances($entity_type, $bundle_name);
   foreach (field_info_instances($entity_type, $bundle_name) as $field_name => $field) {
     $info = field_info_field($field_name);
 
@@ -23,12 +30,85 @@ function vivodashboard_import_feeds_processor_targets_alter(&$targets, $entity_t
     }
   }
 
-  if ($entity_type == 'node' && $bundle_name == 'author') {
-    $targets['primary_department'] = array(
-      'name' => t('Custom: Primary Department'),
-      'callback' => 'vivodashboard_import_mapping_callback_primary_department',
+  // Special mapper to attach authorship URIs to publication nodes.
+  // These get handled later in hook_feeds_after_save().
+  if ($entity_type == 'node' && $bundle_name == 'publication') {
+    $targets['publication_authorships'] = array(
+      'name' => t('Authorships'),
+      'callback' => 'vivodashboard_import_map_verbatim',
+    );
+    $targets["import:node:authors"] = array(
+      'name' => t("Import: Authors"),
+      'callback' => 'vivodashboard_import_mapping_callback',
+      'summary_callback' => 'vivodashboard_import_mapping_summary_callback',
+      'form_callback' => 'vivodashboard_import_mapping_form_callback',
     );
   }
+
+  // Authorship mappers.
+  if ($entity_type == 'relation' && $bundle_name == 'authorship') {
+    // Special mapper to import authors while importing authorships.
+    $targets["import:relation:authors"] = array(
+      'name' => t("Import: Authors"),
+      'callback' => 'vivodashboard_import_mapping_callback',
+      'summary_callback' => 'vivodashboard_import_mapping_summary_callback',
+      'form_callback' => 'vivodashboard_import_mapping_form_callback',
+    );
+    $targets["authorship:endpoint:0"] = array(
+      'name' => t("Authorship: Publication"),
+      'callback' => 'vivodashboard_import_authorship_endpoint_callback',
+    );
+    $targets["authorship:endpoint:1"] = array(
+      'name' => t("Authorship: Author"),
+      'callback' => 'vivodashboard_import_authorship_endpoint_callback',
+    );
+  }
+}
+
+/**
+ * Feeds mapping callback.
+ *
+ * Populates Relation endpoints.
+ *
+ * This is used because the built-in endpoint mapping isn't flexible enough.
+ *
+ * @see https://www.drupal.org/node/2354019
+ */
+function vivodashboard_import_authorship_endpoint_callback($source, $relation, $target, $values) {
+  list(,,$endpoint) = explode(':', $target);
+  $guids = is_array($values) ? $values : array($values);
+
+  foreach ($guids as $guid) {
+
+    $guid = trim($guid);
+    if (empty($guid) || !valid_url($guid, TRUE)) {
+      continue;
+    }
+
+    $match = db_select('feeds_item', 'f')
+      ->condition('guid', $guid)
+      ->fields('f', array('guid', 'entity_id', 'entity_type'))
+      ->execute()
+      ->fetchObject();
+
+    if ($match) {
+      $relation->endpoints[LANGUAGE_NONE][$endpoint] = array('entity_type' => $match->entity_type, 'entity_id' => $match->entity_id);
+      return $relation;
+    }
+  }
+}
+
+/**
+ * Feeds mapping callback.
+ *
+ * Simply attaches values to the entity so they can be used later.
+ *
+ * @see vivodashboard_import_feeds_after_save().
+ */
+function vivodashboard_import_map_verbatim($source, $node, $target, $values, $config = array()) {
+  $uri_list = !is_array($values) ? array($values) : $values;
+  $uri_list = array_filter(array_map('trim', $uri_list));
+  $node->{$target} = $uri_list;
 }
 
 /**
@@ -60,21 +140,26 @@ function vivodashboard_import_mapping_callback($original_source, $entity, $targe
     vivodashboard_import_run_importer($uris_needing_update, $importer_id);
   }
 
-  // Populate field values.
+  // Populate field values on the target entity.
+  // NOTE: If $field_name is not an actual field this just gets skipped,
+  // which is what we want in cases where we are just creating entities.
   list(, $entity_type, $field_name) = explode(':', $target);
-  $field_info = field_info_field($field_name);
-  $is_multivalue_field = ($field_info['cardinality'] == 1) ? FALSE : TRUE;
-  $wrapper = entity_metadata_wrapper($entity_type, $entity);
 
-  switch ($field_info['type']) {
+  if ($field_info = field_info_field($field_name)) {
+    $is_multivalue_field = ($field_info['cardinality'] == 1) ? FALSE : TRUE;
+    $wrapper = entity_metadata_wrapper($entity_type, $entity);
 
-    case 'taxonomy_term_reference':
-      $tids = vivodashboard_import_get_items($uri_list, $importer_id, 'taxonomy_term');
-      if ($tids && isset($wrapper->$field_name)) {
-        $value = ($is_multivalue_field) ? $tids : reset($tids);
-        $wrapper->$field_name->set($value);
-      }
-      break;
+    // @todo - Handle entityreference fields?
+    switch ($field_info['type']) {
+
+      case 'taxonomy_term_reference':
+        $tids = vivodashboard_import_get_items($uri_list, $importer_id, 'taxonomy_term');
+        if ($tids && isset($wrapper->$field_name)) {
+          $value = ($is_multivalue_field) ? $tids : reset($tids);
+          $wrapper->$field_name->set($value);
+        }
+        break;
+    }
   }
 }
 
@@ -117,9 +202,14 @@ function vivodashboard_import_run_importer($uri_list, $importer_id, $suppress_me
     return;
   }
 
-  $fetcher_result = new LdImportFetcherResult($uri_list);
-  $parser_result = $source->importer->parser->parse($source, $fetcher_result);
-  $source->importer->processor->process($source, $parser_result);
+  try {
+    $fetcher_result = new LdImportFetcherResult($uri_list);
+    $parser_result = $source->importer->parser->parse($source, $fetcher_result);
+    $source->importer->processor->process($source, $parser_result);
+  }
+  catch (Exception $e) {
+    watchdog('vivodashboard_import', t('Error while running @id importer: @error', array('@id' => $importer_id, '@error' => $e->getMessage())));
+  }
 
   // Clear any messages set by Feeds.
   if ($suppress_messages) {
@@ -151,7 +241,7 @@ function vivodashboard_import_mapping_summary_callback($config, $target, $form, 
   $output = '';
 
   if (!empty($config['importer'])) {
-    $output = t('Using the <strong>@name</strong> importer to manage terms.', array('@name' => $config['importer']));
+    $output = t('Using the <strong>@name</strong> importer to manage items.', array('@name' => $config['importer']));
   }
   else {
     $output = 'No importer selected.';
@@ -166,7 +256,7 @@ function vivodashboard_import_mapping_summary_callback($config, $target, $form, 
 function vivodashboard_import_mapping_form_callback($config, $target, $form, $form_state) {
   $importer_options = array();
   foreach (feeds_importer_load_all() as $id => $importer) {
-    if ($importer->parser instanceof LdimportParser && $importer->processor instanceof FeedsTermProcessor) {
+    if ($importer->parser instanceof LdimportParser) {
       $importer_options[$id] = $importer->config['name'];
     }
   }
@@ -174,7 +264,7 @@ function vivodashboard_import_mapping_form_callback($config, $target, $form, $fo
     'importer' => array(
       '#type' => 'select',
       '#title' => 'Importer',
-      '#description' => 'Select which importer to use in creating/managing terms.',
+      '#description' => 'Select which importer to use in creating/managing items.',
       '#options' => $importer_options,
       '#default_value' => !empty($config['importer']) ? $config['importer'] : NULL,
     ),
@@ -189,185 +279,131 @@ function vivodashboard_import_mapping_form_callback($config, $target, $form, $fo
 }
 
 /**
- * Implements hook_feeds_after_save().
- *
- * Loads authorship data for publications to create authors and add relations
- * between them. This needs to be handled in this hook instead of a mapper
- * because the NID is not yet available during mapping and is needed to form
- * the relation. We also need to preserve certain properties from the
- * authorship, such as rank and label.
- *
- * @todo Move all this to a Relation importer?
+ * Implements hook_feeds_presave().
  */
-function vivodashboard_import_feeds_after_save($source, $node, $item) {
-  if ($source->id != 'vivo_publications') {
-    return;
-  }
+function vivodashboard_feeds_presave($source, $entity, $item) {
+  // Ensure authors always have titles.
+  if (($source->id == 'vivo_authors' || $source->id == 'vivo_authors_vcard') && empty($entity->title)) {
+    $wrapper = entity_metadata_wrapper('node', $entity);
 
-  // Clear any existing authorships for this publication.
-  $existing = relation_query('node', $node->nid, 0)->entityCondition('bundle', 'authorship')->execute();
-  if ($existing) {
-    relation_delete_multiple(array_keys($existing));
-  }
-
-  $authorships = array();
-
-  // Fetch authorships and gather associated authors for this publication.
-  foreach ($item->values('http://vivoweb.org/ontology/core#informationResourceInAuthorship') as $k => $authorship_data) {
-
-    $authorship_uri = $authorship_data['value'];
-    $authorship = new LdImportItem($authorship_uri);
-    $author = ($data = $authorship->values('http://vivoweb.org/ontology/core#linkedAuthor')) ? $data[0] : array();
-    $rank = ($data = $authorship->values('http://vivoweb.org/ontology/core#authorRank')) ? $data[0] : array();
-    $label = ($data = $authorship->values('http://www.w3.org/2000/01/rdf-schema#label')) ? $data[0] : array();
-
-    if (isset($author['value'])) {
-      $author_uri = $author['value'];
-      $authorships[$author_uri] = array(
-        'uri' => $author_uri,
-        'rank' => isset($rank['value']) ? $rank['value'] : NULL,
-        'label' => isset($label['value']) ? str_replace('Authorship for ', '', $label['value']) : NULL,
-        'authorship' => $authorship_uri,
-        'index' => $k,
-      );
-    }
-  }
-
-  if (!$authorships) {
-    return;
-  }
-
-  uasort($authorships, 'vivodashboard_import_sort_authorships');
-
-  // Determine first/last authors.
-  $first = $last = '';
-  if (count($authorships) > 1) {
-    reset($authorships);
-    $first = key($authorships);
-    end($authorships);
-    $last = key($authorships);
-  }
-
-  $author_uris = array_keys($authorships);
-
-  // Only import new authors or those created before this importer last ran.
-  $uris_to_import = vivodashboard_import_uris_needing_update($author_uris, 'vivo_authors', $source->imported);
-  if ($uris_to_import) {
-    vivodashboard_import_run_importer($uris_to_import, 'vivo_authors');
-  }
-
-  $authors_items = vivodashboard_import_get_items($author_uris, 'vivo_authors', 'node', TRUE);
-
-  // Create authorship relations for author nodes that were saved.
-  foreach ($authors_items as $uri => $nid) {
-    $endpoints = array();
-    $endpoints[] = array('entity_type' => 'node', 'entity_id' => $node->nid);
-    $endpoints[] = array('entity_type' => 'node', 'entity_id' => $nid);
-
-    $relation = relation_create('authorship', $endpoints);
-    $wrapper = entity_metadata_wrapper('relation', $relation);
-
-    if (is_numeric($authorships[$uri]['rank'])) {
-      $wrapper->field_author_rank->set((int) $authorships[$uri]['rank']);
-    }
-
-    if ($authorships[$uri]['label']) {
-      $wrapper->field_author_label->set($authorships[$uri]['label']);
+    $first_name = $wrapper->field_first_name->value();
+    $last_name = $wrapper->field_last_name->value();
+    if ($first_name && $last_name) {
+      $entity->title = "{$last_name}, {$first_name}";
     }
     else {
-      $author_node = node_load($nid);
-      $title = ($author_node) ? $author_node->title : 'Unknown author';
-      $wrapper->field_author_label->set($title);
+      $entity->title = 'Unknown';
     }
-
-    if ($uri == $first) {
-      $wrapper->field_author_position->set('first');
-    }
-    if ($uri == $last) {
-      $wrapper->field_author_position->set('last');
-    }
-
-    relation_save($relation);
   }
 
-  // Clear cache for the node since we just added relation data.
-  entity_get_controller('node')->resetCache(array($node->nid));
+  // Ensure authorships always default to the title of the author.
+  if ($source->id == 'vivo_authorships') {
+    $wrapper = entity_metadata_wrapper('relation', $entity);
+
+    if (!$wrapper->field_author_label->value()) {
+      $values = field_get_items('relation', $entity, 'endpoints');
+      if (!empty($values[1]) && ($author = node_load($values[1]['entity_id']))) {
+        $wrapper->field_author_label->set($author->title);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_feeds_after_save().
+ */
+function vivodashboard_import_feeds_after_save($source, $entity, $item) {
+
+  // Triggers the Authorship import after a publication gets saved. We need to
+  // do this here so we have an NID for the publication.
+  if ($source->id == 'vivo_publications' && !empty($entity->publication_authorships)) {
+
+    vivodashboard_import_run_importer($entity->publication_authorships, 'vivo_authorships');
+
+    // For the authorships that were imported, sort by rank and determine
+    // first/last author status.
+    if ($saved = relation_query('node', $entity->nid, 0)->entityCondition('bundle', 'authorship')->execute()) {
+
+      $authorships = relation_load_multiple(array_keys($saved));
+
+      uasort($authorships, 'vivodashboard_import_sort_authorships');
+
+      if (count($authorships) > 1) {
+        $first = reset($authorships);
+        $last = end($authorships);
+
+        $wrapper = entity_metadata_wrapper('relation', $first);
+        $wrapper->field_author_position->set('first');
+        $wrapper->save();
+
+        $wrapper = entity_metadata_wrapper('relation', $last);
+        $wrapper->field_author_position->set('last');
+        $wrapper->save();
+      }
+    }
+  }
+
+  // Try to get a mostSpecificType value for any items being saved that
+  // use field_rdf_type, and shift that to be the first field value.
+  if (!empty($entity->field_rdf_type) && $item instanceof Graphite_Resource) {
+
+    $most_specific_type = $item->get('http://vitro.mannlib.cornell.edu/ns/vitro/0.7#mostSpecificType');
+
+    if ($most_specific_type instanceof Graphite_Resource) {
+      $uri = $most_specific_type->toString();
+
+      // Look up the existing TID for this rdf type.
+      $tid = db_select('feeds_item')
+        ->fields('feeds_item', array('entity_id'))
+        ->condition('id', 'vivo_types')
+        ->condition('url', $uri)
+        ->execute()
+        ->fetchField();
+
+      $field_items = &$entity->field_rdf_type[LANGUAGE_NONE];
+
+      // Shift field values around.
+      foreach ($field_items as $delta => $field_item) {
+        if ($field_item['tid'] == $tid && $delta != 0) {
+          $first_value = $field_items[0];
+          $field_items[0] = $field_item;
+          $field_items[$delta] = $first_value;
+        }
+      }
+
+      // We don't know the $entity_type here...
+      if (!empty($entity->nid)) {
+        node_save($entity);
+      }
+      elseif (!empty($entity->tid)) {
+        taxonomy_term_save($entity);
+      }
+    }
+  }
 }
 
 /**
  * uasort() callback for sorting authorships by rank.
- *
- * The secondary sort is by array index, which should represent their order
- * from the RDF and is used as a fallback.
  */
 function vivodashboard_import_sort_authorships($a, $b) {
-  if (!$a['rank']) {
-    $a['rank'] = 9999;
+  $a_rank = entity_metadata_wrapper('relation', $a)->field_author_rank->value();
+  $b_rank = entity_metadata_wrapper('relation', $b)->field_author_rank->value();
+
+  if (!$a_rank && $a_rank !== 0) {
+    $a_rank = 9999;
   }
-  if (!$b['rank']) {
-    $b['rank'] = 9999;
+  if (!$b_rank && $b_rank !== 0) {
+    $b_rank = 9999;
   }
 
-  if ($a['rank'] < $b['rank']) {
+  if ($a_rank < $b_rank) {
     return -1;
   }
-  if ($a['rank'] > $b['rank']) {
-    return 1;
-  }
-  if ($a['index'] < $b['index']) {
-    return -1;
-  }
-  if ($a['index'] > $b['index']) {
+  if ($a_rank > $b_rank) {
     return 1;
   }
 
   return 0;
-}
-
-/**
- * Feeds mapping callback for an author's primary department.
- *
- * We're already handling departmental positions in another mapping. However,
- * we also want to map *primary* departmental positions. It's not possible to
- * filter items with the LDimport module at this point, so we need to do it
- * with this custom mapper.
- *
- * - VIVO authors relate to positions via http://vivoweb.org/ontology/core#personInPosition
- * - Positions relate to departments via http://vivoweb.org/ontology/core#positionInOrganization
- * - Positions may have the rdf:type http://vivoweb.org/ontology/core#PrimaryPosition
- */
-function vivodashboard_import_mapping_callback_primary_department($source, $node, $target, $values) {
-  $position_uris = is_array($values) ? $values : array($values);
-
-  $wrapper = entity_metadata_wrapper('node', $node);
-
-  foreach ($position_uris as $position_uri) {
-    $position = new LdImportItem($position_uri);
-    $is_primary_position = FALSE;
-
-    // We only care about positions typed as vivo:primaryPosition.
-    foreach ($position->values('http://www.w3.org/1999/02/22-rdf-syntax-ns#type') as $rdf_type) {
-      if (!empty($rdf_type['value']) && $rdf_type['value'] == 'http://vivoweb.org/ontology/core#PrimaryPosition') {
-        $is_primary_position = TRUE;
-      }
-    }
-
-    if (!$is_primary_position) {
-      continue;
-    }
-
-    // Get the department associated with the position. We're assuming that a
-    // department node has already been created by a previous mapping.
-    foreach ($position->values('http://vivoweb.org/ontology/core#positionInOrganization') as $department) {
-      if (!empty($department['value'])) {
-        $department_uris = array($department['value']);
-        $nids = vivodashboard_import_get_items($department_uris, 'vivo_departments', 'taxonomy_term');
-        if ($nid = reset($nids)) {
-          $wrapper->field_primary_department->set($nid);
-        }
-      }
-    }
-  }
 }
 
 /**

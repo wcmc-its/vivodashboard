@@ -78,6 +78,7 @@ function vivodashboard_publications_default_search_api_index() {
       },
       "processors" : {
         "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
+        "facetapi_autocomplete" : { "status" : 1, "weight" : "0", "settings" : [] },
         "search_api_html_filter" : {
           "status" : 0,
           "weight" : "10",
@@ -164,9 +165,10 @@ function vivodashboard_publications_default_search_api_index() {
         }
       },
       "processors" : {
-        "search_api_case_ignore" : { "status" : 1, "weight" : "0", "settings" : { "fields" : [] } },
+        "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
+        "facetapi_autocomplete" : { "status" : 1, "weight" : "0", "settings" : [] },
         "search_api_html_filter" : {
-          "status" : 1,
+          "status" : 0,
           "weight" : "10",
           "settings" : {
             "fields" : [],
@@ -176,12 +178,12 @@ function vivodashboard_publications_default_search_api_index() {
           }
         },
         "search_api_tokenizer" : {
-          "status" : 1,
+          "status" : 0,
           "weight" : "20",
           "settings" : { "fields" : [], "spaces" : "[^[:alnum:]]", "ignorable" : "[\\u0027]" }
         },
         "search_api_stopwords" : {
-          "status" : 1,
+          "status" : 0,
           "weight" : "30",
           "settings" : {
             "fields" : [],

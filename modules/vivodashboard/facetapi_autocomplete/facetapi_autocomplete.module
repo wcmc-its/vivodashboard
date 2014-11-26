@@ -44,14 +44,32 @@ function facetapi_autocomplete_load_results() {
 
   $searcher = reset($searchers);
   $adapter = facetapi_adapter_load($searcher);
-  $build = $adapter->buildRealm('block');
-
+  $adapter->buildRealm('block');
   $facet = facetapi_facet_load($facet_name, $searcher);
-  $build = $adapter->getFacet($facet)->getBuild();
 
-  $values = FacetapiAutocompleteWidget::getAutocompleteValues($keywords, $build);
+  // Compile values structured for Select2 plugin.
+  foreach ($adapter->getFacet($facet)->getBuild() as $item) {
+    $values[] = array(
+      'id' => $item['#indexed_value'],
+      'text' => $item['#markup'] . ' (' . $item['#count'] . ')',
+    );
+  }
 
   return drupal_json_output($values);
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ *
+ * Ensure that we alter Search API queries AFTER Facet API, so that facets have
+ * already been attached to the query.
+ */
+function facetapi_autocomplete_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'search_api_query_alter') {
+    $group = $implementations['facetapi_autocomplete'];
+    unset($implementations['facetapi_autocomplete']);
+    $implementations['facetapi_autocomplete'] = $group;
+  }
 }
 
 /**
@@ -78,7 +96,7 @@ function facetapi_autocomplete_search_api_query_alter($query) {
   // values for autocomplete facet since the values are not displayed.
   // Unfortunately Search API will hide the facet block if we actually remove
   // the query, so the best we can do is set a low limit.
-  if (!$autocomplete_facet && !empty($searcher) && $adapter = facetapi_adapter_load($searcher)) {
+  if (!$autocomplete_facet && !empty($searcher) && ($adapter = facetapi_adapter_load($searcher))) {
     foreach ($facets as $facet_name => $query_settings) {
       $facet_info = facetapi_facet_load($facet_name, $searcher);
       $realm_info = facetapi_realm_load('block');
@@ -172,4 +190,16 @@ function facetapi_autocomplete_facetapi_widgets() {
       ),
     ),
   );
+}
+
+/**
+ * Implements hook_search_api_processor_info().
+ */
+function facetapi_autocomplete_search_api_processor_info() {
+  $callbacks['facetapi_autocomplete'] = array(
+    'name' => t('Autocomplete processor'),
+    'description' => t('Postprocesses facet autocomplete query results to improve performance.'),
+    'class' => 'FacetapiAutocompleteSearchApiProcessor',
+  );
+  return $callbacks;
 }
