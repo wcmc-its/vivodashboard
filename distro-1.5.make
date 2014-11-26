@@ -15,6 +15,6 @@ projects[drupal][version] = 7.32
 
 projects[vivodashboard][type] = "profile"
 projects[vivodashboard][download][type] = "git"
-projects[vivodashboard][download][url] = "https://github.com/milesw/vivodashboard.git"
+projects[vivodashboard][download][url] = "https://github.com/paulalbert1/vivodashboard.git"
 projects[vivodashboard][download][branch] = "master"
 projects[vivodashboard][download][revision] = "bd4e92761c9f974ed5281fa6e4f2b46fb015dcc5"
