@@ -69,11 +69,11 @@ Install Drush by following the instructions at: https://github.com/drush-ops/dru
 
 For VIVO 1.6+ run:
 
-    drush make https://raw.githubusercontent.com/milesw/vivodashboard/master/distro.make vivodashboard
+    drush make https://raw.githubusercontent.com/paulalbert1/vivodashboard/master/distro.make vivodashboard
     
 For VIVO 1.5 and below run:
 
-    drush make https://raw.githubusercontent.com/milesw/vivodashboard/master/distro-1.5.make vivodashboard
+    drush make https://raw.githubusercontent.com/paulalbert1/vivodashboard/master/distro-1.5.make vivodashboard
 
 If no errors were reported, you should should have a complete VIVO Dashboard codebase inside the "vivodashboard" directory.
 
