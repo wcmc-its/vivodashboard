@@ -14,6 +14,7 @@ dependencies[] = ctools
 dependencies[] = current_search
 dependencies[] = date
 dependencies[] = date_api
+dependencies[] = date_facets
 dependencies[] = disable_messages
 dependencies[] = entity
 dependencies[] = entity_token
