@@ -11,6 +11,178 @@ function vivodashboard_import_views_default_views() {
   $export = array();
 
   $view = new view();
+  $view->name = 'import_log';
+  $view->description = '';
+  $view->tag = 'default';
+  $view->base_table = 'feeds_log';
+  $view->human_name = 'Import Log';
+  $view->core = 7;
+  $view->api_version = '3.0';
+  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+
+  /* Display: Master */
+  $handler = $view->new_display('default', 'Master', 'default');
+  $handler->display->display_options['title'] = 'Import log';
+  $handler->display->display_options['use_more_always'] = FALSE;
+  $handler->display->display_options['access']['type'] = 'perm';
+  $handler->display->display_options['access']['perm'] = 'import vivo_publications feeds';
+  $handler->display->display_options['cache']['type'] = 'none';
+  $handler->display->display_options['query']['type'] = 'views_query';
+  $handler->display->display_options['exposed_form']['type'] = 'basic';
+  $handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
+  $handler->display->display_options['pager']['type'] = 'full';
+  $handler->display->display_options['pager']['options']['items_per_page'] = '100';
+  $handler->display->display_options['pager']['options']['offset'] = '0';
+  $handler->display->display_options['pager']['options']['id'] = '0';
+  $handler->display->display_options['pager']['options']['quantity'] = '9';
+  $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
+  $handler->display->display_options['pager']['options']['expose']['items_per_page_options'] = '100, 500, 1000, 5000';
+  $handler->display->display_options['style_plugin'] = 'table';
+  $handler->display->display_options['style_options']['grouping'] = array(
+    0 => array(
+      'field' => 'request_time',
+      'rendered' => 0,
+      'rendered_strip' => 0,
+    ),
+  );
+  $handler->display->display_options['style_options']['columns'] = array(
+    'log_time_1' => 'log_time_1',
+    'importer_name' => 'importer_name',
+    'request_time' => 'request_time',
+    'message' => 'message',
+    'severity' => 'severity',
+  );
+  $handler->display->display_options['style_options']['default'] = '-1';
+  $handler->display->display_options['style_options']['info'] = array(
+    'log_time_1' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'importer_name' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'request_time' => array(
+      'sortable' => 0,
+      'default_sort_order' => 'asc',
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'message' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+    'severity' => array(
+      'align' => '',
+      'separator' => '',
+      'empty_column' => 0,
+    ),
+  );
+  $handler->display->display_options['style_options']['empty_table'] = TRUE;
+  /* Header: Global: Text area */
+  $handler->display->display_options['header']['area']['id'] = 'area';
+  $handler->display->display_options['header']['area']['table'] = 'views';
+  $handler->display->display_options['header']['area']['field'] = 'area';
+  $handler->display->display_options['header']['area']['content'] = '<p>Note: Log entries expire after two weeks. To locate a particular publication or author after they have been imported, use the <a href="/import/list">imported content list</a>.</p>';
+  $handler->display->display_options['header']['area']['format'] = 'filtered_html';
+  /* No results behavior: Global: Unfiltered text */
+  $handler->display->display_options['empty']['area_text_custom']['id'] = 'area_text_custom';
+  $handler->display->display_options['empty']['area_text_custom']['table'] = 'views';
+  $handler->display->display_options['empty']['area_text_custom']['field'] = 'area_text_custom';
+  $handler->display->display_options['empty']['area_text_custom']['empty'] = TRUE;
+  $handler->display->display_options['empty']['area_text_custom']['content'] = 'No results.';
+  /* Field: Feeds log: Log time */
+  $handler->display->display_options['fields']['log_time_1']['id'] = 'log_time_1';
+  $handler->display->display_options['fields']['log_time_1']['table'] = 'feeds_log';
+  $handler->display->display_options['fields']['log_time_1']['field'] = 'log_time';
+  $handler->display->display_options['fields']['log_time_1']['element_wrapper_type'] = 'div';
+  $handler->display->display_options['fields']['log_time_1']['date_format'] = 'custom';
+  $handler->display->display_options['fields']['log_time_1']['custom_date_format'] = 'g:i:s';
+  $handler->display->display_options['fields']['log_time_1']['second_date_format'] = 'long';
+  /* Field: Feeds log: Importer name */
+  $handler->display->display_options['fields']['importer_name']['id'] = 'importer_name';
+  $handler->display->display_options['fields']['importer_name']['table'] = 'feeds_log';
+  $handler->display->display_options['fields']['importer_name']['field'] = 'importer_name';
+  $handler->display->display_options['fields']['importer_name']['label'] = 'Importer';
+  $handler->display->display_options['fields']['importer_name']['link'] = '1';
+  /* Field: Feeds log: Request time */
+  $handler->display->display_options['fields']['request_time']['id'] = 'request_time';
+  $handler->display->display_options['fields']['request_time']['table'] = 'feeds_log';
+  $handler->display->display_options['fields']['request_time']['field'] = 'request_time';
+  $handler->display->display_options['fields']['request_time']['label'] = 'Import batch started';
+  $handler->display->display_options['fields']['request_time']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['request_time']['date_format'] = 'medium';
+  $handler->display->display_options['fields']['request_time']['second_date_format'] = 'long';
+  /* Field: Feeds log: Log message */
+  $handler->display->display_options['fields']['message']['id'] = 'message';
+  $handler->display->display_options['fields']['message']['table'] = 'feeds_log';
+  $handler->display->display_options['fields']['message']['field'] = 'message';
+  $handler->display->display_options['fields']['message']['label'] = 'Message';
+  /* Field: Feeds log: Severity */
+  $handler->display->display_options['fields']['severity']['id'] = 'severity';
+  $handler->display->display_options['fields']['severity']['table'] = 'feeds_log';
+  $handler->display->display_options['fields']['severity']['field'] = 'severity';
+  /* Sort criterion: Feeds log: Feeds log ID */
+  $handler->display->display_options['sorts']['flid']['id'] = 'flid';
+  $handler->display->display_options['sorts']['flid']['table'] = 'feeds_log';
+  $handler->display->display_options['sorts']['flid']['field'] = 'flid';
+  $handler->display->display_options['sorts']['flid']['order'] = 'DESC';
+  /* Sort criterion: Feeds log: Log time */
+  $handler->display->display_options['sorts']['log_time']['id'] = 'log_time';
+  $handler->display->display_options['sorts']['log_time']['table'] = 'feeds_log';
+  $handler->display->display_options['sorts']['log_time']['field'] = 'log_time';
+  $handler->display->display_options['sorts']['log_time']['order'] = 'DESC';
+  /* Filter criterion: Feeds log: Severity */
+  $handler->display->display_options['filters']['severity']['id'] = 'severity';
+  $handler->display->display_options['filters']['severity']['table'] = 'feeds_log';
+  $handler->display->display_options['filters']['severity']['field'] = 'severity';
+  $handler->display->display_options['filters']['severity']['group'] = 1;
+  $handler->display->display_options['filters']['severity']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['severity']['expose']['operator_id'] = 'severity_op';
+  $handler->display->display_options['filters']['severity']['expose']['label'] = 'Severity';
+  $handler->display->display_options['filters']['severity']['expose']['operator'] = 'severity_op';
+  $handler->display->display_options['filters']['severity']['expose']['identifier'] = 'severity';
+  $handler->display->display_options['filters']['severity']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+  );
+  /* Filter criterion: Global: Combine fields filter */
+  $handler->display->display_options['filters']['combine']['id'] = 'combine';
+  $handler->display->display_options['filters']['combine']['table'] = 'views';
+  $handler->display->display_options['filters']['combine']['field'] = 'combine';
+  $handler->display->display_options['filters']['combine']['operator'] = 'allwords';
+  $handler->display->display_options['filters']['combine']['group'] = 1;
+  $handler->display->display_options['filters']['combine']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['combine']['expose']['operator_id'] = 'combine_op';
+  $handler->display->display_options['filters']['combine']['expose']['label'] = 'Search';
+  $handler->display->display_options['filters']['combine']['expose']['operator'] = 'combine_op';
+  $handler->display->display_options['filters']['combine']['expose']['identifier'] = 'search';
+  $handler->display->display_options['filters']['combine']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+  );
+  $handler->display->display_options['filters']['combine']['fields'] = array(
+    'importer_name' => 'importer_name',
+    'message' => 'message',
+  );
+
+  /* Display: Page */
+  $handler = $view->new_display('page', 'Page', 'page');
+  $handler->display->display_options['path'] = 'import/log';
+  $handler->display->display_options['menu']['type'] = 'tab';
+  $handler->display->display_options['menu']['title'] = 'Log';
+  $handler->display->display_options['menu']['weight'] = '0';
+  $handler->display->display_options['menu']['context'] = 0;
+  $handler->display->display_options['menu']['context_only_inline'] = 0;
+  $export['import_log'] = $view;
+
+  $view = new view();
   $view->name = 'journal_rankings';
   $view->description = '';
   $view->tag = 'default';
