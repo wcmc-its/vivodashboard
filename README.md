@@ -269,6 +269,8 @@ Custom code can be found in:
 
 ### Capturing local changes
 
+As a general rule, don't touch the code inside DRUPAL_ROOT/profiles/vivodashboard. If you need to add or upgrade a contrib module, place it in sites/all.
+
 After overriding the VIVO Dashboard defaults, when customizing things for your institution, you may want to capture your changes in code for version control. Overwriting the VIVO Dashboard features directly would make future updates difficult. A more sustainable approach is to use the features_override module to produce a new feature that contains only your overrides.
 
 ### Search API publications and authorships
