@@ -271,7 +271,9 @@ Custom code can be found in:
 
 As a general rule, don't touch the code inside DRUPAL_ROOT/profiles/vivodashboard. If you need to add or upgrade a contrib module, place it in sites/all.
 
-After overriding the VIVO Dashboard defaults, when customizing things for your institution, you may want to capture your changes in code for version control. Overwriting the VIVO Dashboard features directly would make future updates difficult. A more sustainable approach is to use the features_override module to produce a new feature that contains only your overrides.
+After overriding the VIVO Dashboard defaults, when customizing things for your institution, you may want to capture your changes in code for version control. Overwriting the VIVO Dashboard features directly would make future updates difficult. A more sustainable approach extract new features modules and include them in sites/all/modules.
+
+Sometimes it may be necessary to duplicate the entire VIVO Dashboard feature to sites/all/modules in order to make your modifications. Unfortunately Drupal 7 doesn't offer a better option for managing configuration.
 
 ### Search API publications and authorships
 
