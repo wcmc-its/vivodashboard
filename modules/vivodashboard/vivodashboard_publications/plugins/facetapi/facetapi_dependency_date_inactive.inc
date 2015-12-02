@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Adds a dependency on another facet being active.
+ * Adds a dependency on another facet being inactive.
  */
-class VivodashboardPublicationsYearFacetDependency extends FacetapiDependency {
+class VivodashboardPublicationsDateInactive extends FacetapiDependency {
 
   /**
    * Executes the dependency check.

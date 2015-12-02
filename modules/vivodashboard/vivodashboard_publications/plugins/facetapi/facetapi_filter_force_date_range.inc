@@ -14,11 +14,16 @@ class VivodashboardPublicationsForceDateRange extends FacetapiFilter {
     $facet_info = facetapi_facet_load($this->settings->facet, $this->settings->searcher);
     $active = $adapter->getActiveItems($facet_info);
 
+    // Check to see if the 'publication_timestamp' facet is active. In that case
+    // we do not want to force a date range.
+    $date_filter_info = facetapi_facet_load('publication_timestamp', $this->settings->searcher);
+    $date_filter_active = $adapter->getActiveItems($date_filter_info);
+
     $format = $this->settings->settings['format'];
     $start = date('Y', strtotime($this->settings->settings['format']));
     $end = date('Y');
 
-    if (!$active && $start && $end) {
+    if (!$active && !$date_filter_active && $start && $end) {
       $path = $adapter->getFacetPath($facet_info, array(), FALSE);
       $query = $adapter->getQueryString($facet_info, array("[$start TO $end]"), FALSE);
       drupal_goto($path, array('query' => $query));

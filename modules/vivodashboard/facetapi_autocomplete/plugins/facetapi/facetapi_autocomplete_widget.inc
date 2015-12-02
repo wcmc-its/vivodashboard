@@ -13,7 +13,11 @@ class FacetapiAutocompleteWidget extends FacetapiWidgetLinks {
   public function init() {
     return;
   }
-
+  
+  function getFacet() {
+    return $this->facet;
+  }
+  
   /**
    * Renders the facet.
    */

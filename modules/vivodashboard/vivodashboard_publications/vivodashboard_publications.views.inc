@@ -79,6 +79,20 @@ function vivodashboard_publications_views_data_alter(&$data) {
   $data['search_api_index_publications']['title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['author_labels']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['field_full_title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
+
+  // Feeds module does not expose this column of the log and we need it.
+  $data['feeds_log']['flid'] = array(
+    'title' => 'Feeds log ID',
+    'help' => 'Contains the sequential Feeds log ID.',
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+      'help' => 'Sort by sequential Feeds log ID.',
+    ),
+  );
 }
 
 /**
@@ -115,4 +129,35 @@ function vivodashboard_publications_preload_authors($view) {
     $author_nids[] = $target['entity_id'];
   }
   node_load_multiple($author_nids);
+}
+
+
+/**
+ * Implements hook_views_plugins().
+ */
+function vivodashboard_publications_views_plugins() {
+  // Collect all base tables provided by this module.
+  $bases = array();
+  foreach (search_api_index_load_multiple(FALSE) as $index) {
+
+    //not sure how this would work with Solr, only works with DB for now
+    //probably not much of a stretch to find latest indexed item
+    if($index->server == 'database') {
+      $bases[] = 'search_api_index_' . $index->machine_name;
+    }
+  }
+
+  $ret = array(
+    'cache' => array(
+      'vivo_search_api_views_cache' => array(
+        'title' => t('Search-specific time and index based (Vivo custom)'),
+        'help' => t("Works the same as Search-specific, but will also purge caches when the index is updated"),
+        'base' => $bases,
+        'handler' => 'VivoSearchApiViewsCache',
+        'uses options' => TRUE,
+      ),
+    ),
+  );
+
+  return $ret;
 }

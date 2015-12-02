@@ -126,6 +126,8 @@ function facetapi_autocomplete_forms($form_id) {
  * Form constructor for the autocomplete widget.
  */
 function facetapi_autocomplete_form($form, &$form_state, $widget, $build) {
+  $facet_settings = $widget->getFacet()->getSettings()->settings;
+  
   $form['#widget'] = $widget;
 
   // Select2 will take over this element. It expects a 'hidden' element type.
@@ -136,6 +138,7 @@ function facetapi_autocomplete_form($form, &$form_state, $widget, $build) {
       'data-path' => current_path(),
       'data-params' => json_encode((object) drupal_get_query_parameters()),
       'data-facet' => $widget->getKey(),
+      'data-multiple' => ($facet_settings['limit_active_items'] != 1),
       'class' => array(
         'facetapi-autocomplete',
       ),

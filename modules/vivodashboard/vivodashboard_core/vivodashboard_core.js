@@ -10,6 +10,13 @@ Drupal.facetapi = (Drupal.facetapi) ? Drupal.facetapi : {};
  * @see vivodashboard_core_preprocess_facetapi_link_inactive()
  */
 Drupal.facetapi.applyLimit = function(settings) {
+
+    var currPage = $(location).attr('href');
+    if(currPage.indexOf("/publications") != -1){
+        var linksToMain = $('a[href="/publications"]');
+        linksToMain.addClass("active");
+    }
+
   if (settings.limit > 0 && !$('ul#' + settings.id).hasClass('facetapi-processed')) {
     // Only process this code once per page load.
     $('ul#' + settings.id).addClass('facetapi-processed');

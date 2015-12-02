@@ -132,8 +132,11 @@ function vivodashboard_import_mapping_callback($original_source, $entity, $targe
   // We check the age of previously imported items before running the importer.
   // Items that were imported more recently than the cutoff get skipped.
   // This should save a lot of requests.
-  $minimum_age = !empty($config['age']) ? $config['age'] : 'last';
-  $cutoff = ($minimum_age == 'last') ? $original_source->imported : (time() - ((int) $minimum_age * 60));
+  $minimum_age = !empty($config['age']) ? $config['age'] : '2 weeks';
+  if (!is_numeric($minimum_age) && strtotime($minimum_age)) {
+    $minimum_age = strtotime($minimum_age) - time();
+  }
+  $cutoff = time() - $minimum_age;
 
   $uris_needing_update = vivodashboard_import_uris_needing_update($uri_list, $importer_id, $cutoff);
   if ($uris_needing_update) {

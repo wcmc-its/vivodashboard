@@ -13,11 +13,15 @@
         var params = JSON.parse(element.attr('data-params'));
 
         element.select2({
-          multiple: true,
+          multiple: element.attr('data-multiple'),
           width: '100%',
           minimumInputLength: 2,
           formatInputTooShort: function() {
-            return 'Enter some keywords.';
+              if (path.toLowerCase().indexOf("citations") >= 0){
+                  return 'Enter an author name.';
+              }else {
+                  return 'Enter some keywords.';
+              }
           },
           ajax: {
             url: url,
