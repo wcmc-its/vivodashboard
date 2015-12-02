@@ -22,6 +22,7 @@ function vdb_preprocess_page(&$vars) {
   $menu2 = menu_navigation_links('main-menu', 1);
   $vars['menu_second'] = empty($menu2) ? '' : theme('links__system_main_menu', array(
     'links' => $menu2,
+    'preserve_query' => TRUE,
     'attributes' => array(
       'class' => array('tabs', 'primary'),
     ),
