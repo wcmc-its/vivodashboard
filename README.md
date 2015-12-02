@@ -35,7 +35,7 @@ The import process is quite slow. Tens of thousands of publications will typical
 
 ### Drupal interface
 
-VIVO Dashboard saves imported data as Drupal content.  
+VIVO Dashboard saves imported data as Drupal content.
 
 - Publications -> nodes
 - Authorships -> relations
@@ -54,14 +54,14 @@ The main interface included with the application is highly customizable. These m
 VIVO version compatibility
 --------------------------
 
-VIVO Dashboard has been updated to work with the new VIVO-ISF ontology structure introduced in VIVO 1.6. The import system has been upgraded with better caching and more configurability. The Ultimate Cron module has been added as a more reliable replacement to Elysia Cron. 
+VIVO Dashboard has been updated to work with the new VIVO-ISF ontology structure introduced in VIVO 1.6. The import system has been upgraded with better caching and more configurability. The Ultimate Cron module has been added as a more reliable replacement to Elysia Cron.
 
 To install a version of VIVO Dashboard compatible with VIVO 1.5 and below, simply use the distro-1.5.make file when building the codebase, as described the "Installation" section. Note that, after building the codebase, the README for that particular version of VIVO Dashboard can be found in DRUPAL_ROOT/profiles/vivodashboard.
 
 Installation
 ------------
 
-VIVO Dashboard is made available as a Drupal install profile and does not actually include all the required packages. Before installing, the codebase must be "built" using Drush. 
+VIVO Dashboard is made available as a Drupal install profile and does not actually include all the required packages. Before installing, the codebase must be "built" using Drush.
 
 ### Building with Drush
 
@@ -70,7 +70,7 @@ Install Drush by following the instructions at: https://github.com/drush-ops/dru
 For VIVO 1.6+ run:
 
     drush make https://raw.githubusercontent.com/paulalbert1/vivodashboard/master/distro.make vivodashboard
-    
+
 For VIVO 1.5 and below run:
 
     drush make https://raw.githubusercontent.com/paulalbert1/vivodashboard/master/distro-1.5.make vivodashboard
@@ -81,7 +81,7 @@ If no errors were reported, you should should have a complete VIVO Dashboard cod
 
 If you have your own hosting, or want to install VIVO Dashboard in your own local development environment, review the documentation on installing Drupal here : https://drupal.org/documentation/install (Step 1 is already done).
 
-If you have don't have a preference for hosting, Pantheon is an excellent option. Development sites are free. 
+If you have don't have a preference for hosting, Pantheon is an excellent option. Development sites are free.
 
 If you want to get up and running quickly on your local machine, Acquia Dev Desktop is a great self-contained LAMP environment for Windows and Mac, designed for Drupal.
 
@@ -93,7 +93,7 @@ If you want to get up and running quickly on your local machine, Acquia Dev Desk
 4. Connect to the Pantheon FTP server and upload your "profiles/vivodashboard" to the corresponding "profiles" directory on Pantheon. This may be inside a "code" directory.
 5. In the Pantheon dashboard go to "Workflow" and then "Wipe". Confirm and wipe the environment.
 6. Click on "Visit Development Site".
-7. You should see a Drupal installation page again, with an option to install VIVO Dashboard. Choose that option and proceed through the installation. If there is no such option, you probably did not upload "profiles/vivodashboard" to the correct location. 
+7. You should see a Drupal installation page again, with an option to install VIVO Dashboard. Choose that option and proceed through the installation. If there is no such option, you probably did not upload "profiles/vivodashboard" to the correct location.
 8. When the installation is finished you will be taken to VIVO Dashboard's main page.
 
 Note: If you're comfortable using Git, steps 2-4 can be done with Pantheon's Git repository for the site. You'll need to add an SSH key in the Pantheon dashboard.
@@ -104,7 +104,7 @@ Note: If you're comfortable using Git, steps 2-4 can be done with Pantheon's Git
 2. Open the Acquia Dev Desktop Control Panel, go to Settings, then Sites, then Import.
 3. For the "Site path" locate the "vivo-dashboard" directory you built using Drush.
 4. For the database select "Create new database".
-5. Enter anything you want for the domain. 
+5. Enter anything you want for the domain.
 6. After clicking "Import" you should be brought to a Drupal installation page.
 7. Choose the "VIVO Dashboard" option and proceed through the installation.
 8. When the installation is finished you will be taken to VIVO Dashboard's main page.
@@ -119,16 +119,17 @@ Once installed, the first thing to do is start the import.
 
 1. Visit the /import page, then choose the "VIVO Publications" importer.
 2. Enter your VIVO site's URL in the form.
-3. Enter the URI for the class you'd like to import (e.g. http://purl.org/ontology/bibo/AcademicArticle). 
-4. Click "Import". 
-
-The process will take a few moments to initialize. Once you see a progress bar showing a percentage, the import is underway. Now you'll want to set up cron to keep it moving along. Once cron is configured you can close the progress window and cron will take over in the background. 
+3. Enter the URI for the class you'd like to import (e.g. http://purl.org/ontology/bibo/AcademicArticle).
+4. Click "Import".
+5. In a new browser tab visit /import/log to confirm data is being retrieved.
 
 Note: VIVO importers other than "VIVO Publications" can be ignored. These get triggered automatically.
 
-If you see a status message reporting "There are no new nodes" your class URI is likely incorrect. 
+If you see a status message reporting "There are no new nodes" your class URI is likely incorrect.
 
 If you see an error message, your VIVO site URL might be incorrect or VIVO could be failing to produce the RDF list for the specified class. Some VIVO sites seem to have trouble with RDF lists containing a large number of individuals. You can test this by instead trying a class that contains a smaller number of individuals (hundreds instead of thousands). See the Troubleshooting section for more information.
+
+If the form spends a minute or two loading after clicking "Import", and you get an error without any details, it's likely that PHP hit its time limit. That's fine, the import will pick up where it left off.
 
 ### Configuring cron
 
@@ -138,20 +139,33 @@ Review the documentation on setting up cron for Drupal: https://drupal.org/cron
 
 For VIVO Dashboard, the optimal cron frequency is 1 minute.
 
-A typical crontab entry looks like this:
+The ideal way to run cron is via Drush + Ultimate Cron. The Ultimate Cron module has a special drush command "cron-run" that will be the most efficient way to keep your import running.
+
+Example crontab entry:
+
+    */1 * * * * drush --root=/path/to/your/drupalroot --quiet cron-run
+
+Note: If you need to install your crontab entry on a separate server (i.e. when using Pantheon for hosting), you will need to install SSH keys and Drush aliases on that server.
+
+Example crontab entry on a separate server:
+
+    */1 * * * * drush @pantheon.username.vivo-dashboard.dev --quiet cron-run
+
+If unable to use Drush, a more typical crontab entry should still work:
 
     */1 * * * * wget -O - -q -t 1 http://mysite.gotpantheon.com/cron.php?cron_key=rUncI0PLGq7_56SrZzNCrnerLoHZOHb7pCoFSFhBwdE
 
 Note: The cron_key is unique for each site. You can find this URL on the Status Report (Reports -> Status report).
+
 
 ### More cron
 
 Cron runs are used to keep Drupal working. The two main jobs that VIVO Dashboard performs during a cron run are:
 
 1. Importing data from VIVO
-2. Indexing imported content for search 
+2. Indexing imported content for search
 
-VIVO Dashboard comes with a module called Ultimate Cron. This module acts as a manager responsible for delegating work. Ultimate Cron knows how frequently jobs should be performed and will trigger them accordingly. 
+VIVO Dashboard comes with a module called Ultimate Cron. This module acts as a manager responsible for delegating work. Ultimate Cron knows how frequently jobs should be performed and will trigger them accordingly.
 
 Ultimate Cron can be configured at: Configuration -> System -> Cron Settings (/admin/config/system/cron)
 
@@ -189,7 +203,7 @@ When logged in you can edit configuration for facets by hovering over them and c
 Troubleshooting
 ---------------
 
-The first thing to try when troubleshooting Drupal is clearing caches. You can find "Flush all caches" under the Home icon in the toolbar. 
+The first thing to try when troubleshooting Drupal is clearing caches. You can find "Flush all caches" under the Home icon in the toolbar.
 
 ### Database log
 
@@ -199,7 +213,7 @@ Drupal maintains a comprehensive system log at: Reports -> Recent log messages (
 
 The Feeds module maintains its own log of events. Import-related troubleshooting should start here: Reports -> Feeds log (/admin/reports/feeds)
 
-Per-importer logs can also be found on import pages. For example, the "VIVO Publications" import page (/import/vivo_publications) has a "Log" link at the top. 
+Per-importer logs can also be found on import pages. For example, the "VIVO Publications" import page (/import/vivo_publications) has a "Log" link at the top.
 
 Problems during a VIVO import, such as failed linked data requests, are usually logged with a severity of "warning".
 
@@ -223,7 +237,7 @@ Drupal's great flexibility often comes at the expense of performance. As the amo
 
 ### Linked data caching (enabled by default)
 
-The Graphite library is now used for all RDF handling during imports. Graphite will optionally cache all linked data responses to the filesystem. This saves a tremendous number of HTTP requests while importing VIVO data, so this caching is enabled by default. The cache location is inside Drupal's configured temporary directory, in a "graphite-HASH" directory. Be aware this directory can grow quite large. 
+The Graphite library is now used for all RDF handling during imports. Graphite will optionally cache all linked data responses to the filesystem. This saves a tremendous number of HTTP requests while importing VIVO data, so this caching is enabled by default. The cache location is inside Drupal's configured temporary directory, in a "graphite-HASH" directory. Be aware this directory can grow quite large.
 
 ### Entity Cache
 
@@ -233,7 +247,7 @@ VIVO Dashboard comes with a module called Entity Cache that is intended to reduc
 
 The primary module behind VIVO Dashboard's faceted search is Search API. Search API relies on a "backend" module and clever indexing to do its magic. Out of the box the database backend (search_api_db) is used for VIVO Dashboard in order to minimize hosting requirements. While this is the most convenient backend, it's not the most performant.
 
-Using Apache Solr as the backend for Search API will yield substantially better performance. Although it hasn't been fully tested, it should simply be a matter of changing the Search API indexes to use the Solr backend already included with VIVO Dashboard (/admin/config/search/search_api). 
+Using Apache Solr as the backend for Search API will yield substantially better performance. Although it hasn't been fully tested, it should simply be a matter of changing the Search API indexes to use the Solr backend already included with VIVO Dashboard (/admin/config/search/search_api).
 
 You also, of course, must set up the Apache Solr server itself. Once you do so, you'll need to copy configuration files from the search_api_solr Drupal module to Apache Solr's "conf" directory. Instructions and be found on the search_api_solr module page: https://drupal.org/project/search_api_solr
 
@@ -241,7 +255,7 @@ You also, of course, must set up the Apache Solr server itself. Once you do so, 
 Developer notes
 ----------------------
 
-VIVO Dashboard is set up as a Drupal install profile, with custom functionality handled by the Features module. 
+VIVO Dashboard is set up as a Drupal install profile, with custom functionality handled by the Features module.
 
 The custom features bundled with VIVO dashboard can be found in: DRUPAL_ROOT/profiles/vivodashboard/modules/vivodashboard
 
@@ -255,11 +269,11 @@ Custom code can be found in:
 
 ### Capturing local changes
 
-After overriding the VIVO Dashboard defaults, when customizing things for your institution, you may want to capture your changes in code for version control. Overwriting the VIVO Dashboard features directly would make future updates difficult. A more sustainable approach is to use the features_override module to produce a new feature that contains only your overrides. 
+After overriding the VIVO Dashboard defaults, when customizing things for your institution, you may want to capture your changes in code for version control. Overwriting the VIVO Dashboard features directly would make future updates difficult. A more sustainable approach is to use the features_override module to produce a new feature that contains only your overrides.
 
 ### Search API publications and authorships
 
-You will find there are two Search API indexes: publications and authorships. They have the same fields indexed and the same facets enabled. The authorships index exists to work around an unfortunate limitation in Search API's Views integration. 
+You will find there are two Search API indexes: publications and authorships. They have the same fields indexed and the same facets enabled. The authorships index exists to work around an unfortunate limitation in Search API's Views integration.
 
 VIVO Dashboard's publication export pages are views listing individual authorships (as opposed to publications). Normally Views would be able to accomplish this using relationships, but Search API relies on Entity API for Views integration, which has very limited support for relationships. This drupal.org issue has comments from the Entity API and Search API maintainers regarding this limitation: https://drupal.org/node/1378656
 
