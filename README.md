@@ -17,7 +17,6 @@ What it looks like
 -----------
 
 - Weill Cornell Medical College: http://live-vivo-dashboard.gotpantheon.com
-- Cornell University: http://dev-vdb.gotpantheon.com
 
 
 How it works
