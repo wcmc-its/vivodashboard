@@ -211,11 +211,11 @@ Drupal maintains a comprehensive system log at: Reports -> Recent log messages (
 
 ### Feeds log
 
-The Feeds module maintains its own log of events. Import-related troubleshooting should start here: Reports -> Feeds log (/admin/reports/feeds)
+There is aggregated view of the Feeds import log at: /import/log
 
-Per-importer logs can also be found on import pages. For example, the "VIVO Publications" import page (/import/vivo_publications) has a "Log" link at the top.
+By default, feed importers are configured to add lots of debug information to the log. These entries have a severity of "debug". This can be turned off per-importer in the parser plugin settings.
 
-Problems during a VIVO import, such as failed linked data requests, are usually logged with a severity of "warning".
+Problems during a VIVO import, such as failed linked data requests, are usually logged with a severity of "warning" or "error".
 
 ### Failed linked data requests
 
