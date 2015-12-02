@@ -5,6 +5,8 @@ api = 2
 ; Contrib modules
 ;-------------------------------------------------------------------------------
 
+defaults[projects][subdir] = contrib
+
 projects[admin_menu][version] = "3.0-rc4"
 projects[ctools][version] = "1.4"
 projects[charts_graphs][version] = "2.0"
@@ -21,6 +23,7 @@ projects[facetapi][version] = "1.5"
 projects[facetapi_bonus][version] = "1.1"
 projects[facetapi_multiselect][version] = "1.0-beta1"
 projects[features][version] = "2.2"
+projects[feeds][version] = "2.0-beta1"
 projects[jquery_update][version] = "2.4"
 projects[libraries][version] = "2.1"
 projects[link][version] = "1.2"
@@ -28,23 +31,24 @@ projects[search_api][version] = "1.13"
 projects[search_api_db][version] = "1.4"
 projects[search_api_solr][version] = "1.6"
 projects[strongarm][version] = "2.0"
-projects[ultimate_cron][version] = "2.0-beta7"
 projects[uuid][version] = "1.0-alpha6"
 projects[views][version] = "3.8"
 projects[views_bulk_operations][version] = "3.2"
 projects[views_data_export][version] = "3.0-beta7"
+
+; Newer versions introduce bug with display settings form similar to...
+; https://www.drupal.org/node/2156193
+projects[date_facets][type] = "module"
+projects[date_facets][download][type] = "git"
+projects[date_facets][download][url] = "http://git.drupal.org/project/date_facets.git"
+projects[date_facets][download][branch] = "7.x-1.x"
+projects[date_facets][download][revision] = "9037608bc2736096b9e30d94e843958aab27e584"
 
 projects[facetapi_graphs][type] = "module"
 projects[facetapi_graphs][download][type] = "git"
 projects[facetapi_graphs][download][url] = "http://git.drupal.org/project/facetapi_graphs.git"
 projects[facetapi_graphs][download][branch] = "7.x-1.x"
 projects[facetapi_graphs][download][revision] = "1f87addaa99fa1a941fa9cfa101fd49925b6e49d"
-
-projects[feeds][type] = "module"
-projects[feeds][download][type] = "git"
-projects[feeds][download][url] = "http://git.drupal.org/project/feeds.git"
-projects[feeds][download][branch] = "7.x-2.x"
-projects[feeds][download][revision] = "00a35fe1e10bf1f760cf17a08619d3d1a6e9b79a"
 
 projects[flot][type] = "module"
 projects[flot][download][type] = "git"
@@ -73,8 +77,8 @@ projects[search_api_ranges][download][revision] = "05a372d7d216765cdb49b789602cf
 projects[ldimport][type] = "module"
 projects[ldimport][download][type] = "git"
 projects[ldimport][download][url] = "https://github.com/milesw/ldimport.git"
-projects[ldimport][download][branch] = "graphite"
-projects[ldimport][download][revision] = "4d6cb76c8b30e04004313dcbde37ca4df8329d85"
+projects[ldimport][download][branch] = "master"
+projects[ldimport][download][revision] = "fd76c094b97f322ba31449fdc5de575d7b9a9938"
 
 projects[ldimport_vivo][type] = "module"
 projects[ldimport_vivo][download][type] = "git"
@@ -86,7 +90,6 @@ projects[ldimport_vivo][download][revision] = "5ee8582a42a8e59e726a67d2eeddd6fa2
 ; Patches
 ;-------------------------------------------------------------------------------
 
-; projects[feeds][patch][955236] = "https://www.drupal.org/files/issues/feeds-error-handler-955236-14.patch"
 projects[facetapi_multiselect][patch][180634] = "https://drupal.org/files/issues/1806344.13.count_autosubmit_removeSelected_0.patch"
 projects[relation][patch][2354019] = "https://www.drupal.org/files/issues/relation-2354019-1-custom-feeds-mappers.patch"
 projects[relation][patch][2349385] = "https://www.drupal.org/files/issues/chasing_feeds_head-2349385-1.patch"
