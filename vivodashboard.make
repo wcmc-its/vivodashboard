@@ -78,7 +78,7 @@ projects[ldimport][type] = "module"
 projects[ldimport][download][type] = "git"
 projects[ldimport][download][url] = "https://github.com/milesw/ldimport.git"
 projects[ldimport][download][branch] = "master"
-projects[ldimport][download][revision] = "fd76c094b97f322ba31449fdc5de575d7b9a9938"
+projects[ldimport][download][revision] = "88be6fb818de54d72355a60079630bd00567ea38"
 
 projects[ldimport_vivo][type] = "module"
 projects[ldimport_vivo][download][type] = "git"
