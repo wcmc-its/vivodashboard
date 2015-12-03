@@ -1700,7 +1700,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-49',
       ),
       'rewrite_items' => array(
-        'status' => 0,
+        'status' => 1,
         'weight' => '-48',
       ),
       'narrow_results' => array(
@@ -2092,7 +2092,7 @@ function vivodashboard_publications_facetapi_default_facet_settings() {
         'weight' => '-49',
       ),
       'rewrite_items' => array(
-        'status' => 0,
+        'status' => 1,
         'weight' => '-48',
       ),
       'narrow_results' => array(

@@ -463,3 +463,31 @@ function vivodashboard_publications_views_data_export_complete_page($variables) 
   return $output;
 }
 
+/**
+ * Implements HOOK_facet_items_alter() - from Facetapi Bonus.
+ */
+function vivodashboard_publications_facet_items_alter(&$build, &$settings) {
+  if ($settings->facet == 'publication_timestamp') {
+    foreach($build as $key => $item) {
+
+      // Hide counts for this facet, they are wrong anyway.
+      $build[$key]['#count'] = NULL;
+
+      // Remove any filter parameters for publication_year facet.
+      if (!empty($item['#query']['f'])) {
+        foreach ($item['#query']['f'] as $k => $param) {
+          if (strpos($param, 'publication_year') !== FALSE || strpos($param, 'publication_month') !== FALSE) {
+            unset($build[$key]['#query']['f'][$k]);
+          }
+        }
+      }
+    }
+  }
+  // Remove hidden taxonomy terms from facet values.
+  if ($settings->facet == 'publication_types' || $settings->facet == 'publication_author_types') {
+    $hidden_types = variable_get('vivodashboard_core_hidden_types', array());
+    foreach ($hidden_types as $tid) {
+      unset($build[$tid]);
+    }
+  }
+}
