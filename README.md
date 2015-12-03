@@ -230,6 +230,10 @@ One way to work around this is by manually creating a text file containing all t
 
 **Note**: VIVO's SPARQL form produces a CSV with URIs wrapped in quotes. The quotes need to be removed for VIVO Dashboard.
 
+### Cron jobs not running
+
+If the jobs at /admin/config/system/cron are not running and you are certain that a crontab entry has been correctly configured, it may be that Ultimate Cron has gotten stuck. Unfortunately, the best way to unstick it seems to be to manually truncating the following database tables: cache_ultimate_cron, ultimate_cron_lock
+
 
 Performance
 -----------
