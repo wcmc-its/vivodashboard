@@ -97,6 +97,7 @@ projects[search_api_ranges][patch][2217717] = "https://drupal.org/files/issues/s
 projects[search_api_ranges][patch][2051163] = "https://drupal.org/files/issues/search_api_ranges-2051163-9-decimal-support.patch"
 projects[search_api_ranges][patch][2130349] = "https://drupal.org/files/issues/search_api_ranges-error_locale_module_disabled-2130349-4.patch"
 projects[views_data_export][patch][1258390] = "https://drupal.org/files/views_data_export-solr_export-1258390-13.patch"
+projects[feeds][patch][2489006] = "https://www.drupal.org/files/issues/feeds-7.x-2.x-2489006-4-taxonomy_feeds_set_target.patch"
 
 ;-------------------------------------------------------------------------------
 ; Libraries
