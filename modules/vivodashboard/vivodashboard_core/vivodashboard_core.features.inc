@@ -17,9 +17,6 @@ function vivodashboard_core_ctools_plugin_api($module = NULL, $api = NULL) {
   if ($module == "strongarm" && $api == "strongarm") {
     return array("version" => "1");
   }
-  if ($module == "ultimate_cron" && $api == "ultimate_cron") {
-    return array("version" => "3");
-  }
 }
 
 /**
@@ -52,6 +49,7 @@ function vivodashboard_core_node_info() {
       'help' => '',
     ),
   );
+  drupal_alter('node_info', $items);
   return $items;
 }
 
@@ -85,7 +83,7 @@ function vivodashboard_core_default_search_api_server() {
           "publication_timestamp" : {
             "table" : "search_api_db_authorships",
             "column" : "publication_timestamp",
-            "type" : "integer",
+            "type" : "date",
             "boost" : "1.0"
           },
           "publication_year" : {
@@ -171,7 +169,7 @@ function vivodashboard_core_default_search_api_server() {
           "publication_timestamp" : {
             "table" : "search_api_db_publications",
             "column" : "publication_timestamp",
-            "type" : "integer",
+            "type" : "date",
             "boost" : "1.0"
           },
           "publication_year" : {
@@ -244,6 +242,140 @@ function vivodashboard_core_default_search_api_server() {
             "table" : "search_api_db_publications",
             "column" : "field_citations",
             "type" : "integer",
+            "boost" : "1.0"
+          }
+        },
+        "citations" : {
+          "search_api_language" : {
+            "table" : "search_api_db_citations",
+            "column" : "search_api_language",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_title" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_title",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_article_type" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_article_type",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_category" : {
+            "table" : "search_api_db_citations_publication_category",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_percentile_rank" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_percentile_rank",
+            "type" : "decimal",
+            "boost" : "1.0"
+          },
+          "publication_timestamp" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_timestamp",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_year" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_month" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_year" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_graph_year",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_graph_month" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_graph_month",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
+          "publication_journal" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_journal",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "publication_journal_ranking" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_journal_ranking",
+            "type" : "decimal",
+            "boost" : "1.0"
+          },
+          "publication_types" : {
+            "table" : "search_api_db_citations_publication_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_names" : {
+            "table" : "search_api_db_citations_publication_author_names",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_types" : {
+            "table" : "search_api_db_citations_publication_author_types",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_affiliations" : {
+            "table" : "search_api_db_citations_publication_author_affiliations",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_author_firstlast_affiliations" : {
+            "table" : "search_api_db_citations_publication_author_firstlast_affiliati",
+            "column" : "value",
+            "type" : "list\\u003Cstring\\u003E",
+            "boost" : "1.0"
+          },
+          "field_author_position" : {
+            "table" : "search_api_db_citations",
+            "column" : "field_author_position",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "endpoints_source_node" : {
+            "table" : "search_api_db_citations_endpoints_source_node",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "publication_authors_joined" : {
+            "table" : "search_api_db_citations",
+            "column" : "publication_authors_joined",
+            "type" : "string",
+            "boost" : "1.0"
+          },
+          "endpoints_source_node:field_citations" : {
+            "table" : "search_api_db_citations_endpoints_source_node_field_citations",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "endpoints_target_node:field_primary_department" : {
+            "table" : "search_api_db_citations_endpoints_target_node_field_primary_de",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
             "boost" : "1.0"
           }
         }

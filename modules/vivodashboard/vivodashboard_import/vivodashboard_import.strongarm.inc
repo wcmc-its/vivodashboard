@@ -13,6 +13,13 @@ function vivodashboard_import_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
+  $strongarm->name = 'feeds_debug';
+  $strongarm->value = TRUE;
+  $export['feeds_debug'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
   $strongarm->name = 'feeds_process_limit';
   $strongarm->value = 5;
   $export['feeds_process_limit'] = $strongarm;

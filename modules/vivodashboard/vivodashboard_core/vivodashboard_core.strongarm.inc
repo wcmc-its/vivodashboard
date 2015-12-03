@@ -293,7 +293,7 @@ function vivodashboard_core_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'error_level';
-  $strongarm->value = '0';
+  $strongarm->value = '1';
   $export['error_level'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -491,7 +491,7 @@ function vivodashboard_core_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'site_name';
-  $strongarm->value = 'Cornell VIVO Dashboard';
+  $strongarm->value = 'VIVO Dashboard';
   $export['site_name'] = $strongarm;
 
   $strongarm = new stdClass();

@@ -119,16 +119,18 @@ Once installed, the first thing to do is start the import.
 1. Visit the /import page, then choose the "VIVO Publications" importer.
 2. Enter your VIVO site's URL in the form.
 3. Enter the URI for the class you'd like to import (e.g. http://purl.org/ontology/bibo/AcademicArticle).
-4. Click "Import".
-5. In a new browser tab visit /import/log to confirm data is being retrieved.
+4. Click "Import". This will simply save the details you entered.
+5. Either run "drush cron-run" or visiting /admin/config/system/cron and click "Run scheduled jobs".
 
-Note: VIVO importers other than "VIVO Publications" can be ignored. These get triggered automatically.
+At this point the import has been queued to run on subsequent cron runs. You can either perform step #5 again, or set up your automated cron job now.
+
+Import progress can be monitored at: /import/log
 
 If you see a status message reporting "There are no new nodes" your class URI is likely incorrect.
 
 If you see an error message, your VIVO site URL might be incorrect or VIVO could be failing to produce the RDF list for the specified class. Some VIVO sites seem to have trouble with RDF lists containing a large number of individuals. You can test this by instead trying a class that contains a smaller number of individuals (hundreds instead of thousands). See the Troubleshooting section for more information.
 
-If the form spends a minute or two loading after clicking "Import", and you get an error without any details, it's likely that PHP hit its time limit. That's fine, the import will pick up where it left off.
+Note: VIVO importers other than "VIVO Publications" can be ignored. These get triggered automatically.
 
 ### Configuring cron
 
