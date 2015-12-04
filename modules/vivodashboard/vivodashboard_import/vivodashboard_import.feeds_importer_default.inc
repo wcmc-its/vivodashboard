@@ -819,7 +819,7 @@ function vivodashboard_import_feeds_importer_default() {
             'unique' => FALSE,
           ),
         ),
-        'update_existing' => '1',
+        'update_existing' => '2',
         'input_format' => 'plain_text',
         'skip_hash_check' => 1,
         'bundle' => 'rdf_types',
