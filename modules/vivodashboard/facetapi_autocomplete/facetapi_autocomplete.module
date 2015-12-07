@@ -110,6 +110,17 @@ function facetapi_autocomplete_search_api_query_alter($query) {
 }
 
 /**
+ * Implements hook_views_pre_view().
+ */
+function facetapi_autocomplete_views_pre_build(&$view) {
+  // Disable Views caching for autocomplete page requests.
+  $is_autocomplete_request = drupal_static('facetapi_autocomplete_active_facet');
+  if ($is_autocomplete_request) {
+    $view->display_handler->override_option('cache', array());
+  }
+}
+
+/**
  * Implements hook_forms().
  *
  * Consolidates multiple form IDs to use a single constructor.
@@ -127,7 +138,7 @@ function facetapi_autocomplete_forms($form_id) {
  */
 function facetapi_autocomplete_form($form, &$form_state, $widget, $build) {
   $facet_settings = $widget->getFacet()->getSettings()->settings;
-  
+
   $form['#widget'] = $widget;
 
   // Select2 will take over this element. It expects a 'hidden' element type.
