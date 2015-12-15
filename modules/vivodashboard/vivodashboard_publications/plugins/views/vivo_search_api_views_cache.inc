@@ -48,6 +48,12 @@ class VivoSearchApiViewsCache extends SearchApiViewsCache {
    */
   public function cache_get($type) {
 
+    // Rendered output caching seems to be broken. The same cache object gets
+    // loaded regardless of query filters used.
+    if ($type == 'output') {
+      return NULL;
+    }
+
     // Figure out the last time an item in this index was processed.
     $index = $this->get_index_machine_name();
     $last_indexed = variable_get('vivo_search_api_last_indexed', array());
