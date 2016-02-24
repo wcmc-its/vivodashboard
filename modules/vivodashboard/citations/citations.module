@@ -1,0 +1,540 @@
+<?php
+set_time_limit(3600);
+
+/**
+ * Implements hook_init().
+ */
+function citations_init()
+{
+    global $user;
+    if (isset($_GET['q'])) {
+        $paths = explode('/', $_GET['q']);
+        $module_path = $paths[0];
+    }
+    if ($user->uid == 0 && $module_path == 'citations') {
+        drupal_goto('/saml_login');
+    }
+}
+
+
+function citations_access() {
+    global $user;
+
+    if (in_array('authenticated user', $user->roles) && in_array('citationImpactViewer', $user->roles) ) {
+        return true;
+    }else {
+        return false;
+    }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function citations_menu()
+{
+    $items = array();
+
+    $items['citations/main'] = array(
+        'title callback' => 'citations_chart_title',
+        'title arguments' => array('pictograph'),
+        'page callback' => 'citations_chart',
+        'page arguments' => array('pictograph'),
+        'access callback' => 'citations_access',
+    );
+
+    $items['citations/pictograph'] = array(
+        'title callback' => 'citations_chart_title',
+        'title arguments' => array(1),
+        'page callback' => 'citations_chart',
+        'page arguments' => array(1),
+        'access callback' => 'citations_access',
+    );
+
+    $items['citations/violinplot'] = array(
+        'title callback' => 'citations_chart_title',
+        'title arguments' => array(1),
+        'page callback' => 'citations_chart',
+        'page arguments' => array(1),
+        'access callback' => 'citations_access',
+    );
+
+    $items['citations/faq'] = array(
+        'title' => '',
+        'page callback' => 'citations_faq_block_view',
+        // 'page callback' => 'node_page_view',
+        // 'page arguments' => array(node_load(281948)),
+        'access callback' => 'citations_access',
+    );
+
+    return $items;
+}
+
+function citations_search_api_db_query_alter($db_query, $query) {
+  $search_db_queries = &drupal_static(__FUNCTION__);
+  $search_db_queries[spl_object_hash($query)] = $db_query;
+}
+
+/**
+ * thiis a helper function to join a new search api table
+ * to the db_select object
+**/
+function _citations_query_join_helper($db_query, $new_table, $new_alias = null, $force_new_join = FALSE) {
+  
+  $new_alias = empty($new_alias)?$new_table:$new_alias;
+  
+  $table_aliases = &drupal_static(__FUNCTION__);
+
+  if(empty($table_aliases)) {
+    foreach($db_query->getTables() as $table) {
+      $table_aliases[$table['table']] = $table['alias'];
+    }
+  }
+  
+  $base_alias = $table_aliases['search_api_db_citations'];
+  
+  if(!isset($table_aliases[$new_table]) || $force_new_join) {
+    $condition =  $new_alias.'.item_id = '.$base_alias.'.item_id';
+    $table_aliases[$new_table] = $db_query->leftJoin($new_table, $new_alias, $condition);
+  }
+  
+  return $table_aliases[$new_table];
+}
+
+
+function _citations_chart_data($view) {
+        
+  $publications = &drupal_static(spl_object_hash($view));
+
+  if(!empty($publications)) {    
+    return $publications;
+  }
+  
+  $publications = array();
+  
+  //This is the data source agnostic query
+  //but we can use it get the db_query which we stored in
+  //in static citations_search_api_db_query_alter by it's unique hash
+  $search_query = $view->query->getSearchApiQuery();
+  $search_db_queries = &drupal_static('citations_search_api_db_query_alter');
+  
+  //Now that we can get the DB query, we can go to town with left joins and extra fields
+  //THIS IS ALL TO AVOID ENTITY LOADING $view->render() - normally this woulnd't happen
+  //but because it's search api view it does a lot of lazy loading to get field data
+  $search_query_hash = spl_object_hash($search_query);
+  if(isset($search_db_queries[$search_query_hash])) {
+    $db_query = clone $search_db_queries[$search_query_hash];    
+  }
+  else {
+    return array();
+  }  
+  
+  //These are some other handy search api tables for the citation index
+//  $author_names_alias = _citations_query_join_helper($db_query, 'search_api_db_citations_endpoints_source_node_author_labels', 'author_names', TRUE);        
+  $category_alias = _citations_query_join_helper($db_query, 'search_api_db_citations_publication_category', 'categories', TRUE);        
+  $department_alias = _citations_query_join_helper($db_query, 'search_api_db_citations_endpoints_target_node_field_primary_de', 'department');
+  
+  //Once we join the publication node IDs, we can join in field data
+  //These fields could be added to the index later if it performs better
+  $pub_node_alias = _citations_query_join_helper($db_query, 'search_api_db_citations_endpoints_source_node', 'pub_node', TRUE);        
+  
+  $fields = array(
+    'field_pmid' => array(
+      'bundle' => 'publication',
+      'key' => 'pmid',
+      'value' => 'value',
+    ),
+    'field_scopus_id' => array(
+      'bundle' => 'publication',
+      'key' => 'scopus_doc_id',
+      'value' => 'value',
+    ),
+    'field_citations' => array(
+      'bundle' => 'publication',
+      'key' => 'citation_count',
+      'value' => 'value',
+    ),
+    'field_page_start' => array(
+      'bundle' => 'publication',
+      'key' => 'page_start',
+      'value' => 'value',
+    ),
+    'field_page_end' => array(
+      'bundle' => 'publication',
+      'key' => 'page_end',
+      'value' => 'value',
+    ),
+    'field_volume' => array(
+      'bundle' => 'publication',
+      'key' => 'volume',
+      'value' => 'value',
+    ),
+    'field_issue' => array(
+      'bundle' => 'publication',
+      'key' => 'issue',
+      'value' => 'value',
+    ),
+  );
+  //really just adding fields to try and match how citations_citation_get_chart_data works
+  foreach($fields as $field_name => &$info) {
+    $bundle = $info['bundle'];
+    $condition = "$field_name.entity_id = $pub_node_alias.value AND $field_name.bundle = '$bundle'";
+    $info['alias'] = $db_query->leftJoin('field_data_'.$field_name, $field_name, $condition);          
+    $db_query->addField($info['alias'] , $field_name.'_'.$info['value'], $info['key']);
+  }
+  
+  $db_query->addField('t' , 'publication_authors_joined', 'authors');
+  $db_query->addField('t' , 'publication_title', 'title');
+  $db_query->addField('t' , 'publication_article_type', 'pubtype');
+  $db_query->addField('t' , 'publication_journal', 'publication_name');
+  
+  //Coalesce to -- to keep the JS library happy - i dont want to dig in to that can of worms..
+  $db_query->addExpression("COALESCE(CONCAT(t.publication_year,'-',t.publication_month,'-1'),'--')", 'cover_date');
+  $db_query->addExpression("CONCAT(field_page_start_value, ' - ' ,field_page_end_value)", 'pages');
+
+  $db_query->addExpression("100 - FLOOR(publication_percentile_rank)", 'percentile_rank');
+  $db_query->addExpression("GROUP_CONCAT(DISTINCT $category_alias.value)", 'category');        
+    
+  $db_query->addField($pub_node_alias , 'value', 'publication_nid');
+  $db_query->addField($department_alias, 'value', 'primary_department_tid');
+  
+  $db_query->groupBy('publication_nid');
+  
+  $db_query->range();
+  
+  $max_count = 20000;
+  
+  $results = $db_query->execute()->fetchAll();
+  
+  if(count($results) > $max_count) {
+    drupal_set_message(t('Result set of @total limited to first @max_count', array('@max_count' => $max_count, '@total' => count($results))), 'warning');
+    $db_query->range(0, $max_count);  
+    $results = $db_query->execute()->fetchAll();
+  }
+  
+  foreach($results as $row) {
+    $publications[$row->publication_nid] = (array) $row;
+  }
+
+  return $publications;
+}
+
+function citations_chart_title($type) {
+  $searcher = current_search_get_block_searcher('citations');
+  $adapter = facetapi_adapter_load($searcher);
+  
+  foreach ($adapter->getAllActiveItems() as $item) {
+    if($item['field alias'] == 'publication_author_names') {          
+      return $item['value'];  
+    }
+    
+    if($item['field alias'] == 'endpoints_target_node:field_primary_department') {          
+      return taxonomy_term_load($item['value'])->name;
+    }
+  }
+  
+  
+  if($type =='pictograph') {
+    return t('Citation Impact - Pictograph');
+  }
+  
+  if($type == 'violinplot') {
+    return t('Citation Impact - Violin plot');
+  }
+}
+
+
+function citations_chart($type) {
+  
+  //only plot the chart when one of these facets is enabled
+  $data = array();
+  $subtitle = 'Please enter a name in the author name search box to view the citation impact chart';
+  
+  $plot_required_facets_tags = array(
+    'endpoints_target_node:field_primary_department',
+    'publication_author_names',
+  );  
+  
+  $searcher = current_search_get_block_searcher('citations');
+  $adapter = facetapi_adapter_load($searcher);
+  $active_facets = $adapter->getAllActiveItems();
+  
+  
+  //Executing the view is necessary to build the searchAPIquery and the facets for the page
+  $view = views_get_view('citations_chart');
+  
+  //dont use cache when facetting
+  if(!empty($active_facets)) {
+    $view->display['default']->display_options['cache'] = null;
+  }  
+  
+  $view->init_display();
+
+  $from_year = $view->get_item('page', 'filter', 'publication_year');
+  $from_year['value'] = date('Y', strtotime('-12 years'));
+  $view->set_item('page', 'filter', 'publication_year', $from_year);
+  
+  $to_year = $view->get_item('page', 'filter', 'publication_year_1');
+  $to_year['value'] = date('Y', strtotime('-3 years'));
+  $view->set_item('page', 'filter', 'publication_year_1', $to_year);
+  
+  $view->execute();
+  
+  if(!empty($active_facets)) {
+    $data = _citations_chart_data($view);
+  }
+  
+  foreach ($adapter->getAllActiveItems() as $item) {      
+    if(!empty($data)) {
+      $subtitle = '';
+      $top_row = reset($data);     
+      $dept = taxonomy_term_load($top_row['primary_department_tid'])->name;
+      if($item['field alias'] == 'publication_author_names') {          
+        $subtitle = $dept;
+      }        
+    }
+  }
+  
+  
+  switch($type) {
+    case 'pictograph':
+      return citations_draw_pictograph($data, $subtitle);
+    break;
+    
+    case 'violinplot':
+      return citations_draw_violin($data, $subtitle);
+    break;
+  }
+  
+  return 'empty';
+}
+
+
+function citations_faq_block_view($delta = '')
+{
+//    $html = "";
+//    $html .= "<h1>Frequently asked questions</h1><p>";
+//    $html .= "<i>What is the purpose of this tool?</i><p>";
+//    $html .= "The purpose of this tool is to display the percentile rank of the number of times individual papers have been cited, against a baseline of papers of the same article type, in the same field, and published in the same year. This is one metric among many that may be used to assess the scholarly performance of individual researchers, research groups, and departments.<p>";
+//    $html .= "<i>What data are being displayed in these plots?</i><p>";
+//    $html .= "The Y-axis is divided into bins representing groups of ten of percentiles each. Each square represents an article, and each article is placed into the bin reflecting its percentile rank among articles published in the same year, of the same type, and in the same field. For example, if a given article is in the 10th percentile, this means that 90% of articles in its category have received fewer citations. A percentile rank of one is the best; a percentile rank of 100 is the worst.<p>";
+//    $html .= "<i>What determines the fields in which the articles are published?</i><p>";
+//    $html .= "A journal's fields of research are derived from the Thomson Reuters Web of Science category or categories to which it is assigned. An article's fields of research, in turn, are derived from these journal categories. A given article may therefore be assigned one or more fields of research, and therefore one or more percentile ranks. For example, suppose an article was published in a journal in the biophysics and neuroscience categories. This article may be in the 20th percentile for times cited when measured against a baseline of articles in biophysics, but in the 15th percentile when measured against a baseline of articles in neuroscience.<p>";
+//    $html .= "<i>What if an article is in more than one field?</i><p>";
+//    $html .= "If an article is in more than one field, the percentile rank is averaged across fields. The square is positioned at the average percentile rank.<p>";
+//    $html .= "<i>What do the colors represent?</i><p>";
+//    $html .= "Each square represents one article. Research articles are blue; review articles are purple. The median percentile rank for each time period is indicated by the red arrow.<p>";
+//    $html .= "<i>What determines whether a paper is included?</i><p>";
+//    $html .= "The plots include all research and review articles indexed in Medline or Scopus. Articles of other types, such as letters to the editor, are excluded.<p>";
+//    $html .= "<i>What if a publication is missing?</i><p>";
+//    $html .= "If a publication is missing please contact the <a href=\"http://vivo.med.cornell.edu/support\">VIVO support team</a> so that it can be added.<p>";
+//    $html .= "<i>Why is it necessary to use percentile rank of of times cited, rather than just raw counts of times cited?</i><p>";
+//    $html .= "When an article is cited by authors of other articles, this suggests a stronger scholarly contribution. Citation counts vary based on article type, field of research, and year of publication; therefore raw counts of times cited do not adequately assess an article's impact. By convention in bibliometrics the scholarly impact of an article is assessed against a reference set of other articles of the same type, in the same field, and published the same year. It is then possible to calculate the percentile rank of the number of times a given article has been cited, using the articles in the reference set as a baseline. Percentile ranks are inverted, such that articles in the first percentile were cited the most, and articles in the hundredth percentile were cited the least.<p>";
+//    $html .= "<i>How many articles are there in the baseline for each percentile rank calculation?</i><p>";
+//    $html .= "The baseline for each percentile rank calculation is comprised of 200 articles of the same type, in the same field, and published the same year.<p>";
+//    $html .= "<i>Why doesn't the plot display data for more recent articles?</i><p>";
+//    $html .= "Because recently published articles have had little time to accumulate citations, times cited data for recent articles may be inaccurate and misleading. As of 2015 it is a convention in bibliometrics to exclude data on articles published fewer than two to three years ago. In future years, assuming that current trends in article citation continue, it may be appropriate to include articles published more recently.<p>";
+//    $html .= "<i>How often are the baselines updated?</i><p>";
+//    $html .= "The baseline data is updated on a quarterly basis.<p>";
+
+    $html = '';
+
+    $node = node_load(281948);
+
+    $wrapper = entity_metadata_wrapper('node', $node);
+
+    if (isset($wrapper->title)) {
+        $html .= '<h1 id="page-title" class="title">'.$wrapper->title->value().'</h1>';
+    }
+
+    if (isset($wrapper->body)) {
+        $html .=$wrapper->body->value->value();
+    }
+
+    drupal_add_js(drupal_get_path('module', 'citations') . '/js/faq.js', array('weight' => 12));
+
+    return $html;
+}
+
+
+function citations_draw_pictograph($results, $subtitle = '')
+{
+    $html = '';
+    
+    $resultsCount = count($results);
+    if($resultsCount > 0 && $resultsCount <= 100 ){
+        $articlesPerSquare = 1;
+    }else if ($resultsCount > 100 && $resultsCount <= 200) {
+        $articlesPerSquare = 2;
+    }else if ($resultsCount > 200 && $resultsCount <= 300) {
+        $articlesPerSquare = 3;
+    }else if ($resultsCount > 300 && $resultsCount <= 400) {
+        $articlesPerSquare = 4;
+    }else {
+        $articlesPerSquare = 5;
+    }
+    
+    
+    
+        
+    $violinData = array_values($results);
+
+    $html .= '<span class="msgLabel">'.$subtitle.'</span>';
+    $html .= '<div id="svgContainer"></div>';
+    $html .= '<div id="svgLegendContainer"></div>';
+    $html .= '<div id="popupContainer"></div>';
+
+    drupal_add_css(drupal_get_path('module', 'citations') . '/css/citations.css', array('weight' => 10));
+    drupal_add_css(drupal_get_path('module', 'citations') . '/css/jquery.qtip.css', array('weight' => 10));
+    drupal_add_css(drupal_get_path('module', 'citations') . '/css/font-awesome.min.css', array('weight' => 10));
+
+    drupal_add_js(drupal_get_path('module', 'citations') . '/js/lib/jquery.qtip.js', array('weight' => 10));
+    drupal_add_js(drupal_get_path('module', 'citations') . '/js/lib/underscore.min.js', array('weight' => 10));
+    drupal_add_js(drupal_get_path('module', 'citations') . '/js/citations.js', array('weight' => 12));
+
+    drupal_add_js(array('citations' => array('violinData' => $violinData, 'articlesPerSquare'=> $articlesPerSquare )), array('type' => 'setting'));
+
+    return $html;
+}
+
+function citations_draw_violin($results, $subtitle = '') {
+    $html = '';
+
+    $violinData = array_values($results);
+    
+    $html .= '<span class="msgLabel">'.$subtitle.'</span>';
+    $html .= '<div id="violinPlot"></div>';
+
+    drupal_add_css(drupal_get_path('module', 'citations') . '/css/violin.css', array('weight' => 10));
+
+    drupal_add_js(drupal_get_path('module', 'citations') . '/js/violin.js', array('weight' => 12));
+
+    drupal_add_js(array('violin' => array('violinData' => $violinData)), array('type' => 'setting'));
+
+    return $html;
+}
+
+function citations_get_article_pages($start, $end)
+{
+    $page_str = "";
+    if (!empty($start) && !empty($end)) {
+        $page_str = $start . " - " . $end;
+    } else if (!empty($start) && empty($end)) {
+        $page_str = $start;
+    } else if (empty($start) && !empty($end)) {
+        $page_str = $end;
+    } else {
+        $page_str = "";
+    }
+    return $page_str;
+}
+
+
+/**
+ * Implements hook_block_view_alter().
+ *
+ * Overrides default titles for facet blocks.
+ */
+function citations_block_view_alter(&$data, $block)
+{
+    if ($block->module == 'current_search' && empty($block->title)) {
+        switch ($block->delta) {
+            case 'citations':
+                $data['subject'] = 'Current Filters';
+                break;
+        }
+    }
+    
+    // Replace block titles such as "Filter by Journal Ranking:" to be
+    // simply "Journal Ranking".
+    if ($block->module == 'facetapi')  {
+      
+      // Facet API uses hashed deltas, so need to decode them first.
+      $facet_map = facetapi_get_delta_map();
+      $real_delta = isset($facet_map[$block->delta]) ? $facet_map[$block->delta] : NULL;
+      
+      
+      if(preg_match('/^search_api@citations:block:(.+)$/', $real_delta, $matches)) {
+        
+        $params = drupal_get_query_parameters();
+        $using_params = array();
+        if(isset($params['f'])) {
+          foreach($params['f'] as $p) {
+            $using_params[] = current(explode(":", $p));            
+          }
+        }
+        
+        $field_name = $matches[1];
+        
+        $mutually_exclusive_required = array(
+          'endpoints_target_node%3Afield_primary_department', 
+          'publication_author_names'
+        );          
+      
+        //And dont allow access to the required fields one of them are in use alreay (including itself)
+        if(in_array($field_name, $mutually_exclusive_required)) {
+          if( array_intersect($mutually_exclusive_required, $using_params) ) {
+            $data['content']['#access'] = FALSE;          
+          }
+        }      
+      }
+      
+      
+      if(empty($block->title)) {  
+        
+        // Realm is either "block" or "facetapi_graphs_graphs".
+        if (strpos($real_delta, ':block:')) {
+            list($searcher, $facet_name) = explode(':block:', $real_delta);
+        } else {
+            list($searcher, $facet_name) = explode(':facetapi_graphs_graphs:', $real_delta);
+        }
+
+        // Pull the facet label out of the facet definition.
+        if ($searcher && $facet_name && ($info = facetapi_get_facet_info($searcher)) && !empty($info[$facet_name])) {
+            $data['subject'] = $info[$facet_name]['label'];
+        }
+      }
+    }
+}
+
+
+/**
+ * Implements hook_facetapi_facet_info_alter().
+ */
+function citations_facetapi_facet_info_alter(&$facet_info, $searcher_info)
+{ 
+    if($searcher_info['name'] != 'search_api@citations') {
+      return;
+    }
+    
+    // Override facet labels.
+    foreach ($facet_info as $facet_name => &$facet) {
+        
+        switch ($facet_name) {
+            
+            case 'endpoints_target_node:field_primary_department':
+              $facet['label'] = 'Primary Department';
+            break;
+            
+            case 'publication_author_names':
+                $facet['label'] = 'Author Name';
+            break;
+
+            case 'publication_article_type':
+                $facet['label'] = 'Article Type';
+            break;
+            
+            case 'publication_category':
+                $facet['label'] = 'Category';
+            break;
+
+            case 'field_author_position':
+                $facet['label'] = 'Authorship';
+            break;
+
+        }
+    }
+}
+
+
+

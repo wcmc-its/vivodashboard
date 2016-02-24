@@ -1,0 +1,136 @@
+.label {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 8pt;
+}
+
+.axisLabel {
+    font-weight: bold;
+    alignment-baseline: middle;
+}
+
+.percentileLabel {
+    font-size: 12pt !important;
+}
+
+.timeFrameLabel {
+    font-weight: bold;
+    font-size: 12pt !important;
+}
+
+.articleCount {
+    font-size: 12pt !important;
+}
+
+.authLabel {
+    font-weight: bold;
+    font-size: 16pt !important;
+}
+
+.axisLabel {
+    font-size: 10pt !important;
+}
+
+.msgLabel {
+    font-size: 13pt !important;
+}
+
+.axis {
+    fill: none;
+    stroke: #d4d4d4;
+    stroke: #9ecae1;
+    stroke-width: 2;
+    shape-rendering: crispEdges !important;
+}
+
+.tile {
+    stroke-width: 2;
+    stroke-location: inside;
+    shape-rendering: crispEdges !important;
+}
+
+.researchArticleTile {
+    fill: #6baed6;
+    stroke: #4292c6;
+}
+
+.reviewTile {
+    fill: #807dba;
+    stroke: #6a51a3;
+}
+
+.medianMarker {
+    fill: #a50f15;
+    stroke: #a50f15;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.medianMarkerLabel {
+    fill: #f4f4f4;
+    font-weight: bold;
+    text-anchor: middle;
+}
+
+.legendLabel {
+    font-weight: normal;
+    font-size: 10pt;
+    alignment-baseline: middle;
+}
+
+#svgContainer {
+    float: left;
+}
+
+#controls {
+    float: left;
+}
+
+#svgLegendContainer {
+    float: left;
+}
+
+.popupContainer {
+    padding: 10px;
+    border: 1px solid #202020 !important;
+    font-family: Helvetica, Arial, sans-serif !important;
+    font-size: 8pt !important;
+    background-color: white;
+    width: 250px;
+    font-size: 10pt;
+}
+
+.popupContainer a {
+    color: #08306b;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.popupContainer a:hover {
+    color: #08519c;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.selectBox {
+    width: 150px;
+    margin-top: 3px;
+    margin-bottom: 6px;
+}
+
+.paginationContainer {
+    float: right;
+    color: #08306b;
+}
+
+.paginationEnabled {
+    cursor: pointer;
+}
+
+.paginationDisabled {
+    color: #7193c7;
+}
+
+.innerMetadataContainer {
+    min-height: 150px;
+}
