@@ -311,6 +311,7 @@ A Frequently Asked Questions (FAQ) page for users is available at http://dev-viv
 ### Key processes
 
 Publications authored by WCM full-time faculty are maintained in the PubAdmin database maintained by Paul Albert, Eliza Chan, and Prakash Adekkanattu. Upstream from the Citation Impact Tool, metadata about these publications are ingested into VIVO on a regular basis.
+
 1. Ingesting publication data from VIVO
   1. A combination of multiple modules is used to import WCM faculty-authored publications from VIVO by retrieving and parsing associated RDF data. The parsed data for each publication are then used to create various nodes, terms, and data fields in VIVO Dashboard, which is built on a Drupal platform.
   2. The import process runs on a regular basis through jobs scheduled using Cron.
