@@ -312,9 +312,13 @@ A Frequently Asked Questions (FAQ) page for users is available at http://dev-viv
 
 Publications authored by WCM full-time faculty are maintained in the PubAdmin database maintained by Paul Albert, Eliza Chan, and Prakash Adekkanattu. Upstream from the Citation Impact Tool, metadata about these publications are ingested into VIVO on a regular basis.
 1. Ingesting publication data from VIVO
+
     a. A combination of multiple modules is used to import WCM faculty-authored publications from VIVO by retrieving and parsing associated RDF data. The parsed data for each publication are then used to create various nodes, terms, and data fields in VIVO Dashboard, which is built on a Drupal platform.
+    
     b. The import process runs on a regular basis through jobs scheduled using Cron.
+    
     c. Details on Cron jobs used in the Citation Impact Tool are in the "Cron jobs" section below.
+    
 2. Updating citation counts
     a. The import process brings in updated citation counts for WCM articles as and when this value gets updated in VIVO. 
 3. Compiling articles for the baseline reference sets
@@ -357,7 +361,7 @@ The iconographic box plots are generated using code written with the d3.js javas
 
 ### Instructions and timetable for manual and automatic updates
 
-## Updating the Web of Science categories
+#### Updating the Web of Science categories
 
 Purpose: Thomson Reuters periodically updates the Web of Science journal categories. These changes are manually integrated into the Citation Lookup Tool.
 Persons responsible: Michael Bales and Prakash Adekkanattu
@@ -379,14 +383,14 @@ cat $files > combined.csv
 
 Michael sends the combined.csv file to Prakash, who updates the violin_journal, violin_category, and violin_journal_category tables on VIVO Dashboard Dev and VIVO Dashboard Live.
 
-## Updating the baseline reference sets
+#### Updating the baseline reference sets
 
 Purpose: Percentile ranks are measured against baseline sets of articles published the same year, in the same filed, and of the same article type. These baselines must be updated periodically to maintain the accuracy of the data in the citation impact plots.
 Person responsible: Prakash Adekkanattu
 Dates run: Quarterly, on March 1st, June 1st, September 1st, and December 1st of each year, starting March 1st, 2016.
 Process: Prakash runs medline_fetch.php, scopus_fetch.php, and percentile_ranking.php, in sequence. Details below.
 
-## PHP tools to manage baseline article sets
+#### PHP tools to manage baseline article sets
 
 The tables relevant to management of the baseline article sets are: violin_category, violin_journal, and violin_journal_category, violin_pmid, and violin_baseline.
 
