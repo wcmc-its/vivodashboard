@@ -312,28 +312,24 @@ A Frequently Asked Questions (FAQ) page for users is available at http://dev-viv
 
 Publications authored by WCM full-time faculty are maintained in the PubAdmin database maintained by Paul Albert, Eliza Chan, and Prakash Adekkanattu. Upstream from the Citation Impact Tool, metadata about these publications are ingested into VIVO on a regular basis.
 1. Ingesting publication data from VIVO
-
-    a. A combination of multiple modules is used to import WCM faculty-authored publications from VIVO by retrieving and parsing associated RDF data. The parsed data for each publication are then used to create various nodes, terms, and data fields in VIVO Dashboard, which is built on a Drupal platform.
-    
-    b. The import process runs on a regular basis through jobs scheduled using Cron.
-    
-    c. Details on Cron jobs used in the Citation Impact Tool are in the "Cron jobs" section below.
-    
+  1. A combination of multiple modules is used to import WCM faculty-authored publications from VIVO by retrieving and parsing associated RDF data. The parsed data for each publication are then used to create various nodes, terms, and data fields in VIVO Dashboard, which is built on a Drupal platform.
+  2. The import process runs on a regular basis through jobs scheduled using Cron.
+  3. Details on Cron jobs used in the Citation Impact Tool are in the "Cron jobs" section below.
 2. Updating citation counts
-    a. The import process brings in updated citation counts for WCM articles as and when this value gets updated in VIVO. 
+  1. The import process brings in updated citation counts for WCM articles as and when this value gets updated in VIVO. 
 3. Compiling articles for the baseline reference sets
-    a. Using the baseline set of articles imported from Pubmed and updated with citation counts from Scopus (violin_pmid), a custom PHP tool populates violin_baseline with sets of articles matching the year, field, and article type. These reference sets serve as the baselines against which percentile rank values are calculated.
-    b. Except in cases where the number of candidate articles is small (e.g., review articles in acoustics for the Year 2004), there are approximately 200 articles in each reference set.
+  1. Using the baseline set of articles imported from Pubmed and updated with citation counts from Scopus (violin_pmid), a custom PHP tool populates violin_baseline with sets of articles matching the year, field, and article type. These reference sets serve as the baselines against which percentile rank values are calculated.
+  2. Except in cases where the number of candidate articles is small (e.g., review articles in acoustics for the Year 2004), there are approximately 200 articles in each reference set.
 4. Calculating percentile ranks
-    a. A PHP script calculates percentile rank for each article in VIVO Dashboard and populate tables violin_wcmc_article, violin_wcmc_author and violin_wcmc_author_article with various fields.
-    b. To calculate the percentile rank, this script first calculates a percentile rank for each category assigned to the journal in which the article is published.
-    c. To identify the categories for a given journal, the journal's ISSN (or EISSN) is used to determine the journal_id in the violin_journal table.
-    d. This journal_id is used to look up the journal's categories in the violin_journal_category table.
-    e. The categories themselves are in the violin_category table.
-    f. To determine an article's percentile rank in a given category, the script sorts the articles in the selected baseline by times cited and assigns each article a raw rank. The article cited the highest number of times is assigned a raw rank of 1; the article cited the fewest number of times is assigned 200. The script then determines whether, among the articles in the baseline, there is an article with a matching number of times cited. 
-        i. If there is an article with a matching number of times cited, the article is assigned a percentile rank (for the given category) based on the rank of the article in the baseline.
-        ii. If there is no article with a matching number of times cited, the article is assigned a percentile rank (for the given category) based on the average of the ranks of the articles immediately above and below the value corresponding to the article's times cited.
-    g. When an article's journal is assigned to more than one category, the percentile ranks for each of an article's journal's categories are averaged together to compute the rank. 
+  1. A PHP script calculates percentile rank for each article in VIVO Dashboard and populate tables violin_wcmc_article, violin_wcmc_author and violin_wcmc_author_article with various fields.
+  2. To calculate the percentile rank, this script first calculates a percentile rank for each category assigned to the journal in which the article is published.
+  3. To identify the categories for a given journal, the journal's ISSN (or EISSN) is used to determine the journal_id in the violin_journal table.
+  4. This journal_id is used to look up the journal's categories in the violin_journal_category table.
+  5. The categories themselves are in the violin_category table.
+  6. To determine an article's percentile rank in a given category, the script sorts the articles in the selected baseline by times cited and assigns each article a raw rank. The article cited the highest number of times is assigned a raw rank of 1; the article cited the fewest number of times is assigned 200. The script then determines whether, among the articles in the baseline, there is an article with a matching number of times cited.
+    1. If there is an article with a matching number of times cited, the article is assigned a percentile rank (for the given category) based on the rank of the article in the baseline.
+    2. If there is no article with a matching number of times cited, the article is assigned a percentile rank (for the given category) based on the average of the ranks of the articles immediately above and below the value corresponding to the article's times cited.
+  7. When an article's journal is assigned to more than one category, the percentile ranks for each of an article's journal's categories are averaged together to compute the rank. 
 
 ### Percentile ranking for WCM Publications
 
