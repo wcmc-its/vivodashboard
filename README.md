@@ -375,8 +375,11 @@ The iconographic box plots are generated using code written with the d3.js javas
 #### Updating the Web of Science categories
 
 Purpose: Thomson Reuters periodically updates the Web of Science journal categories. These changes are manually integrated into the Citation Lookup Tool.
+
 Persons responsible: Michael Bales and Prakash Adekkanattu
+
 Dates run: March 1st of each year, starting March 1st, 2016.
+
 How to get the Web of Science subject categories for all journals (Michael):
 
 1. Point a web browser to Web of Science
