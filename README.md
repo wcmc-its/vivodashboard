@@ -397,8 +397,11 @@ Michael sends the combined.csv file to Prakash, who updates the violin_journal, 
 #### Updating the baseline reference sets
 
 Purpose: Percentile ranks are measured against baseline sets of articles published the same year, in the same filed, and of the same article type. These baselines must be updated periodically to maintain the accuracy of the data in the citation impact plots.
+
 Person responsible: Prakash Adekkanattu
+
 Dates run: Quarterly, on March 1st, June 1st, September 1st, and December 1st of each year, starting March 1st, 2016.
+
 Process: Prakash runs medline_fetch.php, scopus_fetch.php, and percentile_ranking.php, in sequence. Details below.
 
 #### PHP tools to manage baseline article sets
