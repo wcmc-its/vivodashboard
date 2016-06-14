@@ -168,6 +168,20 @@ VIVO Dashboard comes with a module called Ultimate Cron. This module acts as a m
 
 Ultimate Cron can be configured at: Configuration -> System -> Cron Settings (/admin/config/system/cron)
 
+### Resting the publication import process on VIVODashboard
+
+Following are the procedures to reset the import on VIVODashboard.
+1. Login with admin privilege.
+2. Unlock the import by first killing/unlocking the running cron jobs on feeds: (https://vivodashboard.weill.cornell.edu/admin/config/system/cron)
+Default cron handler
+Queue: feeds_push_unsubscribe
+Queue: feeds_source_clear
+Queue: feeds_source_expire
+Queue: feeds_source_import
+3. Go to import module and unlock the import process: (https://vivodashboard.weill.cornell.edu/import/vivo_publications)
+Click on the UNLOCK tab to open a confirmation page.
+Confirm unlock by clicking on Unlock button.
+
 
 Customization
 -------------
