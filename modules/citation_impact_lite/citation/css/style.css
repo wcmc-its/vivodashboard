@@ -1,0 +1,105 @@
+.label {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 8pt;
+}
+
+.axisLabel {
+    font-weight: bold;
+    alignment-baseline: middle;
+}
+
+.percentileLabel {
+    font-size: 12pt !important;
+}
+
+.timeFrameLabel {
+    font-weight: bold;
+    font-size: 11pt !important;
+}
+
+.articleCount {
+    font-size: 10pt !important;
+}
+
+.axis {
+    fill: none;
+    stroke: #d4d4d4;
+    stroke: #9ecae1;
+    stroke-width: 2;
+    shape-rendering: crispEdges !important;
+}
+
+.tile {
+    stroke-width: 2;
+    stroke-location: inside;
+    shape-rendering: crispEdges !important;
+}
+
+.researchArticleTile {
+    fill: #6baed6;
+    stroke: #4292c6;
+}
+
+.reviewTile {
+    fill: #807dba;
+    stroke: #6a51a3;
+}
+
+.medianMarker {
+    fill: #a50f15;
+    stroke: #a50f15;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+}
+
+.medianMarkerLabel {
+    fill: #f4f4f4;
+    font-weight: bold;
+    alignment-baseline: middle;
+    text-anchor: middle;
+}
+
+.legendLabel {
+    font-weight: normal;
+    font-size: 10pt;
+    alignment-baseline: middle;
+}
+
+#svgContainer {
+    float: left;
+}
+
+#controls {
+    float: left;
+}
+
+#svgLegendContainer {
+    float: left;
+}
+
+#popupContainer {
+    padding: 10px;
+    border-width: 0px;
+    background-color: white;
+    width: 250px;
+    font-size: 10pt;
+}
+
+#popupContainer a {
+    color: #08306b;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#popupContainer a:hover {
+    color: #08519c;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.selectBox {
+    width: 200px;
+    margin-top: 3px;
+    margin-bottom: 6px;
+}
