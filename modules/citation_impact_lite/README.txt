@@ -8,6 +8,7 @@ Many measures of scholarly impact, including the journal impact factor, use para
 Building a fully functional citation impact visualization application involves the following steps:
 
 I) Database
+Note: The below table definitions can be replicated using the create_db.sql file under the folder sql.
 * Create a database using your preferred database client.
 * Create a database user account and provide access permission to this new database.
 * Create the following tables necessary for the base application.
@@ -20,11 +21,9 @@ I) Database
  * violin_update_history
 
 In addition to the above tables, the following three tables are also needed if institutional articles are to be stored in a database.
-article
-author
-author_article
-
-For table definitions; use the create_db.sql file under the folder sql.
+* article
+* author
+* author_article
 
 II) Application settings
 Copy the entire code base of citation_impact_lite to your web server home directory.
