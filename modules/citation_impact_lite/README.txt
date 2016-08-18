@@ -8,16 +8,16 @@ Many measures of scholarly impact, including the journal impact factor, use para
 Building a fully functional citation impact visualization application involves the following steps:
 
 I) Database
--Create a database using your preferred database client.
--Create a database user account and provide access permission to this new database.
--Create the following tables necessary for the base application.
---violin_excel
---violin_category
---violin_journal
---violin_journal_category
---violin_pmid
---violin_baseline
---violin_update_history
+* Create a database using your preferred database client.
+* Create a database user account and provide access permission to this new database.
+* Create the following tables necessary for the base application.
+ * violin_excel
+ * violin_category
+ * violin_journal
+ * violin_journal_category
+ * violin_pmid
+ * violin_baseline
+ * violin_update_history
 
 In addition to the above tables, the following three tables are also needed if institutional articles are to be stored in a database.
 article
