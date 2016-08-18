@@ -3,21 +3,21 @@ Citation Impact Tool
 
 Overview
 
-Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same field, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
+Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same discipline, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
 
 Building a fully functional citation impact visualization application involves the following steps:
 
 I) Database
-Create a database using your preferred database client.
-Create a database user account and provide access permission to this new database.
-Create the following tables necessary for the base application.
-violin_excel
-violin_category
-violin_journal
-violin_journal_category
-violin_pmid
-violin_baseline
-violin_update_history
+-Create a database using your preferred database client.
+-Create a database user account and provide access permission to this new database.
+-Create the following tables necessary for the base application.
+--violin_excel
+--violin_category
+--violin_journal
+--violin_journal_category
+--violin_pmid
+--violin_baseline
+--violin_update_history
 
 In addition to the above tables, the following three tables are also needed if institutional articles are to be stored in a database.
 article
@@ -64,7 +64,7 @@ CITATION_DIR=/dir/location/of/citation_impact_lite
 
 Note: Before every run, all entries from previous runs should be removed from violin_pmid table.
 
-VI) Custom scripts to import publications for a given year, category id and article type:
+VI) Custom scripts to import publications for a given year, category ID and article type:
 
 1. custom_medline_fetch.php - This script fetches a list of PMIDs from PubMed for a given year, category_id and article type. The program will randomly select 200 of these PMIDs and fetch details of each article from PubMed. The returned XML is then parsed to populate the table violin_pmid.
 2. custom_scopus_fetch.php - This script accesses the Scopus API to retrieve citation counts for each article in violin_pmid for a given year and updates the citation_count field.
