@@ -65,11 +65,11 @@ To run these scripts on Cron, set up a crontab as follows:
 **Run Medline fetch script:**
 ```
 CITATION_DIR=/dir/location/of/citation_impact_lite
-00      10      12      3       4       cd $CITATION_DIR; php -f ./medline_fetch.php > /dev/null 2>&1
+cd $CITATION_DIR; php -f ./medline_fetch.php > /dev/null 2>&1
 ```
 **Run Scopus fetch script**
 ```
-00      13      12      3       4       cd $CITATION_DIR; php -f ./scopus_fetch.php > /dev/null 2>&1
+cd $CITATION_DIR; php -f ./scopus_fetch.php > /dev/null 2>&1
 ```
 
 ***Note: Before every run, all entries from previous runs should be removed from violin_pmid table.
