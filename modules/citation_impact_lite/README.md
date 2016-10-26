@@ -6,6 +6,22 @@ Overview
 
 Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same discipline, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
 
+Here's how we calculate percentile ranks:
+
+For a given article, we determine the Web of Science subject categories for its journal.
+
+We take the first category, identify all the journals in Medline that are assigned to that category, and randomly select a sample of 200 articles matching the year and article type (academic article or review).
+
+These 200 articles form our baseline for comparison. To determine how many times each of these articles has each been cited we use the Scopus API.
+Once we know how many times these articles have been cited we assign each one a rank. The one that’s been cited the fewest number of times is given a rank of 1; the one that’s been cited the most is given a rank of 200. Sometimes there are ties (when more than one article has been cited the same number of times); in that case we assign the median rank of the articles that are tied.
+Once we have a rank for each article, we can calculate the percentile rank of the number of times it’s been cited, against the articles in the baseline, using a formula proposed by Hazen (1914):
+
+((i-0.5)/n*100)
+where i is the article rank (adjusted for ties)
+and n is the number of documents in the reference set.
+
+Finally, we use the reference set to calculate the percentile rank of the article we’re interested in. A given article will have a percentile rank for each category that its journal is in.
+
 ####  Building a fully functional citation impact visualization application involves the following steps:
 
 ####  I) Database
