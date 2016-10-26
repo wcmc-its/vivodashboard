@@ -6,7 +6,7 @@ Overview
 
 Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same discipline, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
 
-Here's how we calculate percentile ranks:
+####  Here's how we calculate percentile ranks:
 
 For a given article, we determine the Web of Science subject categories for its journal.
 
