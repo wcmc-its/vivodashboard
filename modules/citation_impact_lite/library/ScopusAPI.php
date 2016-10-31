@@ -26,8 +26,6 @@ class ScopusAPI extends Exception
 
     private $scopus_query_start = "http://api.elsevier.com/content/search/index:SCOPUS?";
 
-    // http://api.elsevier.com/content/search/index:SCOPUS?query=pmid(23000000)&view=COMPLETE&field=citedby-count,identifier&apikey=e0fa610418a4859d24f2457e021aea60
-
     public function query($term)
     {
         $this->term = $term;
