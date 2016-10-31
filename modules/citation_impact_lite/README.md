@@ -6,6 +6,22 @@ Overview
 
 Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same discipline, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
 
+#### How to generate a citation impact plot using your own data
+
+The Citation Impact Tool Lite requires PHP, a general-purpose programming language. If you are using a Mac you likely already have PHP on your machine. If you are using Windows you will need to install PHP if it is not already installed: http://php.net/manual/en/install.windows.php
+
+To use these instructions, you need to know how to use a terminal or command prompt to navigate between directories. A tutorial on using the command prompt is here: http://www.digitalcitizen.life/command-prompt-how-use-basic-commands
+
+* In a terminal or command prompt, navigate to the directory where you would like to install the Citation Impact Tool
+* To download the code to your local machine, enter the command:
+git clone https://github.com/wcmc-its/vivodashboard.git
+* Navigate to the directory /vivodashboard/modules/citation_impact_lite/citation
+* To generate an html file with the plot, enter the command:
+php plot_csv.php > citation_impact.html
+* In Finder (on Mac) or File Explorer (on Windows), navigate to the directory /vivodashboard/modules/citation_impact_lite/citation
+* To display the plot in your browser, double-click on citation_impact.html
+* To change the data displayed in the plot, modify the data in /vivodashboard/modules/citation_impact_lite/citation/data/sample_times_cited_data_1_with_authors.csv. (To modify the data, open it in Microsoft Excel or a text editor.)
+
 ####  Here's how we calculate percentile ranks:
 
 For a given article, we determine the Web of Science subject categories for its journal.
