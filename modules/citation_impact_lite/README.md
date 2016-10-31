@@ -6,7 +6,7 @@ Overview
 
 Many measures of scholarly impact, including the journal impact factor, use parametric approaches that assume citation data to be normally distributed. However, because citation data are highly skewed (i.e., not normally distributed), these parametric approaches are often unreliable. For proper measurement of citation impact, leading bibliometrics researchers support the use of nonparametric approaches. In accordance with this recommendation we developed the Citation Impact Tool, a system that calculates the percentile rank of times cited for individual articles, measured against a baseline of 200 articles of the same type, in the same discipline, and published the same year. The system presents this information visually as an iconographic box plot, portraying a researcher or department’s profile of articles as a collection, with each article displayed in a bin corresponding to its normalized percentile rank.
 
-#### How to generate a citation impact plot using your own data
+#### How to generate a citation impact plot using your own data:
 
 The Citation Impact Tool Lite requires PHP, a general-purpose programming language. If you are using a Mac you likely already have PHP on your machine. If you are using Windows you will need to install PHP if it is not already installed: http://php.net/manual/en/install.windows.php
 
@@ -156,7 +156,7 @@ Note. Parallel implementation significantly reduces the overall time required fo
 Running the script **baseline_rank.php** will access the violin_pmid table and then calculate the rank, median rank, and percentile rank for the set of 200 articles corresponding to a given year, category id, and article type:  
 ```php -f baseline_rank.php```
 
-#### IX) Calculating percentile rank of institutional articles
+#### IX) Calculating percentile rank of institutional articles:
 Before running this script, excluding the percentile_rank field in the article table, the tables article, author, and author_article need to be properly populated with appropriate data.
 
 The specific source of these data may vary between institutions. At Weill Cornell Medicine, these data come from our VIVO instance through a separate import process.
@@ -165,7 +165,7 @@ Running the script calculate_percentile_rank.php will calculate the percentile r
 This script will then update the percentile_rank field the article table.
 php -f calculate_percentile_rank.php
 
-#### X) Visualizing citation impact of institutional articles
+#### X) Visualizing citation impact of institutional articles:
 The folder citation contains all the code necessary for visualizing the citation impact plot for a given set of articles.
 Two sample scripts are provided: **plot_csv.php** and **plot_db.csv**.
 The script **plot_csv.php** gets publication data from a local CSV file and shows the corresponding visualization chart.
