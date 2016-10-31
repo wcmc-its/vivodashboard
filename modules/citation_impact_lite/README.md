@@ -20,7 +20,12 @@ git clone https://github.com/wcmc-its/vivodashboard.git
 php plot_csv.php > citation_impact.html
 * In Finder (on Mac) or File Explorer (on Windows), navigate to the directory /vivodashboard/modules/citation_impact_lite/citation
 * To display the plot in your browser, double-click on citation_impact.html
-* To change the data displayed in the plot, modify the data in /vivodashboard/modules/citation_impact_lite/citation/data/sample_times_cited_data_1_with_authors.csv. (To modify the data, open it in Microsoft Excel or a text editor.)
+* To change the data displayed in the plot, modify the data in /vivodashboard/modules/citation_impact_lite/citation/data/sample_times_cited_data_1_with_authors.csv.
+* To modify the data, open it in Microsoft Excel or a text editor. At a minimum, you need to include data in the following fields:
+ * pubtype
+ * citation_count
+ * percentile_rank_dummy_data
+ * cover_date
 
 ####  Here's how we calculate percentile ranks:
 
