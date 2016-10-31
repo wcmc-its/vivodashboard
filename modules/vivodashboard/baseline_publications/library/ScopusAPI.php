@@ -14,7 +14,7 @@ class ScopusAPI extends Exception
     public $field = 'pubmed-id,citedby-count,identifier'; //filed to search
     public $start = 0;
     public $view = "COMPLETE";
-    public $api_key = 'e0fa610418a4859d24f2457e021aea60';
+    public $api_key = '';
     public $http_accept = 'application/xml';
     public $term = '';
     public $db = 'pubmed';
@@ -26,7 +26,7 @@ class ScopusAPI extends Exception
     private $scopus_query_start = "http://api.elsevier.com/content/search/index:SCOPUS?";
 
 
-    // http://api.elsevier.com/content/search/index:SCOPUS?query=pmid(23000000)&view=COMPLETE&field=citedby-count,identifier&apikey=e0fa610418a4859d24f2457e021aea60
+    // http://api.elsevier.com/content/search/index:SCOPUS?query=pmid(23000000)&view=COMPLETE&field=citedby-count,identifier&apikey=
 
     public function query($term)
     {
