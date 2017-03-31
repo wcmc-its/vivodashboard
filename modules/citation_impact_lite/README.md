@@ -18,6 +18,7 @@ git clone https://github.com/wcmc-its/vivodashboard.git
 * Navigate to the directory /vivodashboard/modules/citation_impact_lite/citation
 * To generate an html file with the plot, enter the command:
 php plot_csv.php > citation_impact.html
+(Note that the above command tells the operating system to use php to run the code in plot_csv.php and to save the output as citation_impact.html)
 * In Finder (on Mac) or File Explorer (on Windows), navigate to the directory /vivodashboard/modules/citation_impact_lite/citation
 * To display the plot in your browser, double-click on citation_impact.html
 * To change the data displayed in the plot, modify the data in /vivodashboard/modules/citation_impact_lite/citation/data/sample_times_cited_data_1_with_authors.csv.
