@@ -8,7 +8,7 @@ Many measures of scholarly impact, including the journal impact factor, use para
 
 #### How to generate a citation impact plot using your own data:
 
-The Citation Impact Tool Lite requires PHP, a general-purpose programming language. If you are using a Mac you likely already have PHP on your machine. If you are using Windows you will need to install PHP if it is not already installed: http://php.net/manual/en/install.windows.php
+The Citation Impact Tool Lite requires PHP, a general-purpose programming language, to be installed (note that knowledge of how to code in PHP is *not* required). If you are using a Mac you likely already have PHP on your machine. If you are using Windows you will need to install PHP if it is not already installed: http://php.net/manual/en/install.windows.php
 
 To use these instructions, you need to know how to use a terminal or command prompt to navigate between directories. A tutorial on using the command prompt is here: http://www.digitalcitizen.life/command-prompt-how-use-basic-commands
 
