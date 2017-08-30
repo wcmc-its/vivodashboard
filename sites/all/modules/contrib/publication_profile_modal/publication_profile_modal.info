@@ -1,0 +1,5 @@
+name = Publication Profile Modal
+description = A module to display author profile in modal on the publications page
+core = 7.x
+
+stylesheets[all][] = publication_profile_modal.css

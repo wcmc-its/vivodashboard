@@ -1,0 +1,153 @@
+<?php
+/**
+ * Implements hook_menu().
+ */
+function publication_profile_modal_menu() {
+  $items = array();
+
+  $items['publication_profile_by_cwid/%'] = array(
+  	'page callback' => 'get_profile_by_cwid',
+    'page arguments' => array(1),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+
+  return $items;
+
+}
+
+function get_headshot_status($headshot_url){
+	$handle = curl_init($headshot_url);
+	curl_setopt($handle,  CURLOPT_RETURNTRANSFER, TRUE);
+	$response = curl_exec($handle);
+	$httpCode = curl_getinfo($handle, CURLINFO_HTTP_CODE);
+	if($httpCode == 404) {
+		return '404';
+	}
+
+	curl_close($handle);
+
+	return '';
+}
+
+function get_profile_by_cwid($args) {
+
+	$author_id = db_query("SELECT i.entity_id as entity_id, f.field_first_name_value AS first_name, l.field_last_name_value AS last_name, t.field_primary_title_value AS field_primary_title_value, 
+    v.field_vivouri_url as vivo_uri, p.field_popsuri_url as pops_uri, w.field_webdiruri_url as webdir_uri
+    FROM field_data_field_id i LEFT JOIN field_data_field_first_name f ON i.entity_id = f.entity_id LEFT JOIN field_data_field_last_name l ON i.entity_id = l.entity_id LEFT JOIN field_data_field_primary_title t ON i.entity_id = t.entity_id 
+    LEFT JOIN field_data_field_vivouri v ON i.entity_id = v.entity_id LEFT JOIN field_data_field_popsuri p ON i.entity_id = p.entity_id LEFT JOIN field_data_field_webdiruri w ON i.entity_id = w.entity_id
+    WHERE i.field_id_value = '" .$args. "'")->fetchObject();
+
+	if(!empty($author_id->entity_id)) {
+
+		print '<div class="author-modal">';
+
+		$headshot_status = get_headshot_status('https://directory.weill.cornell.edu/api/v1/person/profile/'.$args.'.png?returnGenericOn404=true');
+		if($headshot_status == '404') {
+			print '<div class="author-image">';
+			print '<img src="/'.drupal_get_path('module', 'publication_profile_modal').'/generic_headshot.png" width="120">';
+			print '</div>';
+		} else {
+			print '<div class="author-image">';
+			print '<img src="https://directory.weill.cornell.edu/api/v1/person/profile/'.$args.'.png?returnGenericOn404=true" width="120">';
+			print '</div>';
+		}
+
+		print '<div class="author-information">';
+
+		print '<h1>'.$author_id->first_name . ' ' . $author_id->last_name.'</h1>';
+
+		if($author_id->field_primary_title_value != '') {
+			print '<h2>'.$author_id->field_primary_title_value.'</h2>';
+		}
+
+		// get total number of publications
+
+		// get all relation id's
+		$get_author_nodes = db_query("SELECT * FROM field_data_endpoints WHERE endpoints_entity_id = " . $author_id->entity_id);
+		$all_author_nodes = array();
+		if($get_author_nodes->rowCount() > 0) {
+			foreach ($get_author_nodes as $value) {
+				$all_author_nodes[] = $value->entity_id;
+			}
+		}
+		// get all the node id's from the relation id's
+		$all_nodes = array();
+		$get_nodes = db_query("SELECT endpoints_entity_id FROM field_data_endpoints WHERE entity_id IN (".implode(',', $all_author_nodes).") AND delta = 0;");
+		if($get_nodes->rowCount() > 0) {
+			foreach ($get_nodes as $value) {
+				$all_nodes[] = $value->endpoints_entity_id;
+			}
+		}
+
+		// get the min and max date range of the publications
+		$date_range = db_query("SELECT MIN(field_date_value) as start_date, MAX(field_date_value) as end_date FROM field_data_field_date WHERE entity_id IN(".implode(', ', $all_nodes).");")->fetchObject();
+		///
+		$author_appts = '';
+		$author_appt_current = '';
+		$count_appts = 0;
+		$author_appointments = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a 
+			LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = '".$args."' AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate School') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC");
+
+		if($author_appointments->rowCount() > 0){
+			foreach ($author_appointments as $appointment) {
+				$start_date = date('Y', strtotime($appointment->weillCornellEduStartDate));
+				$end_date = date('Y', strtotime($appointment->weillCornellEduEndDate));
+                $end_date_value = '-';
+                if($appointment->weillCornellEduEndDate != '') {
+                    if($end_date >= date('Y')) {
+                        $end_date_value =  '-';
+                    } else {
+                        $end_date_value = '-'.$end_date;
+                    }
+                } else {
+                    $end_date_value = '-';
+                }
+				$author_appts .= $appointment->dept_name . ' &ndash; ' . $start_date . $end_date_value .'<br>';
+
+				if($count_appts == 0) {
+					$author_appt_current = ' - ' . $appointment->dept_name;
+				}
+
+				$count_appts++;
+			}
+		}
+
+		if(count($all_author_nodes) > 0) {
+			print '<div><a href="/publications/list?f[0]=publication_year:['.date('Y', strtotime($date_range->start_date)) . ' TO ' . date('Y', strtotime($date_range->end_date)).']&f[1]=publication_author_names:'.$author_id->first_name.' ' . $author_id->last_name . $author_appt_current.'">'.count($all_author_nodes).' Publications</a></div>';
+		}
+
+		print '<hr>';
+
+		print $author_appts;
+
+		print '<hr>';
+
+		//$pops_url = '';
+		//$pops_uri_url = db_query("SELECT field_popsuri_url FROM field_data_field_popsuri WHERE entity_id = " .$author_id->entity_id )->fetchObject();
+
+		/*if(!empty($pops_uri_url->field_popsuri_url)) {
+			$pops_url = $pops_uri_url->field_popsuri_url;
+		}*/
+
+
+
+        if($author_id->vivo_uri != '') {
+            print '<div class="callout-btns btn-vivo"><a href="'.$author_id->vivo_uri.'" target="_blank">VIVO</a></div>';
+        }
+
+		if($author_id->pops_uri != '') {
+		    print '<div class="callout-btns btn-pops"><a href="'.$author_id->pops_uri.'" target="_blank">POPS</a></div>';
+		}
+
+        if($author_id->webdir_uri != '') {
+            print '<div class="callout-btns btn-directory"><a href="' . $author_id->webdir_uri . '" target="_blank">Directory</a></div>';
+        }
+		print '</div>';
+
+		print '</div>';
+
+	} else {
+		print 'Author not found';
+	}
+}

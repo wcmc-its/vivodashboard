@@ -1,0 +1,7 @@
+name = VIVO Appointments
+description = Incorporates data for WCMC organizational appointments
+core = 7.x
+package = VIVO Dashboard
+version = 7.x-1.0
+project = vivodashboard_appointments
+files[] = plugins/search_api/appointments_alter_callback.inc

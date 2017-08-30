@@ -1,0 +1,27 @@
+name = "Ultimate Cron"
+description = "Cron"
+core = 7.x
+
+php = 5.3
+
+dependencies[] = ctools
+
+files[] = tests/rules.test
+files[] = CronRule.class.php
+files[] = ultimate_cron.lock.inc
+files[] = ultimate_cron.memcache-lock.inc
+files[] = ultimate_cron.job.inc
+files[] = ultimate_cron.plugin.inc
+files[] = ultimate_cron.progress.inc
+files[] = ultimate_cron.memcache-progress.inc
+files[] = ultimate_cron.signal.inc
+files[] = ultimate_cron.cache-signal.inc
+
+configure = admin/config/system/cron/settings
+
+; Information added by Drupal.org packaging script on 2017-05-16
+version = "7.x-2.4"
+core = "7.x"
+project = "ultimate_cron"
+datestamp = "1494969491"
+

@@ -1,0 +1,5 @@
+name = "VIVO Linked Data Import"
+description = "Plugins for retrieving linked data content from VIVO sites"
+package = Feeds
+dependencies[] = ldimport
+core = 7.x

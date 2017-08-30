@@ -1,0 +1,173 @@
+<style type=“text/css”>
+  h3 {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+  }
+</style>
+<ul>
+  <li><a href="#1">What is the purpose of the Citation Impact tool?</a></li>
+  <li><a href="#othermetrics">How does Citation Impact compare to other metrics of impact?</a></li>
+  <li><a href="#3">What data are being displayed in these plots?</a></li>
+  <li><a href="#4">What determines the fields in which the articles are published?</a></li>
+  <li><a href="#5">What categories can I search?</a></li>
+  <li><a href="#6">What if an article is in more than one field?</a></li>
+  <li><a href="#7">What do the colors represent?</a></li>
+  <li><a href="#8">How do I see publications information in my search results?</a></li>
+  <li><a href="#9">How do I save a search?</a></li>
+  <li><a href="#10">Can I export the search results?</a></li>
+  <li><a href="#11">What is the source of the publication data?</a></li>
+  <li><a href="#12">What determines whether a paper is included?</a></li>
+  <li><a href="#13">Why is it necessary to use percentile rank of of times cited, rather than just raw counts of times cited?</a></li>
+  <li><a href="#14">How many articles are there in the baseline for each percentile rank calculation?</a></li>
+  <li><a href="#15">Why doesn't the plot display data for more recent articles?</a></li>
+  <li><a href="#16">How often are the baselines updated?</a></li>
+  <li><a href="#17">Why are some publications missing?</a></li>
+  <li><a href="#18">What if a publication is missing?</a></li>
+  <li><a href="#19">Within a given time period, in what order do the rectangles appear?</a></li>
+  <li><a href="#20">How do I identify the most impactful publication on the chart?</a></li>
+</ul>
+
+
+
+
+<h3 id="1">What is the purpose of the Citation Impact tool?</h3>
+
+<p>The Citation Impact tool allows select users to assess the number of citations a given person or group has received relative to peer publications. Publications are collectively benchmarked against year, publication type (i.e., academic article or review), and topical category of journal.
+</p>
+
+
+<h3 id="othermetrics">How does Citation Impact compare to other metrics of impact?</h3>
+
+<p>A variety of metrics speak to the citation impact of journal articles. Here are several:</p>
+
+<table>
+  <tbody><tr><td><b>Name</b></td><td><b>Level</b></td><td><b>Description</b></td></tr>
+  <tr><td>Impact Factor</td><td>journal</td><td>A propietary measure of the frequency with which the average article in a journal has been cited in a particular year</td></tr>
+  <tr><td>Scimago Journal Ranking</td><td>journal</td><td>A measure of scientific influence of scholarly journals that accounts for both the number of citations received by a journal and the importance or prestige of the journals where such citations come from</td></tr>
+  <tr><td>H-index</td><td>author</td><td>The number of papers an author has written that have been cited that many times; rewards longevity</td></tr>
+  <tr><td>Relative Citation Ratio</td><td>article</td><td>A parametric metric which compares the number of citations an article receives against a baseline of papers authored by NIH R01-funded investigators; does not take into consideration publication type or field</td></tr>
+  </tbody></table>
+
+<p>The Citation Impact metric was designed to address certain weaknesses of the above approaches. Citation Impact is a percentile score calculated at the article level against a reference set of 200 randomly selected "peer" publications. Reference sets are constructed from 4,520 different combinations of: type of article, topical category of journal, and year of publication (details below). Because number of citations is a skewed (rather than normal) distribution, using a percentile ranking is a best practice. The use of journal categories ensures that authors publishing in more specialized fields are not punished for doing so.</p>
+
+
+
+
+
+<h3 id="3">What data are being displayed in these plots?</h3>
+
+<p>The Y-axis is divided into bins representing groups of ten of percentiles each. Each square represents an article, and each article is placed into the bin reflecting its percentile rank among articles published in the same year, of the same type, and in the same field. For example, if a given article is in the 10th percentile, this means that 90% of articles in its category have received fewer citations. A percentile rank of one is the best; a percentile rank of 100 is the worst.</p>
+
+<h3 id="4">What determines the fields in which the articles are published?</h3>
+
+<p>A journal's fields of research are derived from the Thomson Reuters Web of Science category or categories to which it is assigned. An article's fields of research, in turn, are derived from these journal categories. A given article may therefore be assigned one or more fields of research, and therefore one or more percentile ranks. For example, suppose an article was published in a journal in the biophysics and neuroscience categories. This article may be in the 20th percentile for times cited when measured against a baseline of articles in biophysics, but in the 15th percentile when measured against a baseline of articles in neuroscience.</p>
+
+<h3 id="5">What categories can I search?</h3>
+
+<p><i>Author Name:</i> Search by first or last name; a list of possible matches will appear below as you type.
+</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/author_name.png">
+
+<p><i>Primary Department:</i> Search by the author's primary WCM department.  Select any one WCM department by clicking the checkbox.  This table will disappear once you make a selection..
+</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/Primary_Dept.png">
+
+<p><i>Publication Type:</i> Choose Journal Article or Review by clicking the checkbox.</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/pub_type.png">
+
+<p><i>Author Rank:</i> Search publications that list the author first or last.</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/author_rank.png">
+
+<p><i>Journal Rank:</i> As you type into the field, a list of possible matches will appear below.</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/author_name.png">
+
+<h3 id="6">What if an article is in more than one field?</h3>
+
+
+<p>If an article is in more than one field, the percentile rank is averaged across fields. The square is positioned at the average percentile rank.</p>
+
+
+<h3 id="7">What do the colors represent?</h3>
+
+
+<p>Each square represents one article. Research articles are blue; review articles are purple. The median percentile rank for each time period is indicated by the red arrow.</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/view_results.png">
+
+
+<h3 id="8">How do I see publications information in my search results?</h3>
+
+
+<p>Click directly on a square to view a popup window with the full citation and rank information.  Click the left and right arrows to scroll through multiple publications, and click <b>View Details</b> to see its abstract in VIVO.</p>
+
+<img src="/profiles/vivodashboard/themes/vdb/images/faq/view_pubs.png">
+
+<h3 id="9">How do I save a search?</h3>
+
+
+<p>Just bookmark it in your browser! Every facet or filter you add is added to the web address.</p>
+
+<h3 id="10">Can I export the search results?</h3>
+
+
+<p>At this time, VIVO Dashboard does not allow you to export Citation Impact data, but one could take a screenshot.</p>
+
+<h3 id="11">What is the source of the publication data?</h3>
+
+
+<p>The publication data is ultimately from the PubMed and Scopus databases. VIVO Dashboard will harvest data from VIVO on a monthly basis. VIVO is maintained by Weill Cornell Medicine and the Clinical and Translational Science Center. An FAQ contains more information on how these publications are identified.</p>
+
+<h3 id="12">What determines whether a paper is included?</h3>
+
+
+<p>The plots include all research and review articles indexed in Medline or Scopus. Articles of other types, such as letters to the editor, are excluded.</p>
+
+<h3 id="13">Why is it necessary to use percentile rank of of times cited, rather than just raw counts of times cited?</h3>
+
+
+<p>When an article is cited by authors of other articles, this suggests a stronger scholarly contribution. Citation counts vary based on article type, field of research, and year of publication; therefore raw counts of times cited do not adequately assess an article's impact. By convention in bibliometrics the scholarly impact of an article is assessed against a reference set of other articles of the same type, in the same field, and published the same year. It is then possible to calculate the percentile rank of the number of times a given article has been cited, using the articles in the reference set as a baseline. Percentile ranks are inverted, such that articles in the first percentile were cited the most, and articles in the hundredth percentile were cited the least.</p>
+
+
+<h3 id="14">How many articles are there in the baseline for each percentile rank calculation?</h3>
+
+
+<p>The baseline for each percentile rank calculation is comprised of 200 articles of the same type, in the same field, and published the same year.</p>
+
+
+<h3 id="15">Why doesn't the plot display data for more recent articles?</h3>
+
+
+<p>Because recently published articles have had little time to accumulate citations, times cited data for recent articles may be inaccurate and misleading. As of 2015 it is a convention in bibliometrics to exclude data on articles published fewer than two to three years ago. In future years, assuming that current trends in article citation continue, it may be appropriate to include articles published more recently.</p>
+
+
+<h3 id="16">How often are the baselines updated?</h3>
+
+
+<p>The baseline data is updated on a quarterly basis.</p>
+
+<h3 id="17">Why are some publications missing?</h3>
+
+<p>There are several reasons that articles written by a WCM author may not be displayed.</p>
+<ol>
+  <li>It is a convention in bibliometrics to exclude data on articles published fewer than two to three years ago. If the article appeared more recently, it will not be shown.</li>
+  <li>The Citation Impact Tool displays data for publications included in PubMed. Articles appearing in journals not indexed in Medline will not appear in the chart.</li>
+  <li>The Tool displays data on research articles and review articles. Articles of other types, including editorials and certain conference papers, will not appear.</li>
+  <li>When the check boxes are used to apply filters, articles not meeting the specified criteria are excluded from the chart. Adding more than one filter results in a successive reduction of the number of results displayed. Filters can be cleared by clicking "Clear all".</li>
+</ol>
+
+<h3 id="18">What if a publication is missing?</h3>
+
+<p>If a publication is missing for a reason other than those mentioned above, please contact the <a href="http://vivo.med.cornell.edu/support">VIVO support team</a> so that it can be added.</p>
+
+<h3 id="19">Within a given time period, in what order do the rectangles appear?</h3>
+
+<p>The rectangles, which represent one or more articles, are sorted first by article type, with research articles appearing before review articles. Within each group of articles sorted by type, they are then sorted by citation impact. They are ordered from top to bottom, then left to right.</p>
+
+<h3 id="20">How do I identify the most impactful publication on the chart?</h3>
+
+<p>Once a chart is displayed, select the time period for which you'd like to identify the most impactful publication. In that column, click on the leftmost rectangle in the top row of rectangles. A pop-up window will display data on the most impactful publication, including the number of times it has been cited and its best field-normalized percentile rank.</p>

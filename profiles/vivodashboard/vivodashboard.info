@@ -1,0 +1,14 @@
+name = VIVO Dashboard
+description = Install the VIVO Dashboard profile
+core = 7.x
+
+files[] = vivodashboard.profile
+
+dependencies[] = vivodashboard_core
+dependencies[] = vivodashboard_import
+dependencies[] = vivodashboard_publications
+
+; Useful modules that are not actually required
+dependencies[] = admin_menu_toolbar
+dependencies[] = dblog
+dependencies[] = ultimate_cron

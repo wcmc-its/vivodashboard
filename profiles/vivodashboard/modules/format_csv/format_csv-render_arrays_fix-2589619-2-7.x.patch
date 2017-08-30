@@ -1,0 +1,28 @@
+diff --git a/format_csv.module b/format_csv.module
+index 081b9c2..7aa869d 100644
+--- a/format_csv.module
++++ b/format_csv.module
+@@ -32,13 +32,20 @@ define('FORMAT_CSV_ENCLOSURE', '"');
+  * @return array
+  */
+ function format_csv_theme($existing, $type, $theme, $path) {
++  //Base the theme registration on theme_table settings from core
++  $drupal_common_theme = drupal_common_theme();
++  $format_csv = $drupal_common_theme['table'];
++  $format_csv['variables'] = array(
++    'delimiter' => FORMAT_CSV_DELIMITER, 
++    'enclosure' => FORMAT_CSV_ENCLOSURE
++  ) + $format_csv['variables'];
++  
+   return array(
+-    'format_csv' => array(
+-      'variables'  => array('vars' => NULL),
+-    ),
++    'format_csv' => $format_csv,
+   );
+ }
+ 
++
+ /**
+  * Processes table arrays and returns formatted CSV string.
+  * Expected table arrays should be in standard Drupal format.

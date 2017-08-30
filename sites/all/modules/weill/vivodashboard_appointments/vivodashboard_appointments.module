@@ -1,0 +1,178 @@
+<?php
+/**
+ * @file
+ * VIVO Dashboard Appointments module
+ */
+
+/**
+ * Implements hook_node_load().
+ */
+function vivodashboard_appointments_node_load($nodes, $types) {
+  foreach ($nodes as $node) {
+    if ($node->type == 'author') {
+      $node->appointments = vivodashboard_appointments_for_author($node);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_load().
+ */
+function vivodashboard_appointments_relation_load($relations) {
+  foreach ($relations as $relation) {
+    if ($relation->relation_type == 'authorship') {
+      // DISABLED: This is causing recursion and could lead to stale caches.
+      // $relation->organizations = vivodashboard_appointments_organization_list_for_authorship($relation);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_property_info_alter().
+ *
+ * Expose custom properties on authors and authorships to consolidate logic
+ * around appointments / organizations.
+ */
+function vivodashboard_appointments_entity_property_info_alter(&$info) {
+  $author = &$info['node']['bundles']['author']['properties'];
+  $author['appointments'] = array(
+    'label' => 'Appointments',
+    'description' => 'All WCMC appointments for the author',
+    'type' => 'list<struct>',
+    'getter callback' => 'vivodashboard_appointments_for_author',
+    'computed' => TRUE,
+  );
+
+  $authorship = &$info['relation']['bundles']['authorship']['properties'];
+  $authorship['organization_list'] = array(
+    'label' => 'Organization',
+    'description' => 'List of organizations based on the publication authors\' appointments' ,
+    'type' => 'list<text>',
+    'getter callback' => 'vivodashboard_appointments_organization_list_for_authorship',
+    'entity views field' => TRUE,
+    'computed' => TRUE,
+  );
+}
+
+/**
+ * Entity property 'getter callback' for 'appointments' on author nodes.
+ */
+function vivodashboard_appointments_for_author($node) {
+  // When appointments are already cached on the node just return those.
+  if (isset($node->appointments)) {
+    return $node->appointments;
+  }
+
+  // CWID must be available.
+  if (empty($node->field_id[LANGUAGE_NONE][0]['value'])) {
+    return array();
+  }
+
+  $cwid = $node->field_id[LANGUAGE_NONE][0]['value'];
+
+  return vivodashboard_appointments_for_cwid($cwid);
+}
+
+/**
+ * Entity property 'getter callback' for 'organizations' on authorship relations.
+ */
+function vivodashboard_appointments_organization_list_for_authorship($relation) {
+  // When appointments are already cached on the relation just return those.
+  if (isset($relation->organization_list)) {
+    return $relation->organization_list;
+  }
+
+  // Extract endpoints from authorship.
+  list($source, $target) = field_get_items('relation', $relation, 'endpoints');
+  $publication_node = node_load($source['entity_id']);
+  $author_node = node_load($target['entity_id']);
+
+  if (!$publication_node || $publication_node->type != 'publication' || !$author_node || $author_node->type != 'author') {
+    return array();
+  }
+
+  $publication = entity_metadata_wrapper('node', $publication_node);
+  $author = entity_metadata_wrapper('node', $author_node);
+
+  $relation->organization_list = vivodashboard_appointments_relevant_organizations($publication, $author);
+
+  return $relation->organization_list;
+}
+
+/**
+ * Finds organizations relevant to publication + author.
+ */
+function vivodashboard_appointments_relevant_organizations(EntityMetadataWrapper $publication, EntityMetadataWrapper $author) {
+  $organizations = array();
+
+  $publication_date = $publication->field_date->raw();
+  if (!$publication_date) {
+    return array();
+  }
+
+  // Go through each of the author's appointments and gather organizations.
+  foreach ($author->appointments->value() as $appointment) {
+
+    // An author's appointment is relevant when the publication was published
+    // during their appointment. We include 1 year of padding, so if the
+    // publication was published within a year after the appointment ended,
+    // we consider that relevant.
+    if ($publication_date >= $appointment['start']
+      && $publication_date <= strtotime('+1 year', $appointment['end'])) {
+
+      $organizations[] = $appointment['organization'];
+    }
+  }
+
+  return array_unique($organizations);
+}
+
+/**
+ * Helper to load all appointments for a particular person by CWID.
+ */
+function vivodashboard_appointments_for_cwid($cwid) {
+  $appointments = array();
+
+  // Query for all appointments for this CWID.
+  $query = db_select('violin_appointments', 'va');
+  $query->leftJoin('violin_org_units', 'vou', 'va.weillCornellEduDepartment = vou.dept_id');
+  $results = $query
+    ->fields('va')
+    ->fields('vou')
+    ->condition('va.weillCornellEduCWID', $cwid)
+    ->orderBy('va.weillCornellEduStartDate', 'DESC')
+    ->execute()
+    ->fetchAll();
+
+  foreach ($results as $result) {
+
+    // Example : 20031118050000Z = November 18, 2003 @ 05:00am
+    $format = 'YmdGis\Z';
+    $start = date_create_from_format($format, $result->weillCornellEduStartDate);
+    $end = date_create_from_format($format, $result->weillCornellEduEndDate);
+
+    if (!$start || !$end) {
+      continue;
+    }
+
+    $appointments[] = array(
+      'start' => $start->getTimestamp(),
+      'end' => $end->getTimestamp(),
+      'organization' => !empty($result->dept_name) ? $result->dept_name : $result->weillCornellEduDepartment,
+    );
+  }
+
+  return $appointments;
+}
+
+/**
+ * Implements hook_search_api_alter_callback_info().
+ */
+function vivodashboard_appointments_search_api_alter_callback_info() {
+  $callbacks['appointments'] = array(
+    'name' => t('Appointments'),
+    'description' => t('Attach organizational appointments data for facets.'),
+    'class' => 'VivodashboardAppointmentsAlterCallback',
+  );
+  return $callbacks;
+}

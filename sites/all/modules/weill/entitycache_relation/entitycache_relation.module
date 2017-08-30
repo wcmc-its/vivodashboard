@@ -1,0 +1,19 @@
+<?php
+/**
+ * EntityCache Relation module.
+ */
+
+/**
+ * Implements hook_entity_info_alter().
+ */
+function entitycache_relation_entity_info_alter(&$entity_info) {
+  $entity_info['relation']['entity cache'] = TRUE;
+  $entity_info['relation']['controller class'] = 'EntityCacheRelationController';
+}
+
+/**
+ * Implements hook_flush_caches().
+ */
+function entitycache_relation_flush_caches() {
+  entity_get_controller('relation')->resetCache();
+}

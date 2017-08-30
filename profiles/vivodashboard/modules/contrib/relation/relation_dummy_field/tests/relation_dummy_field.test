@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ * Tests for Relation Dummy Field module.
+ */
+
+/**
+ * Functional test of Relation's integration with the Dummy Field.
+ */
+class RelationDummyFieldTestCase extends RelationTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Relation Dummy Field test',
+      'description' => 'Tests the Relation Dummy Field.',
+      'group' => 'Relation',
+    );
+  }
+
+  function setUp() {
+    parent::setUp('relation', 'relation_dummy_field');
+  }
+
+  /**
+   * Helper function to create a dummy field with the given widget.
+   */
+  function createDummyField($widget_type = 'relation_default') {
+    $field_name = drupal_strtolower($this->randomName()) . '_field_name';
+    $field = array(
+      'field_name' => $field_name,
+      'type' => 'relation',
+      'entity_types' => array('node'),
+    );
+    field_create_field($field);
+    $instance = array(
+      'field_name' => $field_name,
+      'entity_type' => 'node',
+      'bundle' => 'article',
+      'label' => $this->randomString(),
+      'widget_type' => $widget_type,
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => $widget_type,
+        ),
+        'teaser' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    );
+    field_create_instance($instance);
+    return $field_name;
+  }
+
+  /**
+   * Create a relation field on the Article node type, and
+   * check if it displays the relations correctly on the node page.
+   */
+  function testDummyFieldDisplayed() {
+    $this->drupalGet('node/' . $this->node1->nid);
+    $this->assertNoRaw($this->node4->title, 'Node 4 title is not found');
+    $this->createDummyField();
+    // Assert that user without access relations permission does not see the 
+    // endpoint label.
+    $test_user = $this->drupalCreateUser(array());
+    $this->drupalLogin($test_user);
+    $this->drupalGet('node/' . $this->node1->nid);
+    $this->assertNoRaw($this->node4->title, 'Node 4 title is not found');
+    // As we have asserted Node 4 title not being on the page the only way this
+    // click can succeed if the field formatter put it there.
+    $test_user = $this->drupalCreateUser(array('access relations'));
+    $this->drupalLogin($test_user);
+    $this->drupalGet('node/' . $this->node1->nid);
+    $this->clickLink($this->node4->title);
+  }
+
+  /**
+   * Verify that the dummy field protects against XSS attacks.
+   */
+  function testDummyFieldXSS() {
+    // Attempt to execute a script via the relation type label.
+    $relation_type = array(
+      'relation_type' => 'directional-xss',
+      'label' => 'directional<script>alert("relation-type-label-xss");</script>',
+      'directional' => TRUE,
+      'source_bundles' => array('node:*'),
+      'target_bundles' => array('node:*'),
+    );
+    relation_type_save($relation_type);
+
+    // Create a relation of type directional-xss between article 1 and page 4.
+    $endpoints = array(
+      array('entity_type' => 'node', 'entity_id' => $this->node1->nid),
+      array('entity_type' => 'node', 'entity_id' => $this->node4->nid),
+    );
+    $this->saveRelation('directional-xss', $endpoints);
+
+    // Add a dummy field with the natural language formatter.
+    $this->createDummyField('relation_natural');
+
+    // Attempt to execute a script via the subject title.
+    $this->node1->title = 'subject<script>alert("subject-xss");</script>';
+    node_save($this->node1);
+
+    // Visit the parent and ensure that the title and relation type label have
+    // been escaped properly.
+    $this->drupalGet('node/' . $this->node1->nid);
+    $this->assertNoRaw('directional<script>alert("relation-type-label-xss');
+    $this->assertNoRaw('subject<script>alert("subject-xss");</script>');
+  }
+}

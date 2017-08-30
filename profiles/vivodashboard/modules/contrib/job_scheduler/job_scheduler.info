@@ -1,0 +1,13 @@
+name = Job Scheduler
+description = Scheduler API
+files[] = job_scheduler.module
+files[] = job_scheduler.install
+files[] = JobScheduler.inc
+files[] = JobSchedulerCronTab.inc
+core = 7.x
+php = 5.2
+
+; Information added by drush on 2014-01-24
+version = "7.x-2.0-alpha3+8-dev"
+project = "job_scheduler"
+datestamp = "1390572517"

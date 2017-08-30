@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Linked Data Import - Feeds plugins for importing Linked Data content.
+ */
+
+/**
+* Implements hook_feeds_plugins().
+*/
+function ldimport_feeds_plugins() {
+  $info['LdImportFetcher'] = array(
+    'name' => 'Linked Data Fetcher',
+    'description' => 'Simple text input for a list of resource URIs.',
+    'handler' => array(
+      'parent' => 'FeedsFetcher',
+      'class' => 'LdImportFetcher',
+      'file' => 'LdImportFetcher.inc',
+      'path' => drupal_get_path('module', 'ldimport') . '/plugins',
+    ),
+  );
+  $info['LdImportParser'] = array(
+    'name' => 'Linked Data Parser',
+    'description' => 'Prepares Linked Data for processing.',
+    'handler' => array(
+      'parent' => 'FeedsParser',
+      'class' => 'LdImportParser',
+      'file' => 'LdImportParser.inc',
+      'path' => drupal_get_path('module', 'ldimport') . '/plugins',
+    ),
+  );
+  return $info;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Adjusts the Feeds mapping UI form to allow for extra long mapping sources.
+ */
+function ldimport_form_feeds_ui_mapping_form_alter(&$form, &$form_state) {
+  $importer = feeds_importer_load($form['#importer']);
+
+  if ($importer && $importer->parser instanceof LdImportParser) {
+    $form['source']['#type'] = 'textarea';
+    $form['source']['#default_value'] = '';
+    $form['source']['#rows'] = 2;
+  }
+}
+
+/**
+ * Implements hook_libraries_info().
+ */
+function ldimport_libraries_info() {
+  $libraries['ARC2'] = array(
+    'name' => 'ARC2',
+    'vendor url' => 'https://github.com/semsol/arc2',
+    'download url' => 'http://github.com/semsol/arc2/tarball/master',
+    'version' => 'latest',
+    'path' => 'arc',
+    'files' => array(
+      'php' => array('ARC2.php'),
+    ),
+  );
+  $libraries['Graphite'] = array(
+    'name' => 'Graphite',
+    'vendor url' => 'https://github.com/cgutteridge/Graphite',
+    'download url' => 'https://github.com/cgutteridge/Graphite/archive/master.zip',
+    'version' => 'latest',
+    'files' => array(
+      'php' => array('Graphite.php'),
+    ),
+    'dependencies' => array('ARC2'),
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Adds the Graphite and ARC2 libraries to the registry to enable autoloading.
+ *
+ * @todo Remove this if Libraries eventually supports autoloading.
+ * @see https://drupal.org/node/1092270
+ */
+function ldimport_registry_files_alter(&$files, $modules) {
+  $libraries = array();
+  $libraries[] = libraries_load('Graphite');
+  $libraries[] = libraries_load('ARC2');
+
+  foreach ($libraries as $library) {
+    foreach ($library['files']['php'] as $filename => $value) {
+      $file_path = $library['library path'] . '/' . $library['path'] . '/' . $filename;
+      if (file_exists($file_path)) {
+        $files[$file_path] = array('module' => '', 'weight' => 0);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_requirements().
+ */
+// function ldimport_requirements($phase) {
+//   $requirements = array();
+
+//   if ($phase == 'runtime') {
+//     $library = libraries_load('ARC2');
+
+//     $requirements['ldimport']['title'] = t('ARC2 library installed');
+//     $requirements['ldimport']['value'] = '';
+
+//     if ($library['installed'] && class_exists('ARC2')) {
+//       $requirements['ldimport']['description'] = t('The ARC2 library is required for the Linked Data Import module and has been installed in @filepath', array('@filepath' => DRUPAL_ROOT . '/' . $library['library path']));
+//       $requirements['ldimport']['severity'] = REQUIREMENT_OK;
+//     }
+//     else {
+//       $requirements['ldimport']['description'] = t('The ARC2 library has not been installed correctly and is necessary for the Linked Data Import module to function. Check the README file located in @filepath for instructions.', array('@filepath' => DRUPAL_ROOT . '/' . drupal_get_path('module', 'ldimport')));
+//       $requirements['ldimport']['severity'] = REQUIREMENT_ERROR;
+//     }
+//   }
+
+//   return $requirements;
+// }

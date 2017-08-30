@@ -1,0 +1,9 @@
+name = EntityCache Relation
+description = Implements entity caching for relation entities
+core = 7.x
+package = VIVO Dashboard
+version = 7.x-1.0
+project = entitycache_relation
+dependencies[] = entitycache
+dependencies[] = relation
+files[] = entitycache_relation.inc

@@ -1,0 +1,9 @@
+name = Flot
+description = Provides an API for the flot js graphing library.
+core = 7.x
+package = Charts
+files[] = flot.module
+; Information added by drush on 2012-07-16
+version = "7.x-1.0+4-dev"
+project = "flot"
+datestamp = "1342430440"

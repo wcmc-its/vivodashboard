@@ -1,0 +1,11 @@
+name = Relation Endpoints Field
+description = Helper module for Relation. Defines endpoints field (not usable except by relation).
+core = 7.x
+package = Relation
+
+; Information added by Drupal.org packaging script on 2017-08-08
+version = "7.x-1.1"
+core = "7.x"
+project = "relation"
+datestamp = "1502188457"
+

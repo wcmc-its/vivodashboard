@@ -1,0 +1,7 @@
+name = VIVO Dashboard Citation Lookup
+description = Drupal version of the FacultyDatabase php app for citation lookups
+core = 7.x
+package = VIVO Dashboard
+version = 7.x-1.0
+project = citation_lookup
+dependencies[] = format_csv

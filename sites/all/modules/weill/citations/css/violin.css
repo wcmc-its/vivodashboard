@@ -1,0 +1,113 @@
+body {
+    font: 10px sans-serif;
+}
+
+#violinPlot {
+    float: left;
+    width: 690px;
+    margin-bottom: 20px;
+}
+
+.area{
+    shape-rendering: geometricPrecision;
+}
+
+.grid {
+    shape-rendering: crispEdges;
+    stroke: #dbdbdb;
+    stroke-width: 1px;
+}
+
+.violin {
+    shape-rendering: geometricPrecision;
+    fill: none !important;
+    stroke-width: 1px;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #4b4b4b;
+    stroke-width: 1px;
+    color-rendering: optimizeQuality !important;
+    shape-rendering: crispEdges !important;
+    text-rendering: geometricPrecision !important;
+}
+
+.axis text , .axis-label {
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    fill: rgb(40, 40, 40);
+}
+
+.axis-label-bold {
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    font-weight: bold;
+    fill: rgb(40, 40, 40);
+}
+
+.medianMarker {
+    stroke-width: 2px;
+}
+
+.medianLabel {
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 10pt;
+    font-weight: 600;
+    fill: rgb(40, 40, 40);
+}
+
+.medianLabelOrdinalIndicator {
+    font-size: 8pt;
+    fill: rgb(40, 40, 40);
+}
+
+#controls {
+    float: left;
+    padding-left: 10px;
+}
+
+.selectBox {
+    width: 200px;
+    margin-top: 3px;
+    margin-bottom: 6px;
+}
+
+.controlLabel {
+    font-weight: bold;
+}
+
+.tooltip {
+    font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+    font-size: 9pt;
+    background-color: #fffceb;
+    border: 1px solid #8a8a8a;
+    border-radius: 2px;
+    display: none;
+}
+
+#tooltipArticleCount {
+    width: 690px;
+}
+
+#tooltipArticleCount div {
+    margin: 5px;
+}
+
+#tooltipMedian {
+    width: 200px;
+    position: absolute;
+}
+
+#tooltipMedian div {
+    margin: 5px;
+}
+
+#tooltipViolin {
+    width: 200px;
+    position: absolute;
+}
+
+#tooltipViolin div {
+    margin: 5px;
+}

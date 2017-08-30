@@ -1,0 +1,21 @@
+commit 5959b7e3cb22077f155dd9e962493245bbce6838
+Author: Andreas Hennings <andreas@dqxtech.net>
+Date:   Mon May 18 17:54:21 2015 +0200
+
+    Uninitialized array in taxonomy_feeds_set_target(). See https://www.drupal.org/node/2489006
+
+diff --git a/mappers/taxonomy.inc b/mappers/taxonomy.inc
+index 1a83e0b..94dadbc 100644
+--- a/mappers/taxonomy.inc
++++ b/mappers/taxonomy.inc
+@@ -104,6 +104,10 @@ function taxonomy_feeds_set_target($source, $entity, $target, array $terms, $map
+     }
+   }
+ 
++  if (empty($cache['allowed_vocabularies'][$target])) {
++    return;
++  }
++
+   $query = new EntityFieldQuery();
+   $query->entityCondition('entity_type', 'taxonomy_term')
+     ->entityCondition('bundle', $cache['allowed_vocabularies'][$target])

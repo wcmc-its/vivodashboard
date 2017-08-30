@@ -1,0 +1,5 @@
+# OSX files
+.DS_Store
+
+# Sublime Text files
+._*

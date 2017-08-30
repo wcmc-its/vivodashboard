@@ -1,0 +1,180 @@
+<?php
+
+/**
+ * @file
+ * Provides new theme function to format table array as CSV.
+ *
+ * Format CSV is a module to convert Drupal's table array to CSV format,
+ * mimicking Drupal's built-in theme_table() function behavior.
+ * It accepts both simple arrays of cell values and associative arrays
+ * with "data" keys, strips all HTML tags and ignores all HTML attributes,
+ * returning full content of CSV file with default or user-defined
+ * CSV field delimiters and enclosures.
+ */
+
+/**
+ * @name Default $delimiter value to use with PHP's fputcsv() function.
+ */
+define('FORMAT_CSV_DELIMITER', ',');
+
+/**
+ * @name Default $enclosure value to use with PHP's fputcsv() function.
+ */
+define('FORMAT_CSV_ENCLOSURE', '"');
+
+/**
+ * Implementation of hook_theme().
+ *
+ * @param  array  $existing
+ * @param  string $type
+ * @param  string $theme
+ * @param  string $path
+ * @return array
+ */
+function format_csv_theme($existing, $type, $theme, $path) {
+  //Base the theme registration on theme_table settings from core
+  $drupal_common_theme = drupal_common_theme();
+  $format_csv = $drupal_common_theme['table'];
+  $format_csv['variables'] = array(
+    'delimiter' => FORMAT_CSV_DELIMITER, 
+    'enclosure' => FORMAT_CSV_ENCLOSURE
+  ) + $format_csv['variables'];
+  
+  return array(
+    'format_csv' => $format_csv,
+  );
+}
+
+
+/**
+ * Processes table arrays and returns formatted CSV string.
+ * Expected table arrays should be in standard Drupal format.
+ *
+ * @param  array  $header
+ * @param  array  $rows
+ * @param  array  $attributes
+ * @param  string $caption
+ * @param  string $delimiter
+ * @param  string $enclosure
+ * @return string
+ */
+function theme_format_csv($variables) {
+
+  $delimiter = (isset($variables['delimiter']) && $variables['delimiter']) ? $variables['delimiter'] : FORMAT_CSV_DELIMITER;
+  $enclosure = (isset($variables['enclosure']) && $variables['enclosure']) ? $variables['enclosure'] : FORMAT_CSV_ENCLOSURE;
+
+  // For PHP versions >= 5.1, let's store data in memory.
+  if (floatval(phpversion()) >= '5.1') {
+    $outstream = fopen('php://temp', 'r+');
+  }
+  // For older version, where php://temp does not exist yet,
+  // let's use temporary file.
+  else {
+    $outstream = tmpfile();
+  }
+
+  // Process caption.
+  if (isset($variables['caption']) && $variables['caption']) {
+    fputcsv($outstream, array($variables['caption']), $delimiter, $enclosure);
+  }
+
+  // Process header.
+  if (isset($variables['header']) && is_array($variables['header']) && count($variables['header'])) {
+    $data = _format_csv_table_row($variables['header']);
+    fputcsv($outstream, $data, $delimiter, $enclosure);
+  }
+
+  // Process data.
+  if (isset($variables['rows']) && is_array($variables['rows']) && count($variables['rows'])) {
+    foreach ($variables['rows'] as $row_number => $row) {
+      $data = array();
+      // Complex rows.
+      if (isset($row['data'])) {
+        $data = _format_csv_table_row($row['data']);
+      }
+      // Simple rows.
+      else {
+        $data = _format_csv_table_row($row);
+      }
+      if (count($data)) {
+        fputcsv($outstream, $data, $delimiter, $enclosure);
+      }
+    }
+  }
+
+  // Return CSV.
+  rewind($outstream);
+  $csv = stream_get_contents($outstream);
+  fclose($outstream);
+  return $csv;
+}
+
+/**
+ * Processes table row array and returns an array
+ * ready to output directly to CSV file.
+ *
+ * @param  array $row
+ * @return array
+ */
+function _format_csv_table_row($row) {
+  global $_format_csv_rowspans;
+
+  // All result cells will be stored in $data array.
+  $data = array();
+
+  // Column number modifier used for tracing columns with rowspans.
+  $rowspan_column_key_modifier = 0;
+
+  // Loop through all row's cells.
+  foreach ($row as $column_key => $cell) {
+
+    // Complex cells.
+    if (is_array($cell)) {
+      $data[] = isset($cell['data']) ? strip_tags($cell['data']) : '';
+      // Deal with colspans.
+      if (isset($cell['colspan']) && $cell['colspan'] > 1) {
+        for ($n = 0; $n < $cell['colspan'] - 1; $n++) {
+          $data[] = '';
+        }
+      }
+      // Deal with new rowspans.
+      if (isset($cell['rowspan']) && $cell['rowspan'] > 1) {
+        if (!isset($_format_csv_rowspans)) {
+          $_format_csv_rowspans = array();
+        }
+        $_format_csv_rowspans[] = array(
+          'column'  => $column_key + $rowspan_column_key_modifier,
+          'count'   => $cell['rowspan'] - 1,
+        );
+      }
+    }
+    // Simple cells.
+    else {
+      $data[] = strip_tags($cell);
+    }
+
+    // Deal with rowspans from previous rows.
+    if (isset($_format_csv_rowspans) && is_array($_format_csv_rowspans) && count($_format_csv_rowspans)) {
+      foreach ($_format_csv_rowspans as $key => $rowspan) {
+        if ($rowspan['column'] == $column_key + $rowspan_column_key_modifier + 1) {
+          $data[] = '';
+          // Decrease number of rows left to process for this rowspan.
+          $_format_csv_rowspans[$key]['count']--;
+          $rowspan_column_key_modifier++;
+          // If we have already dealt with this rowspan,
+          // let's remove it from array storing all rowspans.
+          if ($_format_csv_rowspans[$key]['count'] == 0) {
+            unset($_format_csv_rowspans[$key]);
+          }
+          // If we have already dealt with all rowspans,
+          // let's remove its variable from global scope.
+          if (count($_format_csv_rowspans) == 0) {
+            unset($_format_csv_rowspans);
+          }
+        }
+      }
+    }
+
+  }
+  return $data;
+}

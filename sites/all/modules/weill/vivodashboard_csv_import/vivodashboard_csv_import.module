@@ -1,0 +1,107 @@
+<?php
+/**
+ * VIVO Dashboard CSV Import module code.
+ */
+
+/**
+ * Implements hook_registry_files_alter().
+ *
+ * Adds all our classes to the registry instead of specifying in .info file.
+ */
+function vivodashboard_csv_import_registry_files_alter(&$files, $modules) {
+  $path = drupal_get_path('module', 'vivodashboard_csv_import');
+
+  foreach (file_scan_directory(__DIR__ . '/migrations', '/.*\.php$/') as $file) {
+    $files[$path . '/migrations/' . $file->filename] = array('module' => 'vivodashboard_csv_import', 'weight' => 0);
+  }
+
+  foreach (file_scan_directory(__DIR__ . '/includes', '/.*\.php$/') as $file) {
+    $files[$path . '/includes/' . $file->filename] = array('module' => 'vivodashboard_csv_import', 'weight' => 0);
+  }
+
+  // Adds the Graphite and ARC2 libraries to the registry to enable autoloading.
+  // Copied from the ldimport module.
+  $libraries = array();
+  $libraries[] = libraries_load('Graphite');
+  $libraries[] = libraries_load('ARC2');
+  foreach ($libraries as $library) {
+    foreach ($library['files']['php'] as $filename => $value) {
+      $file_path = $library['library path'] . '/' . $library['path'] . '/' . $filename;
+      if (file_exists($file_path)) {
+        $files[$file_path] = array('module' => '', 'weight' => 0);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_migrate_api().
+ */
+function vivodashboard_csv_import_migrate_api() {
+  $api = array(
+    'api' => 2,
+    'groups' => array(
+      'vivodashboard' => array(
+        'title' => t('VIVO Dashboard'),
+      ),
+      'migrations' => array(),
+    ),
+  );
+
+  $migrations = &$api['migrations'];
+
+  foreach (file_scan_directory(__DIR__ . '/migrations', '/.*\.php$/') as $file) {
+    $migration_name = $file->name;
+    $class_name = 'VivoDashboard' . $migration_name . 'Migration';
+
+    // Instead of defining migration details here, definitions have been moved
+    // to the respective migration classes, just to keep things organized.
+    if (property_exists($class_name, 'migrationArguments')) {
+      $migrations[$migration_name] = $class_name::$migrationArguments;
+    }
+
+    $migrations[$migration_name]['class_name'] = $class_name;
+    $migrations[$migration_name]['group_name'] = 'vivodashboard';
+  }
+
+  return $api;
+}
+
+/**
+ * Implements hook_migrate_api_alter().
+ */
+function vivodashboard_csv_import_migrate_api_alter(array &$info) {
+  // Prevent relation_migrate's migration's from being registered. We don't
+  // need them and they cause errors because they are incompatible with the
+  // current versions of migration classes.
+  $info['relation_migrate']['migrations'] = array();
+}
+
+/**
+ * Implements hook_libraries_info().
+ *
+ * Adds libraries that are normally defined by ldimport.module
+ */
+function vivodashboard_csv_import_libraries_info() {
+  $libraries['ARC2'] = array(
+    'name' => 'ARC2',
+    'vendor url' => 'https://github.com/semsol/arc2',
+    'download url' => 'http://github.com/semsol/arc2/tarball/master',
+    'version' => 'latest',
+    'path' => 'arc',
+    'files' => array(
+      'php' => array('ARC2.php'),
+    ),
+  );
+  $libraries['Graphite'] = array(
+    'name' => 'Graphite',
+    'vendor url' => 'https://github.com/cgutteridge/Graphite',
+    'download url' => 'https://github.com/cgutteridge/Graphite/archive/master.zip',
+    'version' => 'latest',
+    'files' => array(
+      'php' => array('Graphite.php'),
+    ),
+    'dependencies' => array('ARC2'),
+  );
+  return $libraries;
+}

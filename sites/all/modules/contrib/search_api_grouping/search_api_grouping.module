@@ -1,0 +1,399 @@
+<?php
+/**
+ * @file
+ * Module search_api_grouping.
+ */
+
+/**
+ * Define the separator for the permutation key.
+ */
+define('SEARCH_API_GROUPING_ENTITY_FIELD_SEPERATOR', '-');
+
+/**
+ * Implements hook_search_api_item_type_info().
+ */
+function search_api_grouping_search_api_item_type_info() {
+  $types = array();
+  foreach (entity_get_info() as $entity_type => $entity_info) {
+    if (!empty($entity_info['fieldable'])) {
+      $types[search_api_grouping_get_type($entity_type)] = array(
+        'name' => t('Denormalized @entity', array('@entity' => $entity_info['label'])),
+        'datasource controller' => 'SearchApiDenormalizedEntityDataSourceController',
+        'entity_type' => $entity_type,
+      );
+    }
+  }
+  return $types;
+}
+
+/**
+ * Implements hook_search_api_solr_field_mapping_alter().
+ */
+function search_api_grouping_search_api_solr_field_mapping_alter(SearchApiIndex $index, array &$fields) {
+  $entity_type = search_api_grouping_get_entity_from_type($index->item_type);
+  $entity_type_info = entity_get_property_info($entity_type);
+  if (!empty($entity_type_info)) {
+
+    // Ge configured fields for denormalization and grouping.
+    $grouping_fields = DenormalizedEntityIndexHijack::getGroupingProcessorFields($index);
+    $denormalize_fields = DenormalizedEntityIndexHijack::getDenormalizeProcessorFields($index);
+
+    // Adjust all field list types to non-list.
+    foreach ($fields as $field => $map) {
+      // Split field and property.
+      $field_name = $field;
+      $property = NULL;
+      if (stristr($field, ':')) {
+        list($field_name, $property) = explode(':', $field, 2);
+      }
+
+      if (empty($property)) {
+        // If denormalization based on this field is enabled we convert the field
+        // from multi-value (Xm) to single value (Xs).
+        if (isset($denormalize_fields[$field_name]) && strpos($map, 'm') === 1 && strpos($field, 'field_') === 0) {
+          $fields[$field] = substr_replace($map, 's', 1, 1);
+        }
+        // If grouping is enabled based on this field we've to convert integer
+        // fields to type string.
+        if (isset($grouping_fields[$field_name]) && substr($map, 0, 1) != 's') {
+          $fields[$field] = substr_replace($map, 's', 0, 1);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_search_api_processor_info().
+ */
+function search_api_grouping_search_api_processor_info() {
+  $processors['search_api_denormalized_entity_field'] = array(
+    'name' => t('Denormalization'),
+    'description' => t('This processor allows you to configure which multivalue fields are used for denormalization.'),
+    'class' => 'SearchApiDenormalizedEntityField',
+  );
+  $processors['search_api_denormalized_entity_grouping'] = array(
+    'name' => t('Grouping'),
+    'description' => t('This processor will group the result items based on the configured fields.'),
+    'class' => 'SearchApiDenormalizedEntityGrouping',
+  );
+  return $processors;
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Generates the necessary pseudo keys and adds the pseudo entities to to-index.
+ */
+function search_api_grouping_entity_insert($entity, $type) {
+  // When inserting a new search index, the new index was already inserted into
+  // the tracking table. This would lead to a duplicate-key issue, if we would
+  // continue.
+  // We also only react on entity operations for types with property
+  // information, as we don't provide search integration for the others.
+  if ($type == 'search_api_index' || !entity_get_property_info($type)) {
+    return;
+  }
+  list($id) = entity_extract_ids($type, $entity);
+  if (isset($id)) {
+    // SearchApiDenormalizedEntityDataSourceController::trackItemChange()
+    // accesses this static cache to ensure it uses the latest possible version
+    // of the entity.
+    $search_api_grouping_cache = &drupal_static('search_api_grouping_entity_op', array());
+    $search_api_grouping_cache[$id] = clone $entity;
+    search_api_track_item_insert(search_api_grouping_get_type($type), array($id));
+    // Clear cache.
+    $search_api_grouping_cache = array();
+  }
+
+  // If index immediately is enabled we've to convert the ids.
+  _search_api_grouping_index_immediatley_hijack($type, array($id));
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Marks the item as changed for all indexes on entities of the specified type.
+ */
+function search_api_grouping_entity_update($entity, $type) {
+  // We only react on entity operations for types with property information, as
+  // we don't provide search integration for the others.
+  if (!entity_get_property_info($type)) {
+    return;
+  }
+  list($id) = entity_extract_ids($type, $entity);
+  if (isset($id)) {
+    // SearchApiDenormalizedEntityDataSourceController::trackItemChange()
+    // accesses this static cache to ensure it uses the latest possible version
+    // of the entity.
+    $search_api_grouping_cache = &drupal_static('search_api_grouping_entity_op', array());
+    $search_api_grouping_cache[$id] = clone $entity;
+    search_api_track_item_change(search_api_grouping_get_type($type), array($id));
+    // Clear cache.
+    $search_api_grouping_cache = array();
+  }
+
+  // If index immediately is enabled we've to convert the ids.
+  _search_api_grouping_index_immediatley_hijack($type, array($id));
+}
+
+/**
+ * Ensure the ids are adjusted if index immediately is enabled.
+ */
+function _search_api_grouping_index_immediatley_hijack($type, $ids) {
+  if (($queue = &search_api_index_specific_items_delayed())) {
+    $indexes = search_api_index_load_multiple(FALSE, array('enabled' => 1, 'item_type' => search_api_grouping_get_type($type)));
+    foreach ($indexes as $index) {
+      if (!empty($queue[$index->machine_name])) {
+        $item_ids = db_select('search_api_denormalized_entity')
+          ->fields('search_api_denormalized_entity', array('item_id'))
+          ->condition('etid', $ids)
+          ->condition('index_id', $index->id)
+          ->condition('entity_type', $type)
+          ->execute()
+          ->fetchAll(PDO::FETCH_COLUMN, 0);
+        $queue[$index->machine_name] = drupal_map_assoc($item_ids);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Removes the item from the tracking table and deletes it from all indexes.
+ */
+function search_api_grouping_entity_delete($entity, $entity_type) {
+  // We only react on entity operations for types with property information, as
+  // we don't provide search integration for the others.
+  if (!entity_get_property_info($entity_type)) {
+    return;
+  }
+
+  $index_type = search_api_grouping_get_type($entity_type);
+  $ids = search_api_grouping_get_ids($entity_type, $entity);
+
+  if (!empty($ids)) {
+    search_api_track_item_delete($index_type, array_keys($ids));
+  }
+}
+
+/**
+ * Return a set of existing pseudo keys keyed by our custom serial id.
+ *
+ * @param string $entity_type
+ *   The entity type.
+ * @param object $entity
+ *   Optional if provided we return the keys for just this entity, otherwise all
+ *   entities matching the given $entity_type
+ *
+ * @return array
+ *   Array of pseudo_keys keyed by our custom serial id.
+ */
+function search_api_grouping_get_ids($entity_type, $entity = NULL) {
+
+  $query = db_select('search_api_denormalized_entity', 's')
+    ->fields('s', array('id', 'item_id'))
+    ->condition('entity_type', $entity_type);
+  if (!empty($entity)) {
+    list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+    $query->condition('etid', $id);
+  }
+
+  $result = $query->execute()->fetchAllKeyed();
+
+  return $result;
+}
+
+/**
+ * Generate our custom pseudo keys based on the entity data.
+ *
+ * @param object $entity
+ *   The entity object to denormalize to generate.
+ * @param string $entity_type
+ *   The entity entity type of the entity.
+ * @param array $fields
+ *   The fieldnames of the fields to use for denormalizing.
+ *
+ * @see search_api_grouping_generate_keys()
+ *
+ * @return array
+ *   Keys generated from this entity.
+ */
+function search_api_grouping_generate_pseudo_keys($entity, $entity_type, $fields) {
+  $keystrings = array();
+  $keys = array();
+
+  // Now permute on each multi-valued key.
+  if (!empty($fields)) {
+    search_api_grouping_generate_keys($entity_type, $entity, $fields, $keys);
+
+    list($id, $vid, $bundle) = entity_extract_ids($entity_type, $entity);
+
+    if (!empty($keys)) {
+      foreach ($keys as $key) {
+        // Pre-pend our entity type and entity id and build the id string.
+        array_unshift($key, $id);
+        array_unshift($key, $entity_type);
+        $keystrings[] = implode(SEARCH_API_GROUPING_ENTITY_FIELD_SEPERATOR, $key);
+      }
+    }
+  }
+
+  return $keystrings;
+}
+
+/**
+ * Recursive callback to generate the elements of our pseudo keys.
+ *
+ * @param string $entity_type
+ *   The entity type.
+ * @param object $entity
+ *   The entity object.
+ * @param array $fields
+ *   Associative array of field names to use when computing the cartesian
+ *   product.
+ *   The array key is the field name, the value the permutation limit.
+ *   To disable limit use 0.
+ * @param array $keys
+ *   Recursive data holder stores array of field indexes to use in generating
+ *   pseudo document.
+ *
+ * @see search_api_grouping_generate_pseudo_keys()
+ */
+function search_api_grouping_generate_keys($entity_type, $entity, $fields, &$keys) {
+  if (!empty($fields)) {
+    $field_name = key($fields);
+    $permutation_limit = array_shift($fields);
+    if (!empty($field_name)) {
+      $values = field_get_items($entity_type, $entity, $field_name);
+      // Limit values if the permutations are limited.
+      if (is_array($values) && $permutation_limit) {
+        $values = array_slice($values, 0, $permutation_limit);
+      }
+      if (!empty($keys)) {
+        $newkeys = array();
+        // Develop the cross-product of existing keys and our new values.
+        if (!empty($values)) {
+          foreach ($values as $id => $value) {
+            foreach ($keys as $key) {
+              $key[] = $id;
+              $newkeys[] = $key;
+            }
+          }
+        }
+        else {
+          // This field doesn't have any values, but we need a placeholder.
+          $key[] = 0;
+          $newkeys[] = $key;
+        }
+        $keys = $newkeys;
+      }
+      else {
+        // Fresh key stack, add all of our values.
+        if (!empty($values)) {
+          foreach ($values as $id => $value) {
+            $keys[] = array($id);
+          }
+        }
+        else {
+          // This field doesn't have any values, but we need a placeholder.
+          $keys[] = array(0);
+        }
+      }
+    }
+    search_api_grouping_generate_keys($entity_type, $entity, $fields, $keys);
+  }
+}
+
+/**
+ * Returns an index type for the given entity type.
+ *
+ * @param string $entity_type
+ *   An entity type.
+ *
+ * @return string
+ *   A search index type.
+ */
+function search_api_grouping_get_type($entity_type) {
+  return 'denormalized-' . $entity_type;
+}
+
+/**
+ * Returns an index type for the given entity type.
+ *
+ * @param string $type
+ *   An entity type.
+ *
+ * @return string
+ *   A search index type.
+ */
+function search_api_grouping_get_entity_from_type($type) {
+  return str_replace('denormalized-', '', $type);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function search_api_grouping_cron() {
+  // Iterate over all indexes with grouping enabled and queue the permutation
+  // generation.
+  $indexes = search_api_index_load_multiple(FALSE);
+  foreach ($indexes as $index) {
+    if ($index->datasource() instanceof SearchApiDenormalizedEntityDataSourceController) {
+      // Since this is datasource specific we simply use the first index to
+      // handle the overall maintenance.
+      // Ensure the data in table are consistent.
+      $index->datasource()->cleanTable();
+      // Ensure all the required permutations are available.
+      $index->datasource()->queuePermutationGeneration();
+      break;
+    }
+  }
+}
+
+/**
+ * Implements hook_cron_queue_info().
+ */
+function search_api_grouping_cron_queue_info() {
+  $queues['search_api_grouping_generate_permuatations'] = array(
+    'worker callback' => 'search_api_grouping_generate_permuatations',
+    'time' => 60,
+  );
+  return $queues;
+}
+
+/**
+ * Execution callback for the cron queue item.
+ */
+function search_api_grouping_generate_permuatations($queue_item) {
+  // Bundle the items by entity type. That way we can send bundles of items to
+  // method and reduce the amount of db writes.
+  $entity_type_items = array();
+  foreach ($queue_item as $item) {
+    $entity_type_items[$item->entity_type][$item->etid] = $item;
+  }
+  $indexes = search_api_index_load_multiple(FALSE);
+
+  // Now iterate over all entity type bundles.
+  foreach ($entity_type_items as $entity_type => $items) {
+    // Prepare the entities to process.
+    $entities = entity_load($entity_type, array_keys($items));
+    // Iterate over all indexes and generate the item permutations for
+    // denormalized indexes.
+    foreach ($indexes as $index) {
+      if ($index->datasource() instanceof SearchApiDenormalizedEntityDataSourceController) {
+        $index->datasource()->createPermutationItems($index, $entity_type, $entities);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function search_api_grouping_views_api() {
+  return array(
+    'api' => 3,
+  );
+}

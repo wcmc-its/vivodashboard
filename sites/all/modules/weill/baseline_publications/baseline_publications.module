@@ -1,0 +1,115 @@
+<?php
+ini_set('memory_limit', '-1');
+set_time_limit(0);
+
+error_reporting(E_ERROR);
+ini_set('display_errors', 1);
+
+function baseline_publications_access()
+{
+    global $user;
+    if (user_access('administer site configuration')) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function baseline_publications_menu()
+{
+    $items = array();
+    $items['baseline_publications'] = array(
+        'title' => 'Violin Import',
+        'page callback' => 'baseline_publications_main',
+        'access callback' => 'baseline_publications_access',
+        'type' => MENU_CALLBACK,
+
+    );
+
+    $items['baseline_publications/medline_fetch'] = array(
+        'title' => 'Baseline Publications: Fetch publications from Medline',
+        'page callback' => 'baseline_publications_medline_fetch',
+        'access callback' => 'baseline_publications_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'baseline_publications.medline_fetch.inc',
+    );
+
+    $items['baseline_publications/scopus_fetch'] = array(
+        'title' => 'Baseline Publications: Fetch citation count from Scopus',
+        'page callback' => 'baseline_publications_scopus_fetch',
+        'access callback' => 'baseline_publications_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'baseline_publications.scopus_fetch.inc',
+    );
+
+    $items['baseline_publications/percentile_rank'] = array(
+        'title' => 'Baseline Publications: Calculate percentile rank for baseline publications',
+        'page callback' => 'baseline_publications_percentile_rank',
+        'access callback' => 'baseline_publications_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'baseline_publications.percentile_rank.inc',
+    );
+
+    $items['baseline_publications/populate_journal_category'] = array(
+        'title' => 'Baseline Publications: Populate tables for journal and journal_category',
+        'page callback' => 'baseline_publications_populate_journal_category',
+        'access callback' => 'baseline_publications_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'baseline_publications.populate_journal_category.inc',
+    );
+
+
+    return $items;
+}
+
+
+function baseline_publications_main()
+{
+    $html = '';
+    $html .= '<ul>';
+    $html .= '<li><a href="baseline_publications/populate_journal_category">Populate Journal Category</a>: Populates violin_journal, violin_category, and violin_journal_category tables using data from violin_excel</li>';
+    $html .= '<li><a href="baseline_publications/medline_fetch">Medline Fetch</a>: Import baseline publications from Medline</li>';
+    $html .= '<li><a href="baseline_publications/scopus_fetch">Scopus Fetch</a>: Import citation counts for baseline publications from Scopus</li>';
+    $html .= '<li><a href="baseline_publications/percentile_rank">Percentile Rank</a>: Rank baseline publications based on citation count and populate the table violin_baseline</li>';
+    $html .= '</ul>';
+    return $html;
+}
+
+/*
+// set cron job,
+function baseline_publications_cronapi($op, $job = NULL) {
+    return array(
+        'baseline_publications_scopus_cronjob' => array(
+            'title' => 'Basline Publications: Scopus Import Handler',
+            'callback' => 'baseline_publications_scopus_fetch',
+            'file' => 'baseline_publications.scopus_fetch.inc',
+            'scheduler' => array(
+                'name' => 'crontab',
+                'crontab' => array(
+                    'rules' => array('0 * * * *'),
+                ),
+            ),
+        ),
+        'baseline_publications_medline_cronjob' => array(
+            'title' => 'Basline Publications: Medline Import Handler',
+            'callback' => 'baseline_publications_medline_fetch',
+            'file' => 'baseline_publications.medline_fetch.inc',
+            'scheduler' => array(
+                'name' => 'crontab',
+                'crontab' => array(
+                    'rules' => array('0 * * * *'),
+                ),
+            ),
+        ),
+    );
+}
+
+*/
+
+
+
+
+

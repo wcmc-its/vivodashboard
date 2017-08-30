@@ -1,0 +1,18 @@
+name = "Relation Migrate Tests"
+description = "Support module for the Relation - Migrate integration tests."
+package = Testing
+core = 7.x
+hidden = TRUE
+
+dependencies[] = node_reference
+dependencies[] = user_reference
+dependencies[] = entityreference
+dependencies[] = views
+
+
+; Information added by Drupal.org packaging script on 2017-08-08
+version = "7.x-1.1"
+core = "7.x"
+project = "relation"
+datestamp = "1502188457"
+

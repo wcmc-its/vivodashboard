@@ -1,0 +1,15 @@
+name = Relation UI
+description = Administrative interface to relation. Without this module, you cannot create or edit your relation types.
+package = Relation
+core = 7.x
+configure = admin/structure/relation
+dependencies[] = relation
+files[] = relation_ui.module
+files[] = tests/relation_ui.test
+
+; Information added by Drupal.org packaging script on 2017-08-08
+version = "7.x-1.1"
+core = "7.x"
+project = "relation"
+datestamp = "1502188457"
+

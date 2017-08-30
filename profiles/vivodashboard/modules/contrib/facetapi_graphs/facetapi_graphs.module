@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * @file
+ * Provides Graph widget for Facet API based on Flot Library
+ */
+
+/**
+ * Implements hook_facetapi_filters().
+ */
+function facetapi_graphs_facetapi_filters() {
+  return array(
+    'graph_combo_filter' => array(
+      'handler' => array(
+        'label' => t('Facet Combo'),
+        'class' => 'FacetapiFilterGraphCombo',
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_facetapi_widgets().
+ */
+function facetapi_graphs_facetapi_widgets() {
+  return array(
+    'facetapi_graphs' => array(
+      'handler' => array(
+        'label' => t('Graphs'),
+        'class' => 'FacetAPIGraphsWidgetGraphs',
+        'requirements' => array(
+          'facetapi_requirement_realm_property' => array('element type' => 'graphs'),
+        ),
+        'query types' => array(
+          'term',
+          'date',
+        ),
+      ),
+    ),
+    'facetapi_graphs_combo' => array(
+      'handler' => array(
+        'label' => t('Graphs Combo'),
+        'class' => 'FacetAPIGraphsWidgetGraphsCombo',
+        'query types' => array(
+          'term',
+          'date',
+        ),
+      ),
+    ),
+    'facetapi_graphs_combo_data' => array(
+      'handler' => array(
+        'label' => t('Graphs Combo Data'),
+        'class' => 'FacetAPIGraphsWidgetGraphsComboData',
+        'requirements' => array(
+          'facetapi_requirement_realm_property' => array('element type' => 'graphs_combo_data'),
+        ),
+        'query types' => array(
+          'term',
+          'date',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_facetapi_realm_info().
+ */
+function facetapi_graphs_facetapi_realm_info() {
+  $realms = array();
+  $realms['facetapi_graphs_graphs'] = array(
+    'label' => t('Graphs'),
+    'weight' => 90,
+    'sortable' => FALSE,
+    'default widget' => 'facetapi_graphs',
+    'element type' => 'graphs',
+    /*
+     * not yet implemented sample is: facetapi_block_realm_settings (though
+     * that function is not implemented anywhere yet).
+     */
+    'settings callback' => '',
+    'description' => t(
+      'You may use the <em>Graphs</em> realm to display facets as graphs.'
+    ),
+  );
+  $realms['facetapi_graphs_graphs_data_combo'] = array(
+    'label' => t('Graphs Data Combo'),
+    'weight' => 100,
+    'sortable' => FALSE,
+    'default widget' => 'facetapi_graphs_combo_data',
+    'element type' => 'graphs_combo_data',
+    /*
+     * not yet implemented sample is: facetapi_block_realm_settings (though
+     * that function is not implemented anywhere yet).
+     */
+    'settings callback' => '',
+    'description' => t(
+      'The <em>Graphs Data Combo</em> realm is used by the facets of type
+ Graph Combo to get their Y axis data. Facets from this realm are never
+ displayed by themselves.'
+    ),
+  );
+  return $realms;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function facetapi_graphs_theme() {
+  $hooks['facetapi_graphs'] = array(
+    'variables' => array(
+      'element' => NULL,
+      'data'  => NULL,
+      'options'   => 'icon',
+      // 'need a preprocess'
+    ),
+  );
+  return $hooks;
+}
+
+/**
+ * Fill in a bunch of page variables for our graph and load flot.
+ */
+function template_preprocess_facetapi_graphs(&$variables) {
+  drupal_add_css(drupal_get_path('module', 'advanced_help') . '/help-popup.css');
+  drupal_add_css(drupal_get_path('module', 'advanced_help') . '/help.css');
+  $variables['head_title']        = implode(' | ', $head_title);
+}
+
+/**
+ * Implements hook_block_info().
+ *
+ * We have to implement this hook because the default implementation only
+ *   calls facetapi_get_block_info for the realm with the name 'block'.
+ *
+ * TODO: provide a patch to facetapi that implements 'block' as an attribute
+ * on the realm.
+ */
+function facetapi_graphs_block_info() {
+  $realms = (array) facetapi_graphs_facetapi_realm_info();
+  unset($realms['facetapi_graphs_graphs_data_combo']);
+  return facetapi_get_block_info(array_keys($realms));
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function facetapi_graphs_block_view($delta = '') {
+  $data = facetapi_block_view($delta);
+  $block = block_load('facetapi', $delta);
+  drupal_alter('block_view', $data, $block);
+  return $data;
+}

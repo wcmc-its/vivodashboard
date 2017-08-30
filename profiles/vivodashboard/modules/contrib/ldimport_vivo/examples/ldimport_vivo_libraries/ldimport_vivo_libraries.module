@@ -1,0 +1,34 @@
+<?php
+/**
+ * @file
+ * Code for the VIVO Libraries Example feature.
+ */
+
+include_once 'ldimport_vivo_libraries.features.inc';
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Populates default VIVO values on Feeds import form. These are saved with the
+ * Feeds source and therefore not captured in code.
+ */
+function ldimport_vivo_libraries_form_feeds_import_form_alter(&$form, &$form_state) {
+  if (isset($form['#importer_id']) && $form['#importer_id'] == 'vivo_libraries' && !empty($form['feeds']['LdImportVivoClassFetcher'])) {
+
+    $element = &$form['feeds']['LdImportVivoClassFetcher'];
+
+    if (empty($element['site']['#default_value'])) {
+      $element['site']['#default_value'] = 'http://vivo.cornell.edu';
+    }
+    if (empty($element['class']['#default_value'])) {
+      $element['class']['#default_value'] = 'http://vivoweb.org/ontology/core#Library';
+    }
+  }
+}
+
+/**
+ * Implements hook_enable().
+ */
+function ldimport_vivo_libraries_enable() {
+  drupal_set_message(t('VIVO Libraries Example has been enabled. Visit the !import_page to import content.', array('!import_page' => l('Feeds import page', 'import'))), 'status');
+}

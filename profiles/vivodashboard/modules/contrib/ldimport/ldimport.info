@@ -1,0 +1,7 @@
+name = "Linked Data Import"
+description = "A set of Feeds plugins for importing linked data content"
+package = Feeds
+dependencies[] = feeds (2.x)
+dependencies[] = libraries (2.x)
+core = 7.x
+files[] = ldimport.inc

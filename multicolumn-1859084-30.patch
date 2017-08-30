@@ -1,0 +1,230 @@
+diff --git a/modules/field/modules/field_sql_storage/field_sql_storage.module b/modules/field/modules/field_sql_storage/field_sql_storage.module
+index 93f2077..7ab4ee5 100644
+--- a/modules/field/modules/field_sql_storage/field_sql_storage.module
++++ b/modules/field/modules/field_sql_storage/field_sql_storage.module
+@@ -65,6 +65,49 @@ function _field_sql_storage_revision_tablename($field) {
+ }
+ 
+ /**
++ * Generates a table alias for a field data table.
++ *
++ * The table alias is unique for each unique combination of field name
++ * (represented by $tablename), delta_group and language_group.
++ *
++ * @param $tablename
++ *   The name of the data table for this field.
++ * @param $field_key
++ *   The numeric key of this field in this query.
++ * @param $query
++ *   The EntityFieldQuery that is executed.
++ *
++ * @return
++ *   A string containing the generated table alias.
++ */
++function _field_sql_storage_tablealias($tablename, $field_key, EntityFieldQuery $query) {
++  // No conditions present: use a unique alias.
++  if (empty($query->fieldConditions[$field_key])) {
++    return $tablename . $field_key;
++  }
++
++  // Find the delta and language condition values and append them to the alias.
++  $condition = $query->fieldConditions[$field_key];
++  $alias = $tablename;
++  $has_group_conditions = FALSE;
++
++  foreach (array('delta', 'language') as $column) {
++    if (isset($condition[$column . '_group'])) {
++      $alias .= '_' . $column . '_' . $condition[$column . '_group'];
++      $has_group_conditions = TRUE;
++    }
++  }
++
++  // Return the alias when it has delta/language group conditions.
++  if ($has_group_conditions) {
++    return $alias;
++  }
++
++  // Return a unique alias in other cases.
++  return $tablename . $field_key;
++}
++
++/**
+  * Generate a column name for a field data table.
+  *
+  * @param $name
+@@ -504,17 +547,21 @@ function field_sql_storage_field_storage_query(EntityFieldQuery $query) {
+     $id_key = 'revision_id';
+   }
+   $table_aliases = array();
++  $query_tables = NULL;
+   // Add tables for the fields used.
+   foreach ($query->fields as $key => $field) {
+     $tablename = $tablename_function($field);
+-    // Every field needs a new table.
+-    $table_alias = $tablename . $key;
++    $table_alias = _field_sql_storage_tablealias($tablename, $key, $query);
+     $table_aliases[$key] = $table_alias;
+     if ($key) {
+-      $select_query->join($tablename, $table_alias, "$table_alias.entity_type = $field_base_table.entity_type AND $table_alias.$id_key = $field_base_table.$id_key");
++      if (!isset($query_tables[$table_alias])) {
++        $select_query->join($tablename, $table_alias, "$table_alias.entity_type = $field_base_table.entity_type AND $table_alias.$id_key = $field_base_table.$id_key");
++      }
+     }
+     else {
+       $select_query = db_select($tablename, $table_alias);
++      // Store a reference to the list of joined tables.
++      $query_tables =& $select_query->getTables();
+       // Allow queries internal to the Field API to opt out of the access
+       // check, for situations where the query's results should not depend on
+       // the access grants for the current user.
+diff --git a/modules/field/modules/field_sql_storage/field_sql_storage.test b/modules/field/modules/field_sql_storage/field_sql_storage.test
+index 12c54ba..1d160a0 100644
+--- a/modules/field/modules/field_sql_storage/field_sql_storage.test
++++ b/modules/field/modules/field_sql_storage/field_sql_storage.test
+@@ -438,4 +438,146 @@ class FieldSqlStorageTestCase extends DrupalWebTestCase {
+     $this->assertEqual($foreign_key['table'], $foreign_key_name, 'Foreign key table name preserved in the schema');
+     $this->assertEqual($foreign_key['columns'][$foreign_key_column], 'id', 'Foreign key column name preserved in the schema');
+   }
++
++  /**
++   * Test handling multiple conditions on one column of a field.
++   *
++   * Tests both the result and the complexity of the query.
++   */
++  function testFieldSqlStorageMultipleConditionsSameColumn() {
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$this->field_name}[LANGUAGE_NONE][0] = array('value' => 1);
++    field_test_entity_save($entity);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$this->field_name}[LANGUAGE_NONE][0] = array('value' => 2);
++    field_test_entity_save($entity);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$this->field_name}[LANGUAGE_NONE][0] = array('value' => 3);
++    field_test_entity_save($entity);
++
++    $query = new EntityFieldQuery();
++    // The tag causes field_sql_storage_query_test_alter() to be invoked so the query can be tested.
++    $query->addTag('test');
++    $query->entityCondition('entity_type', 'test_entity');
++    $query->entityCondition('bundle', 'test_bundle');
++    $query->fieldCondition($this->field_name, 'value', 1, '<>', 0, LANGUAGE_NONE);
++    $query->fieldCondition($this->field_name, 'value', 2, '<>', 0, LANGUAGE_NONE);
++    $result = field_sql_storage_field_storage_query($query);
++
++    // Test the results.
++    $this->assertEqual(1, count($result), format_string('One result should be returned, got @count', array('@count' => count($result))));
++
++    // Test the complexity of the query.
++    $query = $GLOBALS['test_query'];
++    $this->assertNotNull($query, 'Precondition: the query should be available');
++    $tables = $query->getTables();
++    $this->assertEqual(1, count($tables), 'The query contains just one table.');
++  }
++
++  /**
++   * Test handling multiple conditions on multiple columns of one field.
++   *
++   * Tests both the result and the complexity of the query.
++   */
++  function testFieldSqlStorageMultipleConditionsDifferentColumns() {
++    // Create the multi-column shape field
++    $field_name = strtolower($this->randomName());
++    $field = array('field_name' => $field_name, 'type' => 'shape', 'cardinality' => 4);
++    $field = field_create_field($field);
++    $instance = array(
++      'field_name' => $field_name,
++      'entity_type' => 'test_entity',
++      'bundle' => 'test_bundle'
++    );
++    $instance = field_create_instance($instance);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$field_name}[LANGUAGE_NONE][0] = array('shape' => 'A', 'color' => 'X');
++    field_test_entity_save($entity);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$field_name}[LANGUAGE_NONE][0] = array('shape' => 'B', 'color' => 'X');
++    field_test_entity_save($entity);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$field_name}[LANGUAGE_NONE][0] = array('shape' => 'A', 'color' => 'Y');
++    field_test_entity_save($entity);
++
++    $query = new EntityFieldQuery();
++    // The tag causes field_sql_storage_query_test_alter() to be invoked so the SQL query object can be tested.
++    $query->addTag('test');
++    $query->entityCondition('entity_type', 'test_entity');
++    $query->entityCondition('bundle', 'test_bundle');
++    $query->fieldCondition($field_name, 'shape', 'B', '=', 'something', LANGUAGE_NONE);
++    $query->fieldCondition($field_name, 'color', 'X', '=', 'something', LANGUAGE_NONE);
++    $result = field_sql_storage_field_storage_query($query);
++
++    // Test the results.
++    $this->assertEqual(1, count($result), format_string('One result should be returned, got @count', array('@count' => count($result))));
++
++    // Test the complexity of the query.
++    $query = $GLOBALS['test_query'];
++    $this->assertNotNull($query, 'Precondition: the query should be available');
++    $tables = $query->getTables();
++    $this->assertEqual(1, count($tables), 'The query contains just one table.');
++  }
++
++  /**
++   * Test handling multiple conditions on multiple columns of one field for multiple languages.
++   *
++   * Tests both the result and the complexity of the query.
++   */
++  function testFieldSqlStorageMultipleConditionsDifferentColumnsMultipleLanguages() {
++    field_test_entity_info_translatable('test_entity', TRUE);
++
++    // Create the multi-column shape field
++    $field_name = strtolower($this->randomName());
++    $field = array('field_name' => $field_name, 'type' => 'shape', 'cardinality' => 4, 'translatable' => TRUE);
++    $field = field_create_field($field);
++    $instance = array(
++      'field_name' => $field_name,
++      'entity_type' => 'test_entity',
++      'bundle' => 'test_bundle',
++      'settings' => array(
++        // Prevent warning from field_test_field_load().
++        'test_hook_field_load' => FALSE,
++      ),
++    );
++    $instance = field_create_instance($instance);
++
++    $entity = field_test_create_stub_entity(NULL, NULL);
++    $entity->{$field_name}[LANGUAGE_NONE][0] = array('shape' => 'A', 'color' => 'X');
++    $entity->{$field_name}['en'][0] = array('shape' => 'B', 'color' => 'Y');
++    field_test_entity_save($entity);
++    $entity = field_test_entity_test_load($entity->ftid);
++
++    $query = new EntityFieldQuery();
++    // The tag causes field_sql_storage_query_test_alter() to be invoked so the SQL query object can be tested.
++    $query->addTag('test');
++    $query->entityCondition('entity_type', 'test_entity');
++    $query->entityCondition('bundle', 'test_bundle');
++    $query->fieldCondition($field_name, 'color', 'X', '=', NULL, LANGUAGE_NONE);
++    $query->fieldCondition($field_name, 'shape', 'B', '=', NULL, 'en');
++    $result = field_sql_storage_field_storage_query($query);
++
++    // Test the results.
++    $this->assertEqual(1, count($result), format_string('One result should be returned, got @count', array('@count' => count($result))));
++
++    // Test the complexity of the query.
++    $query = $GLOBALS['test_query'];
++    $this->assertNotNull($query, 'Precondition: the query should be available');
++    $tables = $query->getTables();
++    $this->assertEqual(2, count($tables), 'The query contains two tables.');
++  }
++}
++
++/**
++ * Implements hook_query_TAG_alter().
++ *
++ * Saves the query in a global variable to allow tests.
++ */
++function field_sql_storage_query_test_alter($query) {
++  $GLOBALS['test_query'] = $query;
+ }

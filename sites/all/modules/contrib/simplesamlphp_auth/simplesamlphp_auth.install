@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * the install file for the simplesamlphp_auth module
+ */
+
+/**
+ * Implements hook_install().
+ */
+function simplesamlphp_auth_install() {
+
+  user_role_revoke_permissions(DRUPAL_AUTHENTICATED_RID, array('change own password'));
+
+  // Disable the open registration to the site and store the original setting.
+  $original = variable_get('user_register', 1);
+  variable_set('user_register', 0);
+  variable_set('simplesamlphp_auth_user_register_original', $original);
+
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function simplesamlphp_auth_uninstall() {
+  // Restore the original user registration directive.
+  $original = variable_get('simplesamlphp_auth_user_register_original', 1);
+  variable_set('user_register', $original);
+  variable_del('simplesamlphp_auth_user_register_original');
+
+  // Remove the created system variables.
+  variable_del('simplesamlphp_auth_activate');
+  variable_del('simplesamlphp_auth_installdir');
+  variable_del('simplesamlphp_auth_logout_page');
+  variable_del('simplesamlphp_auth_mailattr');
+  variable_del('simplesamlphp_auth_unique_id');
+  variable_del('simplesamlphp_auth_user_name');
+  variable_del('simplesamlphp_auth_authsource');
+  variable_del('simplesamlphp_auth_rolepopulation');
+  variable_del('simplesamlphp_auth_roleevaleverytime');
+  variable_del('simplesamlphp_auth_forcehttps');
+  variable_del('simplesamlphp_auth_registerusers');
+  variable_del('simplesamlphp_auth_allowsetdrupalpwd');
+  variable_del('simplesamlphp_auth_allowdefaultlogin');
+  variable_del('simplesamlphp_auth_allowdefaultloginroles');
+  variable_del('simplesamlphp_auth_allowdefaultloginusers');
+  variable_del('simplesamlphp_auth_logoutgotourl');
+
+}

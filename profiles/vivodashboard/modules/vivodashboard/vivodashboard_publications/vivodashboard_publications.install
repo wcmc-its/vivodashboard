@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function vivodashboard_publications_install() {
+  // The searcher for current_search blocks does not get exported. Need to
+  // manually insert searcher setting for blocks.
+  // @see https://drupal.org/node/1469002
+  if (db_table_exists('block_current_search')) {
+    db_merge('block_current_search')
+      ->key(array('delta' => 'authorships'))
+      ->fields(array('delta' => 'authorships', 'searcher' => 'search_api@authorships'))
+      ->execute();
+    db_merge('block_current_search')
+      ->key(array('delta' => 'publications'))
+      ->fields(array('delta' => 'publications', 'searcher' => 'search_api@publications'))
+      ->execute();
+  }
+}
+
+/**
+ * Update all relations.
+ */
+function vivodashboard_publications_update_7100(&$sandbox) {
+  if (!isset($sandbox['#progress'])) {
+    $sandbox['#progress'] = 0;
+    $sandbox['#total'] = db_select('relation', 'r')
+      ->condition('relation_type', 'authorship')
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+  }
+
+  $start = $sandbox['#progress'];
+  $end = $sandbox['#progress'] + 100;
+
+  $rows = db_select('relation', 'r')
+    ->fields('r', array('rid'))
+    ->condition('relation_type', 'authorship')
+    ->orderBy('rid')
+    ->range($start, $end)
+    ->execute()
+    ->fetchAllAssoc('rid');
+
+  foreach (relation_load_multiple(array_keys($rows)) as $relation) {
+    list($source, $target) = field_get_items('relation', $relation, 'endpoints');
+
+    $authorship = entity_metadata_wrapper('relation', $relation);
+    $author = entity_metadata_wrapper('node', $target['entity_id']);
+
+    $first_name = $author->field_first_name->value();
+    $last_name = $author->field_last_name->value();
+    $label = $last_name . ' ' . substr($first_name, 0, 1);
+    $authorship->field_author_label->set($label);
+
+    $result = relation_query('node', $source['entity_id'], 0)
+      ->entityCondition('bundle', 'authorship')
+      ->fieldOrderBy('field_author_rank', 'value', 'asc')
+      ->execute();
+
+    if ($result && count($result) > 1) {
+      reset($result);
+      if (key($result) == $relation->rid) {
+        $authorship->field_author_position->set('first');
+      }
+      end($result);
+      if (key($result) == $relation->rid) {
+       $authorship->field_author_position->set('last');
+      }
+    }
+
+
+    $authorship->save();
+  }
+
+  $sandbox['#progress'] = $end;
+  $sandbox['#finished'] = $sandbox['#total'] - $sandbox['#progress'];
+}

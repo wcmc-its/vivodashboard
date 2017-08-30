@@ -1,0 +1,20 @@
+<?php
+/**
+ * Install and update operations for Entitycache Relation
+ */
+
+/**
+ * Implementation of hook_schema().
+ */
+function entitycache_relation_schema() {
+  $schema['cache_entity_relation'] = drupal_get_schema_unprocessed('system', 'cache');
+  return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function entitycache_relation_uninstall() {
+  drupal_uninstall_schema('entitycache_relation');
+}
+

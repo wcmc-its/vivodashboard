@@ -1,0 +1,16 @@
+name = Search ranges
+description = "Provides range widgets and a min/max slider for Search API."
+dependencies[] = facetapi
+dependencies[] = search_api
+dependencies[] = search_api_facetapi
+files[] = includes/callback_search_api_ranges.inc
+files[] = plugins/facetapi/widget_links.inc
+files[] = plugins/facetapi/widget_slider.inc
+files[] = plugins/facetapi/widget_select.inc
+core = 7.x
+package = Search
+
+; Information added by drush on 2013-09-01
+version = "7.x-1.4+26-dev"
+project = "search_api_ranges"
+datestamp = "1378040222"

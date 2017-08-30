@@ -1,0 +1,109 @@
+<?php
+
+set_time_limit(0);
+
+//error_reporting(E_ERROR );
+//ini_set('display_errors', 1);
+
+
+function violin_admin_init()
+{
+    drupal_add_js(
+        array('myModule' => array(
+            'key' => 'value'
+        )), 'setting');
+}
+
+function violin_admin_access()
+{
+    global $user;
+    if (user_access('administer site configuration')) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function violin_admin_menu()
+{
+    $items = array();
+    $items['violin_admin'] = array(
+        'title' => 'Violin Import',
+        'page callback' => 'violin_admin_main',
+        'access callback' => 'violin_admin_access',
+        'type' => MENU_CALLBACK,
+
+    );
+
+    $items['violin_admin/pub_view'] = array(
+        'title' => 'Violin Import',
+        'page callback' => 'violin_admin_pub_view',
+        'access callback' => 'violin_admin_access',
+        'type' => MENU_CALLBACK,
+
+    );
+
+    $items['violin_admin/calculate_percentile_rank'] = array(
+        'title' => 'Violin: Calculate percentile rank',
+        'page callback' => 'violin_admin_populate',
+        'access callback' => 'violin_admin_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'violin_admin.rank.inc',
+    );
+
+    $items['violin_admin/calculate_custom_percentile_rank'] = array(
+        'title' => 'Violin: Calculate percentile rank',
+        'page callback' => 'violin_admin_populate_custom_percentile_rank',
+        'access callback' => 'violin_admin_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'violin_admin.rank.inc',
+    );
+
+    $items['violin_admin/import_baseline_percentile_rank'] = array(
+        'title' => 'Violin: Import baseline percentile rank',
+        'page callback' => 'violin_admin_import_baseline_percentile_rank',
+        'access callback' => 'violin_admin_access',
+        'type' => MENU_CALLBACK,
+        'file' => 'violin_admin.import.inc',
+    );
+
+    return $items;
+}
+
+
+function violin_admin_main()
+{
+
+    $html = '';
+    $html .= '<ul>';
+    $html .= '<li><a href="violin_admin/calculate_percentile_rank">Calculate percentile rank</a></li>';
+    // $html .= '<li><a href="violin_admin/calculate_custom_percentile_rank">Calculate custom percentile rank</a></li>';
+    // $html .= '<li><a href="violin_admin/import_baseline_percentile_ranks">Import baseline percentile ranks<a/></li>';
+    $html .= '</ul>';
+    return $html;
+}
+
+//Define custom cron functions.
+function violin_admin_cronapi($op, $job = NULL)
+{
+    return array(
+        'violin_admin_cronjob' => array(
+            'title' => 'Article Percentile Rank Handler',
+            'callback' => 'violin_admin_populate',
+            'file' => 'violin_admin.rank.inc',
+            'scheduler' => array(
+                'name' => 'crontab',
+                'crontab' => array(
+                    'rules' => array('*/15 * * * *'),
+                ),
+            ),
+        ),
+    );
+}
+
+
+

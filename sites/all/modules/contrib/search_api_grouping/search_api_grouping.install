@@ -1,0 +1,89 @@
+<?php
+/**
+ * @file
+ * Installation and update hooks for search_api_denormalized_entity.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function search_api_grouping_schema() {
+  $schema['search_api_denormalized_entity'] = array(
+    'description' => 'Maintain a map from entities to their de-normalized meta entity keys',
+    'fields' => array(
+      'id' => array(
+        'description' => 'The primary identifier, search api needs a serial id',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'index_id' => array(
+        'description' => 'The search api index id',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'item_id' => array(
+        'description' => 'The id in the search index.',
+        'type' => 'varchar',
+        'length' => 256,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'entity_type' => array(
+        'description' => 'The entity type of this item.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ),
+      'etid' => array(
+        'description' => 'The entity id of this item.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'changed' => array(
+        'description' => 'Either a flag or a timestamp to indicate if or when the item was changed since it was last indexed.',
+        'type' => 'int',
+        'size' => 'big',
+        'not null' => TRUE,
+        'default' => 1,
+      ),
+      'needs_processing' => array(
+        'description' => 'Defines that this item was already processed from the queue.',
+        'type' => 'int',
+        'size' => 'small',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+      'queued' => array(
+        'description' => 'Timestamp when the item was queued.',
+        'type' => 'int',
+        'size' => 'big',
+        'not null' => TRUE,
+        'default' => 0,
+      ),
+    ),
+    'indexes' => array(
+      'item_id' => array(array('item_id', 16)),
+    ),
+    'primary key' => array('id'),
+  );
+
+  return $schema;
+}
+
+/**
+ * Add new columns required for processing.
+ */
+function search_api_grouping_update_7000() {
+  $schema = search_api_grouping_schema();
+  if (isset($schema['search_api_denormalized_entity']['fields']['needs_processing']) && !db_field_exists('search_api_denormalized_entity', 'needs_processing')) {
+    db_add_field('search_api_denormalized_entity', 'needs_processing', $schema['search_api_denormalized_entity']['fields']['needs_processing']);
+  }
+  if (isset($schema['search_api_denormalized_entity']['fields']['queued']) && !db_field_exists('search_api_denormalized_entity', 'queued')) {
+    db_add_field('search_api_denormalized_entity', 'queued', $schema['search_api_denormalized_entity']['fields']['queued']);
+  }
+}

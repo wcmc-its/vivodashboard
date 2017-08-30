@@ -1,0 +1,9 @@
+name = VIVO Dashboard CSV Import
+description = Migrations to bring remote CSV data from VIVO into VIVO Dashboard
+core = 7.x
+package = VIVO Dashboard
+version = 7.x-1.0
+project = vivodashboard_csv_import
+dependencies[] = migrate
+dependencies[] = migrate_ui
+dependencies[] = relation_migrate

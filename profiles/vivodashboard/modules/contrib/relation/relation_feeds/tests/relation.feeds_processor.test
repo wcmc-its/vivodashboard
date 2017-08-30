@@ -1,0 +1,185 @@
+<?php
+
+/**
+ * @file
+ * Tests for RelationFeedsProcessor.inc
+ */
+
+if (!class_exists('FeedsWebTestCase')) {
+  return;
+}
+
+/**
+ * Test aggregating a feed as data records.
+ */
+class FeedsCSVtoRelationsTest extends FeedsWebTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Feeds CSV import to relations',
+      'description' => 'Tests a standalone import configuration that uses file fetcher and CSV parser to import relations from a CSV file.',
+      'group' => 'Relation',
+    );
+  }
+
+  public function setUp() {
+    // relation_ctools_test module provides relation type that we can use to
+    // test feeds imports
+    parent::setUp(array('relation_feeds', 'relation', 'relation_ctools_test'));
+    $this->importUsers();
+
+    // Create an importer.
+    $this->createImporterConfiguration('Relation import', 'relation_import');
+
+    // Set and configure plugins.
+    $this->setPlugin('relation_import', 'FeedsFileFetcher');
+    $this->setPlugin('relation_import', 'FeedsCSVParser');
+    $this->setPlugin('relation_import', 'RelationFeedsProcessor');
+
+    // 'no_headers' setting would suit well for relation endpoint testing but,
+    // thats not working atm because of https://drupal.org/node/1984962.
+    // As a workaround columns are now named user1,user2...
+    $this->setSettings('relation_import', 'FeedsCSVParser', array(
+      'no_headers' => FALSE
+    ));
+  }
+
+  /**
+   * Import users from feeds CSV to get some data available for endpoints.
+   */
+  public function importUsers() {
+    $this->createImporterConfiguration('User import', 'user_import');
+
+    // Set and configure plugins.
+    $this->setPlugin('user_import', 'FeedsFileFetcher');
+    $this->setPlugin('user_import', 'FeedsCSVParser');
+    $this->setPlugin('user_import', 'FeedsUserProcessor');
+
+    // Go to mapping page and create a couple of mappings.
+    $mappings = array(
+      0 => array(
+        'source' => 'name',
+        'target' => 'guid',
+        'unique' => TRUE,
+      ),
+      1 => array(
+        'source' => 'name',
+        'target' => 'name',
+        'unique' => TRUE,
+      ),
+      2 => array(
+        'source' => 'mail',
+        'target' => 'mail',
+        'unique' => FALSE,
+      ),
+    );
+    $this->addMappings('user_import', $mappings);
+
+    // Import CSV file.
+    $path = $this->absolute() . '/' . drupal_get_path('module', 'feeds');
+    $this->importFile('user_import', $path . '/tests/feeds/users.csv');
+  }
+
+  /**
+   * Test relation creation, refreshing/deleting feeds and feed items.
+   */
+  public function testSymmetricRelations() {
+    // Go to mapping page and create a couple of mappings.
+    $mappings = array(
+      0 => array(
+        'source' => 'user1',
+        'target' => 'source_bundles:user:*:guid',
+      ),
+      1 => array(
+        'source' => 'user2',
+        'target' => 'source_bundles:user:*:guid',
+      ),
+    );
+    $this->setSettings('relation_import', 'RelationFeedsProcessor', array(
+      'bundle' => 'loves'
+    ));
+    $this->addMappings('relation_import', $mappings);
+
+    // Import CSV file creating 'loves' relations between users.
+    $this->importFile('relation_import', $this->absolutePath() . '/tests/feeds/user_relations.csv');
+
+    // Assert results.
+    $this->assertText('Created 3 relations');
+    $this->assertText('Failed importing 2 relations');
+  }
+
+  /**
+   * Test unique endpoints setting
+   */
+  public function testUniqueEndpoints() {
+    // relation_ctools_test relation types are all non-directional so create a
+    // directional relation type too.
+    $this->relation_types['directional'] = array(
+      'relation_type' => 'directional',
+      'label' => 'directional',
+      'directional' => TRUE,
+      'source_bundles' => array('user:*'),
+      'target_bundles' => array('user:*'),
+    );
+    relation_type_save($this->relation_types['directional']);
+
+    // Go to mapping page and create a couple of mappings.
+    $mappings = array(
+      0 => array(
+        'source' => 'target',
+        'target' => 'target_bundles:user:*:guid',
+      ),
+      1 => array(
+        'source' => 'source',
+        'target' => 'source_bundles:user:*:guid',
+      ),
+    );
+    $this->setSettings('relation_import', 'RelationFeedsProcessor', array(
+      'bundle' => 'directional',
+      // unfortunate typo, can't fix as it would break existing and exported
+      // feeds importer configurations.
+      'unique_enpoints' => TRUE,
+    ));
+    $this->addMappings('relation_import', $mappings);
+
+    // Import CSV file creating 'directional' relations between users.
+    $this->importFile('relation_import', $this->absolutePath() . '/tests/feeds/directional_relations.csv');
+
+    // Assert results.
+    $this->assertText('Created 4 relations');
+    // Directional relations should be the following:
+    // Morticia → Gomez
+    // Gomez → Morticia
+    // Fester → Gomez
+    // Fester → Fester
+    foreach (array('Morticia', 'Gomez', 'Fester') as $user_name) {
+      $users[$user_name] = user_load_by_name($user_name);
+    }
+    $endpoint_sets[] = array(
+      array('entity_type' => 'user', 'entity_id' => $users['Morticia']->uid),
+      array('entity_type' => 'user', 'entity_id' => $users['Gomez']->uid),
+    );
+    $endpoint_sets[] = array(
+      array('entity_type' => 'user', 'entity_id' => $users['Gomez']->uid),
+      array('entity_type' => 'user', 'entity_id' => $users['Morticia']->uid),
+    );
+    $endpoint_sets[] = array(
+      array('entity_type' => 'user', 'entity_id' => $users['Fester']->uid),
+      array('entity_type' => 'user', 'entity_id' => $users['Gomez']->uid),
+    );
+    $endpoint_sets[] = array(
+      array('entity_type' => 'user', 'entity_id' => $users['Fester']->uid),
+      array('entity_type' => 'user', 'entity_id' => $users['Fester']->uid),
+    );
+    foreach ($endpoint_sets as $endpoints) {
+      $this->assertTrue(relation_relation_exists($endpoints, 'directional', TRUE));
+    }
+  }
+
+  /**
+   * Get the absolute directory path of the relation module.
+   */
+  public function absolutePath() {
+    return $this->absolute() . '/' . drupal_get_path('module', 'relation_feeds');
+  }
+}

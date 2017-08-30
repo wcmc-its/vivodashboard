@@ -1,0 +1,17 @@
+name = FacetAPI Graph Widget
+description = Display Facets as (Solr) Graphs
+package = Search
+core = 7.x
+
+dependencies[]=facetapi
+dependencies[]=charts_graphs
+
+files[] = plugins/facetapi/widget_graphs.inc
+files[] = plugins/facetapi/widget_graphs_combo.inc
+files[] = plugins/facetapi/widget_graphs_combo_data.inc
+files[] = plugins/facetapi/filter.inc
+
+; Information added by drush on 2013-07-27
+version = "7.x-1.x-dev"
+project = "facetapi_graphs"
+datestamp = "1374950649"

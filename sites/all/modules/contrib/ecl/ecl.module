@@ -1,0 +1,270 @@
+<?php
+
+/**
+ * @file
+ * Module file for the entity cache loader, which tries to load entities into
+ * cache.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function ecl_menu() {
+  $items = array();
+
+  $items['admin/config/development/ecl'] = array(
+    'title' => 'Entity Cache Loader',
+    'description' => 'Form to cache entities/bundles',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ecl_load_caches_form'),
+    'access arguments' => array('administer display cache'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function ecl_permission() {
+  return array(
+    'administer entity cache loader' => array(
+      'title' => t('Administer Entity Cache Loader'),
+      'description' => t('Permission to load caches from the ui.'),
+    ),
+  );
+}
+
+/**
+ * AJAX callback function for ecl_load_caches_form.
+ * Provides the change for the bundle type.
+ */
+function ecl_load_caches_form_entity_chosen_callback($form, &$form_state) {
+  return $form['ecl_bundle_type'];
+}
+
+/**
+ * Form to load caches.
+ */
+function ecl_load_caches_form($form, &$form_state) {
+  $types = entity_get_info();
+
+  foreach ($types as $key => $values) {
+    $entities[$key] = $values['label'];
+  }
+
+  $form['ecl_entity_type'] = array(
+    '#type' => 'select',
+    '#title' => t('Entity Type'),
+    '#description' => t('Select an entity type you wish to load into caches (optional)'),
+    '#options' => array_merge(array('' => t('All Entity Types')), $entities),
+    '#ajax' => array(
+      'callback' => 'ecl_load_caches_form_entity_chosen_callback',
+      'wrapper' => 'ecl-bundle-type',
+    ),
+  );
+
+  if (isset($form_state['values']['ecl_entity_type'])) {
+    foreach ($types[$form_state['values']['ecl_entity_type']]['bundles'] as $key => $values) {
+      $bundles[$key] = $values['label'];
+    }
+    $form['ecl_bundle_type'] = array(
+      '#type' => 'select',
+      '#title' => t('Bundle Type'),
+      '#description' => t('Select an entity bundle you wish to load into caches (optional)'),
+      '#options' => array_merge(array('' => t('All Entity Bundles')), $bundles),
+      '#prefix' => '<div id="ecl-bundle-type">',
+      '#suffix' => '</div>',
+    );
+  }
+  else {
+    $form['ecl_bundle_type'] = array(
+      '#type' => 'markup',
+      '#markup' => t('Please select an entity type if you wish to select a particular bundle.'),
+      '#prefix' => '<div id="ecl-bundle-type">',
+      '#suffix' => '</div>',
+    );
+  }
+
+  if (module_exists('display_cache')) {
+    $form['ecl_cache_view_modes'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Load view modes for entity.'),
+      '#description' => t('Load the view modes for an entity bundle. Useful with Display Cache.'),
+    );
+  } else {
+    $form['ecl_cache_view_modes'] = array(
+      '#type' => 'value',
+      '#value' => FALSE,
+    );
+  }
+
+  $form['cache'] = array(
+    '#type' => 'submit',
+    '#value' => t('Cache'),
+  );
+  return $form;
+}
+
+function ecl_load_caches_form_submit($form, &$form_state) {
+  $values = $form_state['values'];
+  $types = entity_get_info();
+  // TODO: Hardcoded, need to make form setting.
+  $batch_limit = 50;
+  if (!empty($values['ecl_entity_type'])) {
+    $types = array(
+      $values['ecl_entity_type'] => $types[$values['ecl_entity_type']],
+    );
+  }
+  if (!isset($values['ecl_bundle_type'])) {
+    $values['ecl_bundle_type'] = '';
+  }
+
+  $batch = array(
+    'operations' => array(),
+    'finished' => 'ecl_batches_finished',
+    'title' => t('Loading entities...'),
+    'init_message' => t('Preparing to load entities...'),
+    'progress_message' => t('Submitting content...'),
+    'error_message' => t('Content could not get cached'),
+  );
+
+  foreach ($types as $entity_type => $entity_info) {
+    $batch['operations'][] = array(
+      'ecl_batch_load_cache', array($entity_type, $entity_info, $values['ecl_bundle_type'], $batch_limit, $form_state['values']),
+    );
+  }
+
+  batch_set($batch);
+}
+
+/**
+ * Batch function to initialize loading caches for given type of entity.
+ */
+function ecl_batch_load_cache($entity_type, $entity_info, $bundle, $batch_limit, $form_state_values, &$context) {
+  if (!isset($context['sandbox']['progress'])) {
+    $context['message'] = t("Begin caching {$entity_type}");
+    $context['sandbox']['progress'] = 0;
+    $context['sandbox']['current_id'] = -1;
+    $context['sandbox']['entity_count'] = _ecl_get_entity_count($entity_type, $bundle);
+    $context['sandbox']['ecl_cache_view_modes'] = $form_state_values['ecl_cache_view_modes'];
+  }
+  $current = min($context['sandbox']['progress'] + 1, $context['sandbox']['entity_count']);
+  $limit = min($context['sandbox']['progress'] + $batch_limit, $context['sandbox']['entity_count']);
+  $type_bundle = empty($bundle) ? $entity_type : "$entity_type.$bundle";
+  $context['message'] = t("Caching {$type_bundle}: {$current} - {$limit} of {$context['sandbox']['entity_count']}");
+  _ecl_load_cache($entity_type, $entity_info, $bundle, $batch_limit, $context);
+}
+
+function ecl_batches_finished() {
+  drupal_set_message('Successfully cached entities!');
+}
+
+/**
+ * Loads cache bin with content from a specific type of entity.
+ */
+function _ecl_load_cache($entity_type, $entity_info, $bundle, $batch_limit, &$context) {
+  $query = new EntityFieldQuery;
+  $query->entityCondition('entity_type', $entity_type)
+    ->entityCondition('entity_id', $context['sandbox']['current_id'], '>');
+  if (!empty($bundle)) {
+    $query->entityCondition('bundle', $bundle);
+  }
+  $result = $query
+    ->entityOrderBy('entity_id', 'ASC')
+    ->range(0, $batch_limit)
+    ->execute();
+
+  $keys = array();
+  $limit = 0;
+  if (count($result) <= 0) {
+    $context['finished'] = TRUE;
+    return;
+  }
+  foreach ($result[$entity_type] as $entity_key => $entity_result) {
+    $keys[] = $entity_key;
+    $context['sandbox']['progress']++;
+    $context['sandbox']['current_id'] = $entity_key;
+  }
+  $entities = _ecl_load_entities($entity_type, $entity_info, $keys);
+  if ($entities && module_exists('display_cache') && !empty($context['sandbox']['ecl_cache_view_modes'])) {
+    _ecl_load_entities_display_caches($entity_type, $entity_info, $entities);
+  }
+  // Do a final count to cache any additional entities that may have been added
+  // in the interim.
+  if ($context['sandbox']['progress'] >= $context['sandbox']['entity_count']) {
+    $context['sandbox']['entity_count'] = _ecl_get_entity_count($entity_type, $bundle);
+  }
+  $context['finished'] = min($context['sandbox']['progress'] / $context['sandbox']['entity_count'], 1.0);
+}
+
+/**
+ * Returns total number of entities given a specific entity given.
+ */
+function _ecl_get_entity_count($entity_type, $bundle) {
+  $query = new EntityFieldQuery();
+  $query->entityCondition('entity_type', $entity_type);
+  if (!empty($bundle)) {
+    $query->entityCondition('bundle', $bundle);
+  }
+  return $query
+    ->count()
+    ->execute();
+}
+
+/**
+ * Loads entities provided there are keys.
+ */
+function _ecl_load_entities($entity_type, $entity_info, $keys = array()) {
+  if (count($keys) > 0) {
+    return entity_load($entity_type, $keys);
+  }
+  return NULL;
+}
+
+/**
+ * Loads display caches
+ */
+function _ecl_load_entities_display_caches($entity_type, $entity_info, $entities) {
+  // Only cache entities that are set up for caching.
+  $request_method = $_SERVER['REQUEST_METHOD'];
+  // drupal_render only caches when REQUEST_METHOD is 'GET' or 'HEAD'
+  // Temporarily convert REQUEST_METHOD to 'HEAD' until caching is complete.
+  foreach ($entities as $key => $entity) {
+    foreach ($entity_info['view modes'] as $view_mode => $view_mode_info) {
+      if (!empty($entity_info['entity keys']['bundle'])) {
+        $bundle_key = $entity_info['entity keys']['bundle'];
+      }
+      else {
+        $bundle_key = $entity_info['bundle keys']['bundle'];
+      }
+      $bundle = $entity_type;
+      if (!empty($bundle_key)) {
+        $bundle = $entity->{$bundle_key};
+      }
+      $display_cache_settings = _ecl_retrieve_display_cache_settings($entity_type, $bundle, $view_mode);
+      if ($display_cache_settings['default']['use'] == DISPLAY_CACHE_ENABLED) {
+        $_SERVER['REQUEST_METHOD'] = 'HEAD';
+        $temporary_entity = array($key => clone $entity);
+        $build = entity_view($entity_type, $temporary_entity, $view_mode);
+        drupal_render($build);
+        $_SERVER['REQUEST_METHOD'] = $request_method;
+      }
+    }
+  }
+}
+
+/**
+ * Retrieves Display Cache settings by entity type, bundle, and view mode.
+ */
+function _ecl_retrieve_display_cache_settings($entity_type, $bundle, $view_mode) {
+  static $settings;
+  if (!isset($settings)) {
+    $settings = array();
+  }
+  if (!isset($settings[$entity_type][$bundle][$view_mode])) {
+    $settings[$entity_type][$bundle][$view_mode] = display_cache_get_settings($entity_type, $bundle, $view_mode);
+  }
+  return $settings[$entity_type][$bundle][$view_mode];
+}

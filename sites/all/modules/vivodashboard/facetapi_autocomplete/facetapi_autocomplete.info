@@ -1,0 +1,6 @@
+name = FacetAPI Autocomplete
+description = Provides an autocomplete facet widget for Search API + Facet API
+core = 7.x
+project = facetapi_autocomplete
+files[] = plugins/facetapi/facetapi_autocomplete_widget.inc
+files[] = plugins/search_api/facetapi_autocomplete_processor.inc

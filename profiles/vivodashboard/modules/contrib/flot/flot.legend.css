@@ -1,0 +1,5 @@
+/* Bartik sets tables at 100% we need to prevent this for our legend */
+
+.flot .legend table {
+	width: auto;
+}

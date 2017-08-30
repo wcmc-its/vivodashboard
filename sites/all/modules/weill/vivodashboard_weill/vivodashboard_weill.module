@@ -1,0 +1,56 @@
+<?php
+/**
+ * @file
+ * Code for the VIVO Dashboard Weill feature.
+ */
+
+include_once 'vivodashboard_weill.features.inc';
+
+/**
+ * Implements hook_menu().
+ */
+function vivodashboard_weill_menu() {
+  $items['warm-caches'] = array(
+    'title' => 'Warm Caches',
+    'page callback' => 'vivodashboard_weill_warm_caches',
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  $items['publications/faq'] = array(
+    'title' => 'Publications - Frequently Asked Questions',
+    'page callback' => 'file_get_contents',
+    'page arguments' => array(drupal_get_path('module', 'vivodashboard_weill') . '/pages/publications_faq.html'),
+    'access callback' => 'user_access',
+    'access arguments' => array('access content'),
+  );
+  return $items;
+}
+
+/**
+ * Menu callback used to warm various caches.
+ *
+ * This menu item is intended to be access via cron tasks.
+ */
+function vivodashboard_weill_warm_caches() {
+
+  // Pages that might involve redirects need to use drupal_http_request().
+  $front = url('<front>', array('absolute' => TRUE));
+  drupal_http_request($front);
+
+  $front = url('publications/list', array('absolute' => TRUE));
+  drupal_http_request($front);
+
+  // Pages behind Shibboleth login need to be handled manually, bypassing any
+  // access checks in the menu system.
+  $GLOBALS['user'] = user_load(1);
+  $paths = array('citations/main');
+  foreach ($paths as $path) {
+    // This is effectively menu_execute_active_handler() without access checks.
+    if ($router_item = menu_get_item($path)) {
+      if ($router_item['include_file']) {
+        require_once DRUPAL_ROOT . '/' . $router_item['include_file'];
+      }
+      call_user_func_array($router_item['page_callback'], $router_item['page_arguments']);
+    }
+  }
+}

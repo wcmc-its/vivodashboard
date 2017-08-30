@@ -1,0 +1,4 @@
+name = Violin Admin
+description = Violin admin tools use to calculate percentile ranks and to import base line publications data.
+core = 7.x
+package = Violin
