@@ -1,4 +1,0 @@
-name = Citations Admin
-description = Citations Admin module calculates percentile ranks for WCM publications by matching aginst a baseline set of publications.
-core = 7.x
-package = Violin

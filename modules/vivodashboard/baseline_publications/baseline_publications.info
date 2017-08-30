@@ -1,4 +1,0 @@
-name = Baseline Publications
-description = Baseline Publications module imports a baseline set of publications from medline, updates with citation count from Scopus and rank them.
-core = 7.x
-package = Violin
