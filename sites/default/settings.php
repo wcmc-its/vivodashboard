@@ -283,13 +283,13 @@ $drupal_hash_salt = '-JkA-4ulIfI4FpyuwknLJqbJknQSVST_5nPVqpqa_S8';
  */
 # $base_url = 'http://www.example.com';  // NO trailing slash!
 
-# $base_url = 'https://vivodashboard.weill.cornell.edu';  
+$base_url = 'https://vivodashboard.weill.cornell.edu';
 
-if ( isset($_SERVER['PANTHEON_ENVIRONMENT']) ){
+/*if ( isset($_SERVER['PANTHEON_ENVIRONMENT']) ){
     if ($_SERVER['PANTHEON_ENVIRONMENT'] == "live"){
         $base_url = 'https://vivodashboard.weill.cornell.edu';
     }    
-}
+}*/
 
 /**
  * PHP settings:
@@ -588,28 +588,6 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  */
 # $conf['allow_authorize_operations'] = FALSE;
 
-// All Pantheon Environments.
-if (defined('PANTHEON_ENVIRONMENT')) {
-    // Use Redis for caching.
-$conf['redis_client_interface'] = 'PhpRedis';
-
-  // Point Drupal to the location of the Redis plugin.
-  $conf['cache_backends'][] = 'sites/all/modules/contrib/redis/redis.autoload.inc';
-  // If you've installed your plugin in a contrib directory, use this line instead:
-  // $conf['cache_backends'][] = 'sites/all/modules/contrib/redis/redis.autoload.inc';
-
-  $conf['cache_default_class'] = 'Redis_Cache';
-  $conf['cache_prefix'] = array('default' => 'pantheon-redis');
-
-  // Do not use Redis for cache_form (no performance difference).
-  $conf['cache_class_cache_form'] = 'DrupalDatabaseCache';
-
-  // Use Redis for Drupal locks (semaphore).
-  $conf['lock_inc'] = 'sites/all/modules/contrib/redis/redis.lock.inc';
-  // Or if you've installed the redis module in a contrib subdirectory, use:
-  // $conf['lock_inc'] = 'sites/all/modules/contrib/redis/redis.lock.inc';
-
-}
 
 /**
  * Smart start:
@@ -626,7 +604,7 @@ special settings for simplesaml php integration
 # Decode Pantheon Settings
 // $ps = json_decode($_SERVER['PRESSFLOW_SETTINGS'], TRUE);
 # Provide universal absolute path to the installation.
-// $conf['simplesamlphp_auth_installdir'] = '/srv/bindings/'. $ps['conf']['pantheon_binding'] .'/code/private/simplesamlphp-1.13.2';
+$conf['simplesamlphp_auth_installdir'] = '/Users/szd2013/PhpstormProjects/vivodashboard/private/simplesamlphp-1.13.2';
 
 if (file_exists(__DIR__ . '/settings.local.php')) {
   include __DIR__ . '/settings.local.php';

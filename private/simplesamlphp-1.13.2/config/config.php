@@ -8,10 +8,10 @@ if (!ini_get('session.save_handler')) {
     ini_set('session.save_handler', 'file');
 }
 
-$ps = json_decode($_SERVER['PRESSFLOW_SETTINGS'], TRUE);
-$host = $_SERVER['HTTP_HOST'];
-$drop_id = $ps['conf']['pantheon_binding'];
-$db = $ps['databases']['default']['default'];
+//$ps = json_decode($_SERVER['PRESSFLOW_SETTINGS'], TRUE);
+//$host = $_SERVER['HTTP_HOST'];
+//$drop_id = $ps['conf']['pantheon_binding'];
+//$db = $ps['databases']['default']['default'];
 
 $config = array(
 
@@ -30,14 +30,14 @@ $config = array(
      * external url, no matter where you come from (direct access or via the
      * reverse proxy).
      */
-     'baseurlpath' => 'https://'. $host .'/simplesaml/',
+    //'baseurlpath' => 'https://'. $host .'/simplesaml/',
 
-    // 'baseurlpath' => 'https://vivodashboard.weill.cornell.edu/simplesaml/',
+    'baseurlpath' => 'https://vivodashboard.weill.cornell.edu/simplesaml/',
 
     // 'baseurlpath' => 'simplesaml/',
 
     'certdir' => 'cert/',
-    'loggingdir' => 'log/',
+    'loggingdir' => '/var/log/simplesaml/',
     'datadir' => 'data/',
 
     /*
@@ -45,7 +45,7 @@ $config = array(
      *
      * SimpleSAMLphp will attempt to create this directory if it doesn't exist.
      */
-    'tempdir' => '/srv/bindings/'. $drop_id .'/tmp/simplesaml',
+    'tempdir' => '/oac/vivodashboard/tmp/simplesaml',
 
     // 'tempdir' => '/tmp/simplesaml',
 
@@ -104,7 +104,7 @@ $config = array(
      * A possible way to generate a random salt is by running the following command from a unix shell:
      * tr -c -d '0123456789abcdefghijklmnopqrstuvwxyz' </dev/urandom | dd bs=32 count=1 2>/dev/null;echo
      */
-    'secretsalt' => 'myweilvivodashboardsalt',
+    'secretsalt' => 'vivodashboard', //change this
     // 'secretsalt' => 'defaultsecretsalt',
 
     /*
@@ -112,8 +112,8 @@ $config = array(
      * The email address will be used as the recipient address for error reports, and
      * also as the technical contact in generated metadata.
      */
-    'technicalcontact_name' => 'Administrator',
-    'technicalcontact_email' => 'na@example.org',
+    'technicalcontact_name' => 'Sarbajit Dutta',
+    'technicalcontact_email' => 'szd2013@med.cornell.edu',
 
     /*
      * The timezone of the server. This option should be set to the timezone you want
@@ -140,7 +140,7 @@ $config = array(
      *
      */
     'logging.level' => SimpleSAML_Logger::NOTICE,
-    'logging.handler' => 'syslog',
+    'logging.handler' => 'file',
 
     /*
      * Specify the format of the logs. Its use varies depending on the log handler used (for instance, you cannot
@@ -168,7 +168,7 @@ $config = array(
      * - %msg: the message to be logged.
      *
      */
-    //'logging.format' => '%date{%b %d %H:%M:%S} %process %level %stat[%trackid] %msg',
+    'logging.format' => '%date{%b %d %H:%M:%S} %process %level %stat[%trackid] %msg',
 
     /*
      * Choose which facility should be used when logging with syslog.
@@ -635,18 +635,18 @@ $config = array(
      * See http://www.php.net/manual/en/pdo.drivers.php for the various
      * syntaxes.
      */
-    'store.sql.dsn' => 'mysql:host='. $db['host'] .';port='. $db['port'] .';dbname='. $db['database'],
+    'store.sql.dsn' => 'mysql:host=localhost;port=3306;dbname=vivo_dashboard',
 
     // 'store.sql.dsn'                 => 'sqlite:/path/to/sqlitedatabase.sq3',
 
     /*
      * The username and password to use when connecting to the database.
      */
-    'store.sql.username' => $db['username'],
+    'store.sql.username' => 'root',
 
     // 'store.sql.username' => null,
 
-    'store.sql.password' => $db['password'],
+    'store.sql.password' => 'vivodashboard',
     // 'store.sql.password' => null,
 
     /*
