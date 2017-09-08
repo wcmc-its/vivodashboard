@@ -134,3 +134,13 @@
 .innerMetadataContainer {
     min-height: 150px;
 }
+
+#general-loader {
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    background: #000 url('../images/ajax-loader-big.gif') no-repeat center center;
+    opacity: 0.3;
+}

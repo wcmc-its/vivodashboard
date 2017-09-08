@@ -8,6 +8,13 @@ function calloutNextPage(index) {
     jQuery('#article_metadata_' + (index + 1)).show();
 }
 
+
+jQuery( document ).ready(function() {
+    jQuery( ".facetapi-checkbox" ).click(function() {
+        jQuery('body').append('<div id="general-loader"></div>');
+    });
+});
+
 jQuery(document).on('mouseover', '.qtip-citation-btn', function() {
     jQuery('.qtip-citation-btn').qtip({
      position: {
@@ -25,6 +32,7 @@ jQuery(document).on('mouseover', '.qtip-citation-btn', function() {
         }
     })
 });
+
 
 jQuery(document).on('mouseover', '.qtip-citation-author', function() {
     jQuery(this).qtip({
@@ -116,6 +124,7 @@ jQuery(document).on('mouseover', '.qtip-citation-author', function() {
         $( "#popupContainer" ).click(function() {
             $( "#popupContainer").popup();
         });
+
 
         /////
         /*$('.notification-close').click(function() {
