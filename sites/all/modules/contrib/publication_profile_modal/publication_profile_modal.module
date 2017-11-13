@@ -151,3 +151,9 @@ function get_profile_by_cwid($args) {
 		print 'Author not found';
 	}
 }
+
+
+// Exclude "batch" url from admin theme view, fix for export DOC
+function publication_profile_modal_admin_paths_alter(&$paths) {
+  $paths['batch'] = FALSE;
+}
