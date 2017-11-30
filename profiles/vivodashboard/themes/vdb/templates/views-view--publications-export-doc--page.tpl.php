@@ -38,7 +38,7 @@
           <b>About the Publications interface</b>
           <div style="position:absolute; right: 5px; top: 10px; width: 20px; height: 20px; text-align:center; cursor:pointer; border: 1px solid; border-radius: 50%; line-height: 18px;" class="notification-open">+</div>
           <div style="position:absolute; right: 5px; top: 10px; width: 20px; height: 20px; text-align:center; cursor:pointer; border: 1px solid; border-radius: 50%; line-height: 18px; display:none;" class="notification-close">-</div>
-          <p id = "notification-text" style="display:none;">This faceted browser provides a convenient way to explore the publications authored by active and historical members of the Weill Cornell community. It includes publications by full-time faculty, postdocs, fellows, and PhD / MD-PhD students as well as publications authored prior to joining the Weill Cornell community. Data is updated daily. <a href="/publications/faq" class="notification-text">Read more</a>.</p>
+          <p id = "notification-text" style="display:none;">This faceted browser provides a convenient way to explore the publications authored by active and historical members of the Weill Cornell community. It includes publications by full-time faculty, postdocs, fellows, and PhD / MD-PhD students as well as publications authored prior to joining the Weill Cornell community. Due to insufficient data in source systems, data for students prior to 2012 are limited. Data is updated daily. <a href="/publications/faq" class="notification-text">Read more</a>.</p>
       </div>
     <div class="view-header">
       <?php print $header; ?>
