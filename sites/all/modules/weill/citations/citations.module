@@ -174,7 +174,6 @@ function _citations_chart_data($view) {
     $filter->condition('publication_year', date('Y', strtotime('-12 years')) , '>=');
     $filter->condition('publication_year', date('Y', strtotime('-3 years')), '<=');
 
-
     //
     // filter through user department ID's
     if($user_access['permission'] == 'chair' && count($user_access['dept'] > 0)) {
@@ -184,19 +183,24 @@ function _citations_chart_data($view) {
       }
       $query->filter($subquery);
     }
+      $subquery = $query->createFilter('OR');
+      $subquery->condition('publication_article_type', 'Review', '=');
+      $subquery->condition('publication_article_type', 'Academic Article', '=');
+
+      $query->filter($subquery);
     ////
 
     $query->filter($filter);
 
     $results = $query->execute();
 
-    $max_count = 20000;
+   // $max_count = 20000;
 
-    if(count($results['results']) > $max_count) {
+    /*if(count($results['results']) > $max_count) {
       drupal_set_message(t('Result set of @total limited to first @max_count', array('@max_count' => $max_count, '@total' => count($results['results']))), 'warning');
       $query->range(0, $max_count);
       $results = $query->execute();
-    }
+    }*/
 
     $publication_nids = array();
     
