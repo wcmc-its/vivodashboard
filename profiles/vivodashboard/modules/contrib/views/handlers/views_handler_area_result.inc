@@ -84,7 +84,7 @@ class views_handler_area_result extends views_handler_area {
     $items = array('start', 'end', 'total', 'name', 'per_page', 'current_page', 'current_record_count', 'page_count');
     $replacements = array();
     foreach ($items as $item) {
-      //$replacements["@$item"] = ${$item}; Commented to have number format for numbers
+        // $replacements["@$item"] = ${$item}; commented to have comma
         $replacements["@$item"] = (is_numeric(${$item})) ? number_format(${$item}) : ${$item};
 
     }
