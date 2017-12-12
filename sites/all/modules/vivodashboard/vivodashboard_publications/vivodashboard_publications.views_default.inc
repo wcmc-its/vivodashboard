@@ -713,208 +713,359 @@ function vivodashboard_publications_views_default_views() {
   $handler->display->display_options['segment_size'] = '100';
   $export['publications_export_csv'] = $view;
 
-  $view = new view();
-  $view->name = 'publications_export_doc';
-  $view->description = '';
-  $view->tag = 'default';
-  $view->base_table = 'search_api_index_publications';
-  $view->human_name = 'Publications: Export (DOC)';
-  $view->core = 7;
-  $view->api_version = '3.0';
-  $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
+    $view = new view();
+    $view->name = 'publications_export_doc';
+    $view->description = '';
+    $view->tag = 'default';
+    $view->base_table = 'search_api_index_publications';
+    $view->human_name = 'Publications: Export (DOC)';
+    $view->core = 7;
+    $view->api_version = '3.0';
+    $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
 
-  /* Display: Master */
-  $handler = $view->new_display('default', 'Master', 'default');
-  $handler->display->display_options['title'] = 'Publications';
-  $handler->display->display_options['css_class'] = 'view-publications';
-  $handler->display->display_options['use_more_always'] = FALSE;
-  $handler->display->display_options['access']['type'] = 'none';
-  $handler->display->display_options['cache']['type'] = 'none';
-  $handler->display->display_options['query']['type'] = 'views_query';
-  $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
-  $handler->display->display_options['pager']['type'] = 'full';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '10';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['pager']['options']['id'] = '0';
-  $handler->display->display_options['pager']['options']['total_pages'] = '1';
-  $handler->display->display_options['pager']['options']['quantity'] = '9';
-  $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
-  $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Items: ';
-  $handler->display->display_options['pager']['options']['expose']['items_per_page_options'] = '10, 20, 30, 40, 50, 60, 70, 80, 90, 100';
-  $handler->display->display_options['style_plugin'] = 'list';
-  $handler->display->display_options['style_options']['default_row_class'] = FALSE;
-  $handler->display->display_options['style_options']['row_class_special'] = FALSE;
-  $handler->display->display_options['style_options']['class'] = 'publication-list';
-  $handler->display->display_options['style_options']['wrapper_class'] = '';
-  $handler->display->display_options['row_plugin'] = 'fields';
-  $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
-  /* Header: Global: Result summary */
-  $handler->display->display_options['header']['result']['id'] = 'result';
-  $handler->display->display_options['header']['result']['table'] = 'views';
-  $handler->display->display_options['header']['result']['field'] = 'result';
-  /* No results behavior: Global: Text area */
-  $handler->display->display_options['empty']['area']['id'] = 'area';
-  $handler->display->display_options['empty']['area']['table'] = 'views';
-  $handler->display->display_options['empty']['area']['field'] = 'area';
-  $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
-  $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
-  /* Field: Indexed Node: Author Labels */
-  $handler->display->display_options['fields']['author_labels']['id'] = 'author_labels';
-  $handler->display->display_options['fields']['author_labels']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['author_labels']['field'] = 'author_labels';
-  $handler->display->display_options['fields']['author_labels']['label'] = '';
-  $handler->display->display_options['fields']['author_labels']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['author_labels']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['author_labels']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['author_labels']['ending_period'] = 1;
-  /* Field: Indexed Node: VIVO URI » The URL of the link. */
-  $handler->display->display_options['fields']['field_uri_url']['id'] = 'field_uri_url';
-  $handler->display->display_options['fields']['field_uri_url']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_uri_url']['field'] = 'field_uri_url';
-  $handler->display->display_options['fields']['field_uri_url']['label'] = '';
-  $handler->display->display_options['fields']['field_uri_url']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_uri_url']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_uri_url']['display_as_link'] = FALSE;
-  $handler->display->display_options['fields']['field_uri_url']['link_to_entity'] = 0;
-  /* Field: Indexed Node: Full Title */
-  $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
-  $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
-  $handler->display->display_options['fields']['field_full_title']['label'] = '';
-  $handler->display->display_options['fields']['field_full_title']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_full_title']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_full_title']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['field_full_title']['ending_period'] = 1;
-  /* Field: Indexed Node: Journal */
-  $handler->display->display_options['fields']['field_journal']['id'] = 'field_journal';
-  $handler->display->display_options['fields']['field_journal']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_journal']['field'] = 'field_journal';
-  $handler->display->display_options['fields']['field_journal']['label'] = '';
-  $handler->display->display_options['fields']['field_journal']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_journal']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_journal']['alter']['text'] = '<em>[field_journal]</em>.';
-  $handler->display->display_options['fields']['field_journal']['element_type'] = 'em';
-  $handler->display->display_options['fields']['field_journal']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_journal']['hide_empty'] = TRUE;
-  $handler->display->display_options['fields']['field_journal']['link_to_entity'] = 0;
-  $handler->display->display_options['fields']['field_journal']['view_mode'] = 'full';
-  $handler->display->display_options['fields']['field_journal']['bypass_access'] = 0;
-  /* Field: Indexed Node: Date */
-  $handler->display->display_options['fields']['field_date']['id'] = 'field_date';
-  $handler->display->display_options['fields']['field_date']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_date']['field'] = 'field_date';
-  $handler->display->display_options['fields']['field_date']['label'] = '';
-  $handler->display->display_options['fields']['field_date']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_date']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_date']['hide_empty'] = TRUE;
-  $handler->display->display_options['fields']['field_date']['settings'] = array(
-    'format_type' => 'year_month',
-    'fromto' => 'both',
-    'multiple_number' => '',
-    'multiple_from' => '',
-    'multiple_to' => '',
-  );
-  /* Field: Indexed Node: Issue */
-  $handler->display->display_options['fields']['field_issue']['id'] = 'field_issue';
-  $handler->display->display_options['fields']['field_issue']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_issue']['field'] = 'field_issue';
-  $handler->display->display_options['fields']['field_issue']['label'] = '';
-  $handler->display->display_options['fields']['field_issue']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_issue']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_issue']['alter']['text'] = '([field_issue])';
-  $handler->display->display_options['fields']['field_issue']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_issue']['hide_empty'] = TRUE;
-  /* Field: Indexed Node: Volume */
-  $handler->display->display_options['fields']['field_volume']['id'] = 'field_volume';
-  $handler->display->display_options['fields']['field_volume']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_volume']['field'] = 'field_volume';
-  $handler->display->display_options['fields']['field_volume']['label'] = '';
-  $handler->display->display_options['fields']['field_volume']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_volume']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_volume']['alter']['text'] = '[field_volume][field_issue]:';
-  $handler->display->display_options['fields']['field_volume']['element_label_colon'] = FALSE;
-  /* Field: Indexed Node: Page End */
-  $handler->display->display_options['fields']['field_page_end']['id'] = 'field_page_end';
-  $handler->display->display_options['fields']['field_page_end']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_page_end']['field'] = 'field_page_end';
-  $handler->display->display_options['fields']['field_page_end']['label'] = '';
-  $handler->display->display_options['fields']['field_page_end']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_page_end']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_page_end']['alter']['text'] = '-[field_page_end]';
-  $handler->display->display_options['fields']['field_page_end']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_page_end']['hide_empty'] = TRUE;
-  $handler->display->display_options['fields']['field_page_end']['settings'] = array(
-    'thousand_separator' => '',
-    'prefix_suffix' => 0,
-  );
-  /* Field: Indexed Node: Page Start */
-  $handler->display->display_options['fields']['field_page_start']['id'] = 'field_page_start';
-  $handler->display->display_options['fields']['field_page_start']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['fields']['field_page_start']['field'] = 'field_page_start';
-  $handler->display->display_options['fields']['field_page_start']['label'] = '';
-  $handler->display->display_options['fields']['field_page_start']['exclude'] = TRUE;
-  $handler->display->display_options['fields']['field_page_start']['alter']['alter_text'] = TRUE;
-  $handler->display->display_options['fields']['field_page_start']['alter']['text'] = '; [field_volume][field_page_start][field_page_end]';
-  $handler->display->display_options['fields']['field_page_start']['element_label_colon'] = FALSE;
-  $handler->display->display_options['fields']['field_page_start']['hide_alter_empty'] = FALSE;
-  $handler->display->display_options['fields']['field_page_start']['settings'] = array(
-    'thousand_separator' => '',
-    'prefix_suffix' => 0,
-  );
-  /* Field: Global: Custom text */
-  $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
-  $handler->display->display_options['fields']['nothing']['table'] = 'views';
-  $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
-  $handler->display->display_options['fields']['nothing']['label'] = '';
-  $handler->display->display_options['fields']['nothing']['alter']['text'] = '[author_labels] [field_full_title] [field_journal] [field_date][field_page_start].';
-  $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
-  /* Sort criterion: Indexed Node: Publication Timestamp */
-  $handler->display->display_options['sorts']['publication_timestamp']['id'] = 'publication_timestamp';
-  $handler->display->display_options['sorts']['publication_timestamp']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['sorts']['publication_timestamp']['field'] = 'publication_timestamp';
-  $handler->display->display_options['sorts']['publication_timestamp']['order'] = 'DESC';
-  /* Sort criterion: Indexed Node: Publication Title */
-  $handler->display->display_options['sorts']['publication_title']['id'] = 'publication_title';
-  $handler->display->display_options['sorts']['publication_title']['table'] = 'search_api_index_publications';
-  $handler->display->display_options['sorts']['publication_title']['field'] = 'publication_title';
+    /* Display: Master */
+    $handler = $view->new_display('default', 'Master', 'default');
+    $handler->display->display_options['title'] = 'Publications';
+    $handler->display->display_options['css_class'] = 'view-publications';
+    $handler->display->display_options['use_more_always'] = FALSE;
+    $handler->display->display_options['access']['type'] = 'none';
+    $handler->display->display_options['cache']['type'] = 'none';
+    $handler->display->display_options['query']['type'] = 'views_query';
+    $handler->display->display_options['exposed_form']['type'] = 'basic';
+    $handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
+    $handler->display->display_options['pager']['type'] = 'full';
+    $handler->display->display_options['pager']['options']['items_per_page'] = '10';
+    $handler->display->display_options['pager']['options']['offset'] = '0';
+    $handler->display->display_options['pager']['options']['id'] = '0';
+    $handler->display->display_options['pager']['options']['total_pages'] = '1';
+    $handler->display->display_options['pager']['options']['quantity'] = '9';
+    $handler->display->display_options['pager']['options']['expose']['items_per_page'] = TRUE;
+    $handler->display->display_options['pager']['options']['expose']['items_per_page_label'] = 'Items: ';
+    $handler->display->display_options['pager']['options']['expose']['items_per_page_options'] = '10, 20, 30, 40, 50, 60, 70, 80, 90, 100';
+    $handler->display->display_options['style_plugin'] = 'list';
+    $handler->display->display_options['style_options']['default_row_class'] = FALSE;
+    $handler->display->display_options['style_options']['row_class_special'] = FALSE;
+    $handler->display->display_options['style_options']['class'] = 'publication-list';
+    $handler->display->display_options['style_options']['wrapper_class'] = '';
+    $handler->display->display_options['row_plugin'] = 'fields';
+    $handler->display->display_options['row_options']['default_field_elements'] = FALSE;
+    /* Header: Global: Result summary */
+    $handler->display->display_options['header']['result']['id'] = 'result';
+    $handler->display->display_options['header']['result']['table'] = 'views';
+    $handler->display->display_options['header']['result']['field'] = 'result';
+    /* No results behavior: Global: Text area */
+    $handler->display->display_options['empty']['area']['id'] = 'area';
+    $handler->display->display_options['empty']['area']['table'] = 'views';
+    $handler->display->display_options['empty']['area']['field'] = 'area';
+    $handler->display->display_options['empty']['area']['empty'] = TRUE;
+    $handler->display->display_options['empty']['area']['content'] = 'No results for your query.';
+    $handler->display->display_options['empty']['area']['format'] = 'filtered_html';
+    /* Field: Indexed Node: Author Labels */
+    $handler->display->display_options['fields']['author_labels']['id'] = 'author_labels';
+    $handler->display->display_options['fields']['author_labels']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['author_labels']['field'] = 'author_labels';
+    $handler->display->display_options['fields']['author_labels']['label'] = '';
+    $handler->display->display_options['fields']['author_labels']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['author_labels']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['author_labels']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['author_labels']['ending_period'] = 0;
+    /* Field: Indexed Node: VIVO URI » The URL of the link. */
+    $handler->display->display_options['fields']['field_uri_url']['id'] = 'field_uri_url';
+    $handler->display->display_options['fields']['field_uri_url']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_uri_url']['field'] = 'field_uri_url';
+    $handler->display->display_options['fields']['field_uri_url']['label'] = '';
+    $handler->display->display_options['fields']['field_uri_url']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_uri_url']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_uri_url']['display_as_link'] = FALSE;
+    $handler->display->display_options['fields']['field_uri_url']['link_to_entity'] = 0;
+    /* Field: Indexed Node: Full Title */
+    $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
+    $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
+    $handler->display->display_options['fields']['field_full_title']['label'] = '';
+    $handler->display->display_options['fields']['field_full_title']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_full_title']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_full_title']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['field_full_title']['ending_period'] = 1;
+    /* Field: Indexed Node: Journal */
+    $handler->display->display_options['fields']['field_journal']['id'] = 'field_journal';
+    $handler->display->display_options['fields']['field_journal']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_journal']['field'] = 'field_journal';
+    $handler->display->display_options['fields']['field_journal']['label'] = '';
+    $handler->display->display_options['fields']['field_journal']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['alter']['text'] = '<em>[field_journal]</em>.';
+    $handler->display->display_options['fields']['field_journal']['element_type'] = 'em';
+    $handler->display->display_options['fields']['field_journal']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_journal']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['field_journal']['view_mode'] = 'full';
+    $handler->display->display_options['fields']['field_journal']['bypass_access'] = 0;
+    /* Field: Indexed Node: Date */
+    $handler->display->display_options['fields']['field_date']['id'] = 'field_date';
+    $handler->display->display_options['fields']['field_date']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_date']['field'] = 'field_date';
+    $handler->display->display_options['fields']['field_date']['label'] = '';
+    $handler->display->display_options['fields']['field_date']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_date']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_date']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_date']['settings'] = array(
+        'format_type' => 'year_month',
+        'fromto' => 'both',
+        'multiple_number' => '',
+        'multiple_from' => '',
+        'multiple_to' => '',
+    );
+    /* Field: Indexed Node: Issue */
+    $handler->display->display_options['fields']['field_issue']['id'] = 'field_issue';
+    $handler->display->display_options['fields']['field_issue']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_issue']['field'] = 'field_issue';
+    $handler->display->display_options['fields']['field_issue']['label'] = '';
+    $handler->display->display_options['fields']['field_issue']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_issue']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_issue']['alter']['text'] = '([field_issue])';
+    $handler->display->display_options['fields']['field_issue']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_issue']['hide_empty'] = TRUE;
+    /* Field: Indexed Node: Volume */
+    $handler->display->display_options['fields']['field_volume']['id'] = 'field_volume';
+    $handler->display->display_options['fields']['field_volume']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_volume']['field'] = 'field_volume';
+    $handler->display->display_options['fields']['field_volume']['label'] = '';
+    $handler->display->display_options['fields']['field_volume']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_volume']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_volume']['alter']['text'] = '[field_volume][field_issue]:';
+    $handler->display->display_options['fields']['field_volume']['element_label_colon'] = FALSE;
+    /* Field: Indexed Node: Page End */
+    $handler->display->display_options['fields']['field_page_end']['id'] = 'field_page_end';
+    $handler->display->display_options['fields']['field_page_end']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_page_end']['field'] = 'field_page_end';
+    $handler->display->display_options['fields']['field_page_end']['label'] = '';
+    $handler->display->display_options['fields']['field_page_end']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['alter']['text'] = '-[field_page_end]';
+    $handler->display->display_options['fields']['field_page_end']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_page_end']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['settings'] = array(
+        'thousand_separator' => '',
+        'prefix_suffix' => 0,
+    );
+    /* Field: Indexed Node: Page Start */
+    $handler->display->display_options['fields']['field_page_start']['id'] = 'field_page_start';
+    $handler->display->display_options['fields']['field_page_start']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_page_start']['field'] = 'field_page_start';
+    $handler->display->display_options['fields']['field_page_start']['label'] = '';
+    $handler->display->display_options['fields']['field_page_start']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_page_start']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_page_start']['alter']['text'] = '; [field_volume][field_page_start][field_page_end]';
+    $handler->display->display_options['fields']['field_page_start']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_page_start']['hide_alter_empty'] = FALSE;
+    $handler->display->display_options['fields']['field_page_start']['settings'] = array(
+        'thousand_separator' => '',
+        'prefix_suffix' => 0,
+    );
+    /* Field: Indexed Node: PMID */
+    $handler->display->display_options['fields']['field_pmid']['id'] = 'field_pmid';
+    $handler->display->display_options['fields']['field_pmid']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_pmid']['field'] = 'field_pmid';
+    $handler->display->display_options['fields']['field_pmid']['label'] = '';
+    $handler->display->display_options['fields']['field_pmid']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_pmid']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_pmid']['alter']['text'] = 'PMID: [field_pmid].';
+    $handler->display->display_options['fields']['field_pmid']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_pmid']['hide_empty'] = TRUE;
+    /* Field: Indexed Node: PMCID */
+    $handler->display->display_options['fields']['field_pmcid']['id'] = 'field_pmcid';
+    $handler->display->display_options['fields']['field_pmcid']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_pmcid']['field'] = 'field_pmcid';
+    $handler->display->display_options['fields']['field_pmcid']['label'] = '';
+    $handler->display->display_options['fields']['field_pmcid']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_pmcid']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_pmcid']['alter']['text'] = 'PMCID: [field_pmcid].';
+    $handler->display->display_options['fields']['field_pmcid']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_pmcid']['hide_empty'] = TRUE;
+    /* Field: Global: Custom text */
+    $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+    $handler->display->display_options['fields']['nothing']['table'] = 'views';
+    $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+    $handler->display->display_options['fields']['nothing']['label'] = '';
+    $handler->display->display_options['fields']['nothing']['alter']['text'] = '[author_labels]| [field_full_title] [field_journal] [field_date][field_page_start]. [field_pmid] [field_pmcid]';
+    $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
+    /* Sort criterion: Indexed Node: Publication Timestamp */
+    $handler->display->display_options['sorts']['publication_timestamp']['id'] = 'publication_timestamp';
+    $handler->display->display_options['sorts']['publication_timestamp']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['sorts']['publication_timestamp']['field'] = 'publication_timestamp';
+    $handler->display->display_options['sorts']['publication_timestamp']['order'] = 'DESC';
+    /* Sort criterion: Indexed Node: Publication Title */
+    $handler->display->display_options['sorts']['publication_title']['id'] = 'publication_title';
+    $handler->display->display_options['sorts']['publication_title']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['sorts']['publication_title']['field'] = 'publication_title';
 
-  /* Display: Page */
-  $handler = $view->new_display('page', 'Page', 'page');
-  $handler->display->display_options['path'] = 'publications/export/doc';
-  $handler->display->display_options['menu']['type'] = 'tab';
-  $handler->display->display_options['menu']['title'] = 'DOC';
-  $handler->display->display_options['menu']['weight'] = '0';
-  $handler->display->display_options['menu']['context'] = 0;
-  $handler->display->display_options['menu']['context_only_inline'] = 0;
+    /* Display: Page */
+    $handler = $view->new_display('page', 'Page', 'page');
+    $handler->display->display_options['path'] = 'publications/export/doc';
+    $handler->display->display_options['menu']['type'] = 'tab';
+    $handler->display->display_options['menu']['title'] = 'DOC';
+    $handler->display->display_options['menu']['weight'] = '0';
+    $handler->display->display_options['menu']['context'] = 0;
+    $handler->display->display_options['menu']['context_only_inline'] = 0;
 
-  /* Display: Download */
-  $handler = $view->new_display('views_data_export', 'Download', 'download');
-  $handler->display->display_options['pager']['type'] = 'some';
-  $handler->display->display_options['pager']['options']['items_per_page'] = '50';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['style_plugin'] = 'views_data_export_doc';
-  $handler->display->display_options['style_options']['provide_file'] = 1;
-  $handler->display->display_options['style_options']['filename'] = 'VIVO Dashboard Publications %timestamp-mmm %timestamp-dd %timestamp-yyyy.doc';
-  $handler->display->display_options['style_options']['parent_sort'] = 0;
-  $handler->display->display_options['path'] = 'publications/export/doc/download';
+    /* Display: Download */
+    $handler = $view->new_display('views_data_export', 'Download', 'download');
+    $handler->display->display_options['pager']['type'] = 'some';
+    $handler->display->display_options['pager']['options']['items_per_page'] = '50';
+    $handler->display->display_options['pager']['options']['offset'] = '0';
+    $handler->display->display_options['style_plugin'] = 'views_data_export_doc';
+    $handler->display->display_options['style_options']['provide_file'] = 1;
+    $handler->display->display_options['style_options']['filename'] = 'VIVO Dashboard Publications %timestamp-mmm %timestamp-dd %timestamp-yyyy.doc';
+    $handler->display->display_options['style_options']['parent_sort'] = 0;
+    $handler->display->display_options['path'] = 'publications/export/doc/download';
 
-  /* Display: Download all */
-  $handler = $view->new_display('views_data_export', 'Download all', 'download_all');
-  $handler->display->display_options['pager']['type'] = 'none';
-  $handler->display->display_options['pager']['options']['offset'] = '0';
-  $handler->display->display_options['style_plugin'] = 'views_data_export_doc';
-  $handler->display->display_options['style_options']['provide_file'] = 1;
-  $handler->display->display_options['style_options']['filename'] = 'VIVO Dashboard Publications %timestamp-mmm %timestamp-dd %timestamp-yyyy.doc';
-  $handler->display->display_options['style_options']['parent_sort'] = 0;
-  $handler->display->display_options['path'] = 'publications/export/doc/download/all';
-  $handler->display->display_options['use_batch'] = 'batch';
-  $handler->display->display_options['return_path'] = 'publications/export/doc';
-  $handler->display->display_options['segment_size'] = '100';
-  $export['publications_export_doc'] = $view;
+    /* Display: Download all */
+    $handler = $view->new_display('views_data_export', 'Download all', 'download_all');
+    $handler->display->display_options['pager']['type'] = 'none';
+    $handler->display->display_options['pager']['options']['offset'] = '0';
+    $handler->display->display_options['style_plugin'] = 'views_data_export_doc';
+    $handler->display->display_options['style_options']['provide_file'] = 1;
+    $handler->display->display_options['style_options']['filename'] = 'VIVO Dashboard Publications %timestamp-mmm %timestamp-dd %timestamp-yyyy.doc';
+    $handler->display->display_options['style_options']['parent_sort'] = 0;
+    $handler->display->display_options['defaults']['fields'] = FALSE;
+    /* Field: Indexed Node: Author Labels */
+    $handler->display->display_options['fields']['author_labels']['id'] = 'author_labels';
+    $handler->display->display_options['fields']['author_labels']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['author_labels']['field'] = 'author_labels';
+    $handler->display->display_options['fields']['author_labels']['label'] = '';
+    $handler->display->display_options['fields']['author_labels']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['author_labels']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['author_labels']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['author_labels']['ending_period'] = 0;
+    /* Field: Indexed Node: VIVO URI » The URL of the link. */
+    $handler->display->display_options['fields']['field_uri_url']['id'] = 'field_uri_url';
+    $handler->display->display_options['fields']['field_uri_url']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_uri_url']['field'] = 'field_uri_url';
+    $handler->display->display_options['fields']['field_uri_url']['label'] = '';
+    $handler->display->display_options['fields']['field_uri_url']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_uri_url']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_uri_url']['display_as_link'] = FALSE;
+    $handler->display->display_options['fields']['field_uri_url']['link_to_entity'] = 0;
+    /* Field: Indexed Node: Full Title */
+    $handler->display->display_options['fields']['field_full_title']['id'] = 'field_full_title';
+    $handler->display->display_options['fields']['field_full_title']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_full_title']['field'] = 'field_full_title';
+    $handler->display->display_options['fields']['field_full_title']['label'] = '';
+    $handler->display->display_options['fields']['field_full_title']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_full_title']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_full_title']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['field_full_title']['ending_period'] = 1;
+    /* Field: Indexed Node: Journal */
+    $handler->display->display_options['fields']['field_journal']['id'] = 'field_journal';
+    $handler->display->display_options['fields']['field_journal']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_journal']['field'] = 'field_journal';
+    $handler->display->display_options['fields']['field_journal']['label'] = '';
+    $handler->display->display_options['fields']['field_journal']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['alter']['text'] = '<em>[field_journal]</em>.';
+    $handler->display->display_options['fields']['field_journal']['element_type'] = 'em';
+    $handler->display->display_options['fields']['field_journal']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_journal']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_journal']['link_to_entity'] = 0;
+    $handler->display->display_options['fields']['field_journal']['view_mode'] = 'full';
+    $handler->display->display_options['fields']['field_journal']['bypass_access'] = 0;
+    /* Field: Indexed Node: Date */
+    $handler->display->display_options['fields']['field_date']['id'] = 'field_date';
+    $handler->display->display_options['fields']['field_date']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_date']['field'] = 'field_date';
+    $handler->display->display_options['fields']['field_date']['label'] = '';
+    $handler->display->display_options['fields']['field_date']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_date']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_date']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_date']['settings'] = array(
+        'format_type' => 'year_month',
+        'fromto' => 'both',
+        'multiple_number' => '',
+        'multiple_from' => '',
+        'multiple_to' => '',
+    );
+    /* Field: Indexed Node: Issue */
+    $handler->display->display_options['fields']['field_issue']['id'] = 'field_issue';
+    $handler->display->display_options['fields']['field_issue']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_issue']['field'] = 'field_issue';
+    $handler->display->display_options['fields']['field_issue']['label'] = '';
+    $handler->display->display_options['fields']['field_issue']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_issue']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_issue']['alter']['text'] = '([field_issue])';
+    $handler->display->display_options['fields']['field_issue']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_issue']['hide_empty'] = TRUE;
+    /* Field: Indexed Node: Volume */
+    $handler->display->display_options['fields']['field_volume']['id'] = 'field_volume';
+    $handler->display->display_options['fields']['field_volume']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_volume']['field'] = 'field_volume';
+    $handler->display->display_options['fields']['field_volume']['label'] = '';
+    $handler->display->display_options['fields']['field_volume']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_volume']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_volume']['alter']['text'] = '[field_volume][field_issue]:';
+    $handler->display->display_options['fields']['field_volume']['element_label_colon'] = FALSE;
+    /* Field: Indexed Node: Page End */
+    $handler->display->display_options['fields']['field_page_end']['id'] = 'field_page_end';
+    $handler->display->display_options['fields']['field_page_end']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_page_end']['field'] = 'field_page_end';
+    $handler->display->display_options['fields']['field_page_end']['label'] = '';
+    $handler->display->display_options['fields']['field_page_end']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['alter']['text'] = '-[field_page_end]';
+    $handler->display->display_options['fields']['field_page_end']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_page_end']['hide_empty'] = TRUE;
+    $handler->display->display_options['fields']['field_page_end']['settings'] = array(
+        'thousand_separator' => '',
+        'prefix_suffix' => 0,
+    );
+    /* Field: Indexed Node: Page Start */
+    $handler->display->display_options['fields']['field_page_start']['id'] = 'field_page_start';
+    $handler->display->display_options['fields']['field_page_start']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_page_start']['field'] = 'field_page_start';
+    $handler->display->display_options['fields']['field_page_start']['label'] = '';
+    $handler->display->display_options['fields']['field_page_start']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_page_start']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_page_start']['alter']['text'] = '; [field_volume][field_page_start][field_page_end]';
+    $handler->display->display_options['fields']['field_page_start']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_page_start']['hide_alter_empty'] = FALSE;
+    $handler->display->display_options['fields']['field_page_start']['settings'] = array(
+        'thousand_separator' => '',
+        'prefix_suffix' => 0,
+    );
+    /* Field: Indexed Node: PMID */
+    $handler->display->display_options['fields']['field_pmid']['id'] = 'field_pmid';
+    $handler->display->display_options['fields']['field_pmid']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_pmid']['field'] = 'field_pmid';
+    $handler->display->display_options['fields']['field_pmid']['label'] = '';
+    $handler->display->display_options['fields']['field_pmid']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_pmid']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_pmid']['alter']['text'] = 'PMID: [field_pmid].';
+    $handler->display->display_options['fields']['field_pmid']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_pmid']['hide_empty'] = TRUE;
+    /* Field: Indexed Node: PMCID */
+    $handler->display->display_options['fields']['field_pmcid']['id'] = 'field_pmcid';
+    $handler->display->display_options['fields']['field_pmcid']['table'] = 'search_api_index_publications';
+    $handler->display->display_options['fields']['field_pmcid']['field'] = 'field_pmcid';
+    $handler->display->display_options['fields']['field_pmcid']['label'] = '';
+    $handler->display->display_options['fields']['field_pmcid']['exclude'] = TRUE;
+    $handler->display->display_options['fields']['field_pmcid']['alter']['alter_text'] = TRUE;
+    $handler->display->display_options['fields']['field_pmcid']['alter']['text'] = 'PMCID: [field_pmcid].';
+    $handler->display->display_options['fields']['field_pmcid']['element_label_colon'] = FALSE;
+    $handler->display->display_options['fields']['field_pmcid']['hide_empty'] = TRUE;
+    /* Field: Global: Custom text */
+    $handler->display->display_options['fields']['nothing']['id'] = 'nothing';
+    $handler->display->display_options['fields']['nothing']['table'] = 'views';
+    $handler->display->display_options['fields']['nothing']['field'] = 'nothing';
+    $handler->display->display_options['fields']['nothing']['label'] = '';
+    $handler->display->display_options['fields']['nothing']['alter']['text'] = '[author_labels]| [field_full_title] [field_journal] [field_date][field_page_start]. [field_pmid] [field_pmcid]';
+    $handler->display->display_options['fields']['nothing']['element_label_colon'] = FALSE;
+    $handler->display->display_options['path'] = 'publications/export/doc/download/all';
+    $handler->display->display_options['use_batch'] = 'batch';
+    $handler->display->display_options['return_path'] = 'publications/export/doc';
+    $handler->display->display_options['segment_size'] = '300';
 
-  $view = new view();
+
+    $view = new view();
   $view->name = 'publications_graph';
   $view->description = 'Used only to activate facets. The result of this view gets hidden in code.';
   $view->tag = 'default';
