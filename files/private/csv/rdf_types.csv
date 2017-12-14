@@ -248,3 +248,6 @@
 "http://www.w3.org/2006/vcard/ns#Voice","Voice"
 "http://www.openlinksw.com/schemas/virtrdf#QuadMapFormat",
 "http://www.w3.org/2002/07/owl#DatatypeProperty"
+"http://weill.cornell.edu/vivo/ontology/wcmc#StudentMdPhdTriI","MD-PhD Student"
+"http://weill.cornell.edu/vivo/ontology/wcmc#StudentPhdWeill","PhD Weill Student"
+"http://weill.cornell.edu/vivo/ontology/wcmc#StudentPhdTriI","PhD Tri-Institutional Student"
