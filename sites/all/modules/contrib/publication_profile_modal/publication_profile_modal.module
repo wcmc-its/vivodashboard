@@ -38,6 +38,7 @@ function get_profile_by_cwid($args) {
     LEFT JOIN field_data_field_vivouri v ON i.entity_id = v.entity_id LEFT JOIN field_data_field_popsuri p ON i.entity_id = p.entity_id LEFT JOIN field_data_field_webdiruri w ON i.entity_id = w.entity_id
     WHERE i.field_id_value = '" .$args. "'")->fetchAll();
 
+
 	if(count($author_id) > 0) {
 
 		$entity_id = array();
