@@ -69,6 +69,11 @@ jQuery(document).on('mouseover', '.qtip-citation-author', function() {
         },
         hide: {
             event: 'unfocus'
+        },
+        events: {
+            hide: function(event, api) {
+                jQuery('#qtip-overlay').remove();
+            }
         }
     });
 });
