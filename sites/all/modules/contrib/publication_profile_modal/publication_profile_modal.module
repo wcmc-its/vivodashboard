@@ -133,7 +133,7 @@ function get_profile_by_cwid($args) {
 		}
 
 		if(count($all_author_nodes) > 0) {
-			print '<div><a href="/publications/list?f[0]=publication_year:['.date('Y', strtotime($date_range->start_date)) . ' TO ' . date('Y', strtotime($date_range->end_date)).']&f[1]=publication_author_names:'.$author_id->first_name.' ' . $author_id->last_name . $author_appt_current.'">'.count($all_author_nodes).' Publications</a></div>';
+			print '<div><a href="/publications/list?f[0]=publication_year:['.date('Y', strtotime($date_range->start_date)) . ' TO ' . date('Y', strtotime($date_range->end_date)).']&f[1]=publication_author_names:'.$first_name.' ' . $last_name . $author_appt_current.'">'.count($all_author_nodes).' Publications</a></div>';
 		}
 
 		print '<hr>';
