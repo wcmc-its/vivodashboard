@@ -38,12 +38,14 @@ function vivodashboard_publications_default_search_api_index() {
     "name" : "Authorships",
     "machine_name" : "authorships",
     "description" : null,
-    "server" : "database",
+    "server" : "solr",
     "item_type" : "relation",
     "options" : {
+      "datasource" : { "bundles" : [] },
       "index_directly" : 0,
       "cron_limit" : "50",
       "fields" : {
+        "organizations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_names" : { "type" : "list\\u003Cstring\\u003E" },
@@ -53,7 +55,7 @@ function vivodashboard_publications_default_search_api_index() {
         "publication_journal" : { "type" : "string" },
         "publication_journal_ranking" : { "type" : "decimal" },
         "publication_month" : { "type" : "integer" },
-        "publication_timestamp" : { "type" : "integer" },
+        "publication_timestamp" : { "type" : "date" },
         "publication_title" : { "type" : "string" },
         "publication_types" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
         "publication_year" : { "type" : "integer" },
@@ -74,7 +76,8 @@ function vivodashboard_publications_default_search_api_index() {
           "status" : 1,
           "weight" : "0",
           "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum, http:\\/\\/purl.org\\/ontology\\/bibo\\/Book" }
-        }
+        },
+        "appointments" : { "status" : 1, "weight" : "0", "settings" : [] }
       },
       "processors" : {
         "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
@@ -111,6 +114,7 @@ function vivodashboard_publications_default_search_api_index() {
             "suffix" : "\\u003C\\/strong\\u003E",
             "excerpt" : 1,
             "excerpt_length" : "256",
+            "exclude_fields" : [],
             "highlight" : "always"
           }
         }
@@ -123,16 +127,29 @@ function vivodashboard_publications_default_search_api_index() {
     "name" : "Citations",
     "machine_name" : "citations",
     "description" : null,
-    "server" : "database",
+    "server" : "solr",
     "item_type" : "relation",
     "options" : {
+      "datasource" : { "bundles" : [] },
       "index_directly" : 0,
-      "cron_limit" : "50",
+      "cron_limit" : "100",
       "fields" : {
         "endpoints_source_node" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "node" },
+        "endpoints_source_node:authorships" : {
+          "type" : "list\\u003Clist\\u003Cinteger\\u003E\\u003E",
+          "entity_type" : "relation"
+        },
         "endpoints_source_node:field_citations" : { "type" : "list\\u003Cinteger\\u003E" },
+        "endpoints_source_node:field_issue" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_page_end" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_page_start" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_pmcid" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_pmid" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_scopus_id" : { "type" : "list\\u003Cstring\\u003E" },
+        "endpoints_source_node:field_volume" : { "type" : "list\\u003Cstring\\u003E" },
         "endpoints_target_node:field_primary_department" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
         "field_author_position" : { "type" : "string" },
+        "organizations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_article_type" : { "type" : "string" },
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
@@ -163,15 +180,16 @@ function vivodashboard_publications_default_search_api_index() {
         "search_api_alter_add_viewed_entity" : { "status" : 0, "weight" : "-46", "settings" : { "mode" : false } },
         "search_api_alter_add_url" : { "status" : 0, "weight" : "-45", "settings" : [] },
         "search_api_alter_add_aggregation" : { "status" : 0, "weight" : "-44", "settings" : [] },
+        "appointments" : { "status" : 1, "weight" : "0", "settings" : [] },
         "publications" : {
           "status" : 1,
           "weight" : "0",
-          "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum, http:\\/\\/purl.org\\/ontology\\/bibo\\/Book" }
+          "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum,http:\\/\\/purl.org\\/ontology\\/bibo\\/Book,http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Letter,http:\\/\\/purl.org\\/ontology\\/bibo\\/Chapter,http:\\/\\/vivoweb.org\\/ontology\\/core#EditorialArticle,http:\\/\\/vivoweb.org\\/ontology\\/core#ConferencePaper,http:\\/\\/purl.org\\/spar\\/fabio\\/Comment,http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Comment,http:\\/\\/purl.org\\/ontology\\/bibo\\/Report,http:\\/\\/purl.org\\/ontology\\/bibo\\/Article,http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#InProcess" }
         }
       },
       "processors" : {
-        "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
         "facetapi_autocomplete" : { "status" : 1, "weight" : "0", "settings" : [] },
+        "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
         "search_api_html_filter" : {
           "status" : 0,
           "weight" : "10",
@@ -196,6 +214,11 @@ function vivodashboard_publications_default_search_api_index() {
             "stopwords" : "but\\r\\ndid\\r\\nthe this that those\\r\\netc"
           }
         },
+        "search_api_porter_stemmer" : {
+          "status" : 0,
+          "weight" : "35",
+          "settings" : { "fields" : [], "exceptions" : "texan=texa" }
+        },
         "search_api_highlighting" : {
           "status" : 0,
           "weight" : "35",
@@ -204,7 +227,9 @@ function vivodashboard_publications_default_search_api_index() {
             "suffix" : "\\u003C\\/strong\\u003E",
             "excerpt" : 1,
             "excerpt_length" : "256",
-            "highlight" : "always"
+            "exclude_fields" : [],
+            "highlight" : "always",
+            "highlight_partial" : 0
           }
         }
       }
@@ -216,13 +241,15 @@ function vivodashboard_publications_default_search_api_index() {
     "name" : "Publications",
     "machine_name" : "publications",
     "description" : null,
-    "server" : "database",
+    "server" : "solr",
     "item_type" : "node",
     "options" : {
+      "datasource" : { "bundles" : [] },
       "index_directly" : 0,
       "cron_limit" : "50",
       "fields" : {
         "field_citations" : { "type" : "integer" },
+        "organizations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_firstlast_affiliations" : { "type" : "list\\u003Cstring\\u003E" },
         "publication_author_names" : { "type" : "list\\u003Cstring\\u003E" },
@@ -232,7 +259,7 @@ function vivodashboard_publications_default_search_api_index() {
         "publication_journal" : { "type" : "string" },
         "publication_journal_ranking" : { "type" : "decimal" },
         "publication_month" : { "type" : "integer" },
-        "publication_timestamp" : { "type" : "integer" },
+        "publication_timestamp" : { "type" : "date" },
         "publication_title" : { "type" : "string" },
         "publication_types" : { "type" : "list\\u003Cinteger\\u003E", "entity_type" : "taxonomy_term" },
         "publication_year" : { "type" : "integer" },
@@ -255,7 +282,8 @@ function vivodashboard_publications_default_search_api_index() {
           "status" : 1,
           "weight" : "0",
           "settings" : { "ignored_types" : "http:\\/\\/weill.cornell.edu\\/vivo\\/ontology\\/wcmc#Erratum, http:\\/\\/purl.org\\/ontology\\/bibo\\/Book" }
-        }
+        },
+        "appointments" : { "status" : 1, "weight" : "0", "settings" : [] }
       },
       "processors" : {
         "search_api_case_ignore" : { "status" : 0, "weight" : "0", "settings" : { "fields" : [] } },
@@ -292,6 +320,7 @@ function vivodashboard_publications_default_search_api_index() {
             "suffix" : "\\u003C\\/strong\\u003E",
             "excerpt" : 1,
             "excerpt_length" : "256",
+            "exclude_fields" : [],
             "highlight" : "always"
           }
         }

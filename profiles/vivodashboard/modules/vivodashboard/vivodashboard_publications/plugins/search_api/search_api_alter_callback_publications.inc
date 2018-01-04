@@ -97,17 +97,12 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
             // Attach author-related propereties.
             if ($authors = $wrapper->authors->value()) {
 
-                reset($authors);
-                $first = key($authors);
-                end($authors);
-                $last = key($authors);
-                
                 $author_names = array();
                 
                 foreach ($wrapper->authors as $delta => $author) {
                     
                     //for publication_authors_joined we care about *all* authors
-                    $author_names[] = $author->title->value();
+                    $author_names[] = $this->formatAuthorName($author->title->value());
 
                     // If we're indexing authorships we only care about one author.
                     if ($target_author && ($target_author->nid != $author->nid->value())) {
@@ -115,7 +110,18 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
                     }
 
                     // Add author name.
-                    $item->publication_author_names[] = $author->title->value();                    
+                    //*
+                    $dept_name = '';
+                    $author_cwid = db_query('SELECT a.cwid, a.first_name, a.last_name FROM {node} n LEFT JOIN {violin_wcmc_author} a ON n.nid = a.entity_id WHERE n.title = :author_name AND a.cwid <> :cwid', array(':author_name'=>$author->title->value(), ':cwid'=>""))->fetchObject();
+                      if(!empty($author_cwid->cwid)) {
+                        $dept_role = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = :cwid AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate College') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC", array(':cwid'=>$author_cwid->cwid))->fetchObject();
+                        if(!empty($dept_role->dept_name)) {
+                          $dept_name = ' - ' . $dept_role->dept_name;
+                        }
+                      }
+                    //*/
+                      $item->publication_author_names[] = $author_cwid->first_name . ' ' . $author_cwid->last_name . $dept_name;
+                    // $item->publication_author_names[] = $this->formatAuthorName($author->title->value()) . $dept_name;
                     
                     // Add field_rdf_type values for author.
                     foreach ($author->field_rdf_type->value() as $term) {
@@ -123,43 +129,12 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
                         // $item->publication_author_types[$term->name] = $term->name;
                     }
 
-                    // Add primary department.
-                    if ($department = $author->field_primary_department->value()) {
-                        $item->publication_author_affiliations[$department->name] = $department->name;
-                    }
-
-                    // Add primary institution.
-                    if (($delta == $first || $delta == $last) && $author->field_primary_institution->value()) {
-                        $institution_name = $author->field_primary_institution->value();
-                        $item->publication_author_firstlast_affiliations[$institution_name] = $institution_name;
-                    }
-
-                    // Add department values for author.
-                    // foreach ($author->field_department->value() as $k => $term) {
-                    //   $item->publication_author_affiliations[$term->name] = $term->name;
-
-                    //   // Add the institutional affiliation if this is a first/last author.
-                    //   $department = entity_metadata_wrapper('taxonomy_term', $term);
-                    //   if (($delta == $first || $delta == $last) && !empty($department->field_institution[0])) {
-                    //     $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->tid->value();
-                    //     // $item->publication_author_firstlast_affiliations[] = $department->field_institution[0]->name->value();
-                    //   }
-
-                    // Restrict to institutions typed as vivo:University.
-                    // if (($delta == $first || $delta == $last)) {
-                    //   foreach ($author->field_department[$k]->field_institution->rdf_types->value() as $rdf_type) {
-                    //     if ($rdf_type == 'http://vivoweb.org/ontology/core#University') {
-                    //       $item->publication_author_firstlast_affiliations[] = $author->field_department[$k]->field_institution->name->value();
-                    //     }
-                    //   }
-                    // }
-                    // }
                 }
                 
-                $first_n_authors = 8;
+                $first_n_authors = 48;
                 
-                //when more than 10, use the first N and the last 2
-                if(count($author_names) > 10) {
+                //when more than 50, use the first N and the last 2 . Previously 8 and count check was for 10
+                if(count($author_names) > 50) {
                   $start = array_slice($author_names, 0, $first_n_authors);
                   $end = array_slice($author_names, -2);
                   $short_author_names = array_merge($start, array("(…)"), $end);
@@ -233,6 +208,22 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
         $item->publication_author_types = array();
         $item->publication_author_affiliations = array();
         $item->publication_author_firstlast_affiliations = array();
+    }
+
+
+    // format author name
+    public function formatAuthorName($name){
+        $fmt_name = '';
+        if(!empty($name)){
+            // check if author name is of the pattern %,%
+            if(!strpos($name, ',')){
+                $fmt_name =  $name;
+            }else {
+                $parts = explode(',', $name);
+                $fmt_name = $parts[1].' '.$parts[0];
+            }
+        }
+        return $fmt_name ;
     }
 
     /**

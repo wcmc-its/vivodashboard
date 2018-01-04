@@ -79,6 +79,20 @@ function vivodashboard_publications_views_data_alter(&$data) {
   $data['search_api_index_publications']['title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['author_labels']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
   $data['search_api_index_publications']['field_full_title']['field']['handler'] = 'vivodashboard_publications_field_handler_title';
+
+  // Feeds module does not expose this column of the log and we need it.
+  $data['feeds_log']['flid'] = array(
+    'title' => 'Feeds log ID',
+    'help' => 'Contains the sequential Feeds log ID.',
+    'field' => array(
+      'handler' => 'views_handler_field_numeric',
+      'click sortable' => TRUE,
+    ),
+    'sort' => array(
+      'handler' => 'views_handler_sort',
+      'help' => 'Sort by sequential Feeds log ID.',
+    ),
+  );
 }
 
 /**
@@ -125,7 +139,7 @@ function vivodashboard_publications_views_plugins() {
   // Collect all base tables provided by this module.
   $bases = array();
   foreach (search_api_index_load_multiple(FALSE) as $index) {
-    
+
     //not sure how this would work with Solr, only works with DB for now
     //probably not much of a stretch to find latest indexed item
     if($index->server == 'database') {
@@ -147,4 +161,3 @@ function vivodashboard_publications_views_plugins() {
 
   return $ret;
 }
-

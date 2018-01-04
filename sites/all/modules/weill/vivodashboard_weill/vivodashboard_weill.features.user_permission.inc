@@ -16,6 +16,7 @@ function vivodashboard_weill_user_default_permissions() {
     'roles' => array(
       'anonymous user' => 'anonymous user',
       'authenticated user' => 'authenticated user',
+      'citationImpactViewer' => 'citationImpactViewer',
     ),
     'module' => 'citation_lookup',
   );

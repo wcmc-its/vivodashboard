@@ -16,6 +16,10 @@ function vivodashboard_publications_install() {
       ->key(array('delta' => 'publications'))
       ->fields(array('delta' => 'publications', 'searcher' => 'search_api@publications'))
       ->execute();
+    db_merge('block_current_search')
+      ->key(array('delta' => 'citations'))
+      ->fields(array('delta' => 'citations', 'searcher' => 'search_api@citations'))
+      ->execute();
   }
 }
 
@@ -76,4 +80,14 @@ function vivodashboard_publications_update_7100(&$sandbox) {
 
   $sandbox['#progress'] = $end;
   $sandbox['#finished'] = $sandbox['#total'] - $sandbox['#progress'];
+}
+
+/**
+ * Add searcher for citations current search block.
+ */
+function vivodashboard_publications_update_7101() {
+  db_merge('block_current_search')
+    ->key(array('delta' => 'citations'))
+    ->fields(array('delta' => 'citations', 'searcher' => 'search_api@citations'))
+    ->execute();
 }

@@ -121,7 +121,7 @@ function vivodashboard_weill_menu_default_menu_links() {
     'external' => 0,
     'has_children' => 0,
     'expanded' => 0,
-    'weight' => -50,
+    'weight' => -49,
     'customized' => 1,
     'parent_identifier' => 'main-menu_publications:publications',
   );
@@ -139,7 +139,7 @@ function vivodashboard_weill_menu_default_menu_links() {
     'external' => 0,
     'has_children' => 0,
     'expanded' => 0,
-    'weight' => -49,
+    'weight' => -50,
     'customized' => 1,
     'parent_identifier' => 'main-menu_publications:publications',
   );
