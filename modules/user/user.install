@@ -325,6 +325,12 @@ function user_install() {
     ->fields(array('name' => 'authenticated user', 'weight' => 1))
     ->execute();
 
+//Added as part of VIVO Dashboard
+  $rid_citationImpactViewer = db_insert('role')
+      ->fields(array('name' => 'citationImpactViewer', 'weight' => 2))
+      ->execute();
+
+
   // Sanity check to ensure the anonymous and authenticated role IDs are the
   // same as the drupal defined constants. In certain situations, this will
   // not be true.
