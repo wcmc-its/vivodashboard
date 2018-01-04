@@ -7,6 +7,20 @@ files[] = vivodashboard.profile
 dependencies[] = vivodashboard_core
 dependencies[] = vivodashboard_import
 dependencies[] = vivodashboard_publications
+dependencies[] = vivodashboard_weill
+dependencies[] = baseline_publications
+dependencies[] = persist_url_params
+dependencies[] = publication_profile_modal
+dependencies[] = publication_profile_modal
+dependencies[] = entitycache
+dependencies[] = entitycache_relation
+
+
+
+
+
+
+
 
 ; Useful modules that are not actually required
 dependencies[] = admin_menu_toolbar
