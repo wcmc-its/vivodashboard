@@ -11,7 +11,7 @@ class ProcessManager {
     private $scripts          = array();//the list of scripts - populated by addScript
     private $processesRunning = 0;		//count of processes running
 
-    function addScript($script, $arg, $max_execution_time = 300)
+    function addScript($script, $arg, $max_execution_time = 36000)
     {
         $this->scripts[] = array("script_name" => $script, "arg"=>$arg, "max_execution_time" => $max_execution_time);
     }
@@ -31,7 +31,7 @@ class ProcessManager {
                     ob_flush();
                     flush();
                 }
-                $this->running[] =& new Process($this->executable, $this->root, $this->scripts[$i]["script_name"], $this->scripts[$i]["arg"], $this->scripts[$i]["max_execution_time"]);
+                $this->running[] = new Process($this->executable, $this->root, $this->scripts[$i]["script_name"], $this->scripts[$i]["arg"], $this->scripts[$i]["max_execution_time"]);
                 $this->processesRunning++;
                 $i++;
             }
