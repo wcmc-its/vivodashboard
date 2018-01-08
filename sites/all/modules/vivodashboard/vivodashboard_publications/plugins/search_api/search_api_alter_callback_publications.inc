@@ -114,7 +114,7 @@ class VivodashboardPublicationsAlterCallback extends SearchApiAbstractAlterCallb
                     $dept_name = '';
                     $author_cwid = db_query('SELECT a.cwid, a.first_name, a.last_name FROM {node} n LEFT JOIN {violin_wcmc_author} a ON n.nid = a.entity_id WHERE n.title = :author_name AND a.cwid <> :cwid', array(':author_name'=>$author->title->value(), ':cwid'=>""))->fetchObject();
                       if(!empty($author_cwid->cwid)) {
-                        $dept_role = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = :cwid AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate College') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC", array(':cwid'=>$author_cwid->cwid))->fetchObject();
+                        $dept_role = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = :cwid AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate College', 'Weill Cornell Graduate School') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC", array(':cwid'=>$author_cwid->cwid))->fetchObject();
                         if(!empty($dept_role->dept_name)) {
                           $dept_name = ' - ' . $dept_role->dept_name;
                         }
