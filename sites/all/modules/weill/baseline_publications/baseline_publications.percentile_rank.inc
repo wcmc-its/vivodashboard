@@ -1,4 +1,6 @@
 <?php
+ini_set('max_execution_time', 0);
+set_time_limit(12000);
 function baseline_publications_percentile_rank()
 {
     include_once(__DIR__ . "/library/portable_utf8.php");
