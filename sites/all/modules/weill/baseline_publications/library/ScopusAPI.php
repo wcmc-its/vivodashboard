@@ -14,8 +14,8 @@ class ScopusAPI extends Exception
     public $field = 'pubmed-id,citedby-count,identifier'; //filed to search
     public $start = 0;
     public $view = "FULL";
-    public $api_key = '<your scopus api key>';
-    public $insttoken = '<your scopus insttoken>';
+    public $api_key = 'apikey';
+    public $insttoken = 'insttoken';
     public $http_accept = 'application/xml';
     public $term = '';
     public $db = 'pubmed';
@@ -24,7 +24,7 @@ class ScopusAPI extends Exception
 
     static public $curl_site_url = '';
 
-    //private $scopus_query_start = "https://api.elsevier.com/content/abstract/PUBMED_ID:"; Use this for full query
+    //private $scopus_query_start = "https://api.elsevier.com/content/abstract/PUBMED_ID:";
 
     private $scopus_query_start = "https://api.elsevier.com/content/search/scopus?query=";
 
@@ -48,7 +48,7 @@ class ScopusAPI extends Exception
             //'count' => $this->count,
             'query' => str_replace(' ', '%20', trim($this->term)),
             'field' => $this->field,
-            'view' => $this->view,
+            //'view' => $this->view,
             'apikey' => $this->api_key,
             'insttoken' => $this->insttoken,
             'httpAccept' => $this->http_accept,
@@ -69,9 +69,9 @@ class ScopusAPI extends Exception
             }
         }
         $http_query = implode('&', $url_fields);
-        $url = $this->scopus_query_start . $http_query;
+        $url = $url . $http_query;
 
-        echo $url . "\n";
+        echo "\n" . $url . "\n";
 
         $XML = self::proxy_simplexml_load_file($url);; // results of esearch, XML formatted
 
