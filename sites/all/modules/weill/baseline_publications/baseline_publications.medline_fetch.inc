@@ -22,66 +22,87 @@ function baseline_publications_medline_fetch()
 
     $pub_types = get_all_types();
 
-    // get next run parameters
-    $parms = get_next_update_parms('medline');
+    $categories = get_all_categories();
+    $years = get_all_years();
 
-    $year = $parms['year'];
+    // get next run parameters
+    //$parms = get_next_update_parms('medline');
+
+    /*$year = $parms['year'];
     $type_id = $parms['type'];
     $type = $pub_types[$type_id];
     $cat_id = $parms['category'];
-    $flag = $parms['flag'];
+    $flag = $parms['flag'];*/
 
-    if (!empty($year) && !empty($type) && !empty($cat_id)) {
+    //if (!empty($year) && !empty($type) && !empty($cat_id)) {
 
-        require_once(__DIR__ . "/library/MedlineAPI.php");
-        $objAPI = new MedlineAPI();
-
-        $term = "";
-
+    require_once(__DIR__ . "/library/MedlineAPI.php");
+    $objAPI = new MedlineAPI();
+    $count = 1;
+    foreach($years as $yearKey => $yearVal) {
+    $term = "";
+    foreach ($pub_types as $type) {
         $start = microtime();
+        if (count($categories) > 0) {
+            foreach ($categories as $key => $val) {
+                // construct queries
+                $ids = array();
+                $ids = get_category_journal_ids($key);
 
-        // construct queries
-        $ids = array();
-        $ids = get_category_journal_ids($cat_id);
+                if (!empty($ids)) {
+                    $term = construct_query($yearVal, $type, $ids);
+                }
 
-        if (!empty($ids)) {
-            $term = construct_query($year, $type, $ids);
+                // Get Medline XML with PMID list for this search term
+                $pmids = array();
+                $pmids = $objAPI->query($term);
+
+                $result_count = count($pmids);
+
+                // Get return count
+                $random_count = ($result_count >= 200) ? 200 : $result_count;
+
+                // get xml for all articles with  a random 200 pmids from this list
+                $pubmed_efetch_results = array();
+                $pubmed_efetch_results = $objAPI->pubmed_random_efetch($pmids, $random_count);
+
+                // populate local database with the result
+                // populate_data( $year, $type, $key, $pubmed_efetch_results );
+                populate_multi_data($yearVal, $type, $key, $pubmed_efetch_results);
+
+                echo "Processed, Year:" . $yearVal . ", Type:" . $type . ", Category:" . $key . "\n";
+
+                // update update history
+                //Set update_history to stop when reaches the end year
+                if($yearVal == (int)(date('Y') - 3)) {
+                    $curr_parms = array(
+                        'year' => $yearVal,
+                        'type' => $type,
+                        'category' => $key,
+                        'flag' => 'stop'
+                    );
+                }
+                else {
+                    $curr_parms = array(
+                        'year' => $yearVal,
+                        'type' => $type,
+                        'category' => $key,
+                        'flag' => 'run'
+                    );
+                }
+                set_curr_update('medline', $curr_parms);
+
+                $end = microtime();
+
+                if (($end - $start) < 333000) {
+                    usleep(333000);
+                }
+            }
         }
-
-        // Get Medline XML with PMID list for this search term
-        $pmids = array();
-        $pmids = $objAPI->query($term);
-
-        $result_count = count($pmids);
-
-        // Get return count
-        $random_count = ($result_count >= 200) ? 200 : $result_count;
-
-        // get xml for all articles with  a random 200 pmids from this list
-        $pubmed_efetch_results = array();
-        $pubmed_efetch_results = $objAPI->pubmed_random_efetch($pmids, $random_count);
-
-        // populate local database with the result
-        // populate_data( $year, $type, $key, $pubmed_efetch_results );
-        populate_multi_data($year, $type, $cat_id, $pubmed_efetch_results);
-
-        echo "Processed, Year:" . $year . ", Type:" . $type . ", Category:" . $cat_id . "\n";
-
-        $end = microtime();
-
-        if (($end - $start) < 333000) {
-            usleep(333000);
-        }
-
-        // update update history
-        $curr_parms = array(
-            'year' => $year,
-            'type' => $type_id,
-            'category' => $cat_id,
-            'flag' => $flag
-        );
-        set_curr_update('medline', $curr_parms);
     }
+}
+
+    //}
 
     return;
 }
