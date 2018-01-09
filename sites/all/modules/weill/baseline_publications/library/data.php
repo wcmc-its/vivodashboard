@@ -174,7 +174,12 @@ function get_query_count($countQuery)
 
 function get_all_years()
 {
-    $years = array(
+    $start_year = (int)date('Y') - 13;
+    for($i =0; $i<10; $i++)  {
+        $start_year++;
+         $years[$start_year] = $start_year;
+    }
+    /*$years = array(
         '2003' => '2003',
         '2004' => '2004',
         '2005' => '2005',
@@ -189,7 +194,7 @@ function get_all_years()
         '2014' => '2014',
         '2015' => '2015'
 
-    );
+    );*/
     return $years;
 }
 
