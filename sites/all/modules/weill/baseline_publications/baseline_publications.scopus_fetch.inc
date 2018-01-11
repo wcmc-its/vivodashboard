@@ -24,29 +24,42 @@ function baseline_publications_scopus_fetch()
 
     $pub_types = get_all_types();
 
-    // get previous run parameters
-    $parms = get_next_update_parms('scopus');
+    $categories = get_all_categories();
+    $years = get_all_years();
 
-    $year = $parms['year'];
-    $type_id = $parms['type'];
-    $type = $pub_types[$type_id];
-    $category = $parms['category'];
-    $flag = $parms['flag'];
+    $limit = 1;
+    $start = 0;
 
-    if (!empty($year) && !empty($type) && !empty($category)) {
+    if (empty($last_offset)) {
+        $last_offset = 0;
+    }
 
-        $pmids = get_update_pmids($year, $type, $category);
+    $total_records = get_pmid_count();
 
-        $count = 0;
+
+
+
+    /* // get previous run parameters
+     $parms = get_next_update_parms('scopus');
+
+     $year = $parms['year'];
+     $type_id = $parms['type'];
+     $type = $pub_types[$type_id];
+     $category = $parms['category'];
+     $flag = $parms['flag'];*/
+
+    $pmids = get_all_pmids();
+
+    $count = 0;
 
         if (count($pmids) > 0) {
 
             foreach ($pmids as $key => $val) {
 
                 if (!empty($key) && !empty($val)) {
-                    //$term = "pmid(" . $val . ")"; Commented out as using FULL View of Scopus API
+                    $term = "pmid(" . $val . ")"; //Commented out as using FULL View of Scopus API
 
-                    $term =  $val;
+                    //$term = $val;
 
                     // Get Scopus XML
                     $scopus_search_xml = $objAPI->query($term);
@@ -64,7 +77,7 @@ function baseline_publications_scopus_fetch()
                         $up_data['pmid_id'] = (int)$key;
                         $up_data['citation_count'] = $citation_count;
                         update_citation_count($up_data);
-                        // echo "Updated, pmid:".$key. "count:".$citation_count ."\n" ;
+                         echo "Updated, pmid:".$key. " with citation count:".$citation_count ."\n" ;
                     }
 
                 }
@@ -75,7 +88,7 @@ function baseline_publications_scopus_fetch()
 
         }
 
-        $curr_parms = array(
+        /*$curr_parms = array(
             'year' => $year,
             'type' => $type_id,
             'category' => $category,
@@ -83,9 +96,9 @@ function baseline_publications_scopus_fetch()
         );
 
         // update cron history
-        set_curr_update('scopus', $curr_parms);
+        set_curr_update('scopus', $curr_parms);*/
 
-    }
 
     return;
 }
+
