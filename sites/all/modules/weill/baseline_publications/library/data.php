@@ -244,7 +244,7 @@ function get_pmid_count()
 function get_all_pmids()
 {
     $pmids = array();
-    $sql = "select pmid_id, pmid from violin_pmid where citation_count = 0 limit 200";
+    $sql = "select pmid_id, pmid from violin_pmid where citation_count = 0";
     $result = db_query($sql)->fetchAll();
     foreach ($result as $row) {
         $pmids[$row->pmid_id] = $row->pmid;
@@ -388,7 +388,7 @@ function set_curr_update($item, $parms)
 {
     $item = addslashes($item);
     $year = (int)$parms['year'];
-    $type = (int)$parms['type'];
+    $type = $parms['type'];
     $category = (int)$parms['category'];
     $flag = addslashes($parms['flag']);
 
