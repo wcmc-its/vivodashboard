@@ -27,6 +27,7 @@ function baseline_publications_scopus_fetch()
     $categories = get_all_categories();
     $years = get_all_years();
 
+
     $limit = 1;
     $start = 0;
 
@@ -49,54 +50,78 @@ function baseline_publications_scopus_fetch()
      $flag = $parms['flag'];*/
 
     $pmids = get_all_pmids();
+    if(count($pmids) >0 ) {
+        $count = 0;
 
-    $count = 0;
+        $chunks = array_chunk($pmids, 25, true);
 
-        if (count($pmids) > 0) {
 
-            foreach ($pmids as $key => $val) {
+        //  if (count($pmids) > 0) {
 
-                if (!empty($key) && !empty($val)) {
-                    $term = "pmid(" . $val . ")"; //Commented out as using FULL View of Scopus API
+        //   foreach ($pmids as $key => $val) {
 
-                    //$term = $val;
+        foreach ($chunks as $chunk) {
 
-                    // Get Scopus XML
-                    $scopus_search_xml = $objAPI->query($term);
-
-                    // check if result empty in Scopus
-                    $is_result_empty = $objAPI->parse_empty_result($scopus_search_xml);
-
-                    if ($is_result_empty) {
-                        $up_data['pmid_id'] = (int)$key;
-                        $up_data['scopus_article_exist'] = 'No';
-                        update_empty_result($up_data);
-                    } else {
-                        $citation_count = $objAPI->parse_citation_count($scopus_search_xml);
-                        // populate local database with the result
-                        $up_data['pmid_id'] = (int)$key;
-                        $up_data['citation_count'] = $citation_count;
-                        update_citation_count($up_data);
-                         echo "Updated, pmid:".$key. " with citation count:".$citation_count ."\n" ;
+            $term = '';
+            $count = count($chunk);
+            if ($count > 0) {
+                $term .= "pmid(";
+                foreach ($chunk as $key => $val) {
+                    $count--;
+                    $term .= $val;
+                    if ($count) {
+                        $term .= ' OR ';
                     }
-
                 }
-
-                // echo "Counter:". $count. "\n";
-                $count++;
+                $term .= ")";
             }
 
-        }
+            if (!empty($term)) {
 
-        /*$curr_parms = array(
-            'year' => $year,
-            'type' => $type_id,
-            'category' => $category,
-            'flag' => $flag
+                // Get Scopus XML
+                $scopus_search_xml = $objAPI->query($term);
+
+                $scopus_search_data = $objAPI->parse($scopus_search_xml);
+
+                if (!empty($scopus_search_data)) {
+                    foreach ($chunk as $key => $val) {
+                        if (array_key_exists($val, $scopus_search_data)) {
+                            // populate local database with the result
+                            $cite_data = $scopus_search_data[$val];
+                            $up_data['pmid_id'] = (int)$key;
+                            $up_data['citation_count'] = $cite_data['citedby-count'];
+                            update_citation_count($up_data);
+                            echo 'Updated pmid : ' . $up_data['pmid_id'] . ' with citation count of : ' . $up_data['citation_count'] . "<br>";
+                        } else {
+                            $up_data['pmid_id'] = (int)$key;
+                            $up_data['scopus_article_exist'] = 'No';
+                            update_empty_result($up_data);
+                        }
+
+                    }
+                }
+
+            }
+            $count++;
+
+        }
+    }
+
+
+
+        //}
+
+        //}
+
+        $curr_parms = array(
+            'year' => (int)date('Y') - 3,
+            'type' => 'Academic Article',
+            'category' => 200,
+            'flag' => 'stop'
         );
 
         // update cron history
-        set_curr_update('scopus', $curr_parms);*/
+        set_curr_update('scopus', $curr_parms);
 
 
     return;
