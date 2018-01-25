@@ -36,9 +36,27 @@ function get_profile_by_cwid($args) {
     v.field_vivouri_url as vivo_uri, p.field_popsuri_url as pops_uri, w.field_webdiruri_url as webdir_uri
     FROM field_data_field_id i LEFT JOIN field_data_field_first_name f ON i.entity_id = f.entity_id LEFT JOIN field_data_field_last_name l ON i.entity_id = l.entity_id LEFT JOIN field_data_field_primary_title t ON i.entity_id = t.entity_id 
     LEFT JOIN field_data_field_vivouri v ON i.entity_id = v.entity_id LEFT JOIN field_data_field_popsuri p ON i.entity_id = p.entity_id LEFT JOIN field_data_field_webdiruri w ON i.entity_id = w.entity_id
-    WHERE i.field_id_value = '" .$args. "'")->fetchObject();
+    WHERE i.field_id_value = '" .$args. "'")->fetchAll();
 
-	if(!empty($author_id->entity_id)) {
+
+	if(count($author_id) > 0) {
+
+		$entity_id = array();
+		$first_name = '';
+		$last_name = '';
+		$primary_title = '';
+		$vivo_uri = '';
+		$pops_uri = '';
+		$webdir_uri = '';
+		foreach ($author_id as $author_node) {
+			$entity_id[] = $author_node->entity_id;
+			$first_name = $author_node->first_name;
+			$last_name = $author_node->last_name;
+			$primary_title = $author_node->field_primary_title_value;
+			$vivo_uri = $author_node->vivo_uri;
+			$pops_uri = $author_node->pops_uri;
+			$webdir_uri = $author_node->webdir_uri;
+		}
 
 		print '<div class="author-modal">';
 
@@ -55,16 +73,17 @@ function get_profile_by_cwid($args) {
 
 		print '<div class="author-information">';
 
-		print '<h1>'.$author_id->first_name . ' ' . $author_id->last_name.'</h1>';
+		print '<h1>'.$first_name . ' ' . $last_name.'</h1>';
 
-		if($author_id->field_primary_title_value != '') {
-			print '<h2>'.$author_id->field_primary_title_value.'</h2>';
+		if($primary_title != '') {
+			print '<h2>'.$primary_title.'</h2>';
 		}
 
 		// get total number of publications
 
 		// get all relation id's
-		$get_author_nodes = db_query("SELECT * FROM field_data_endpoints WHERE endpoints_entity_id = " . $author_id->entity_id);
+		$get_author_nodes = db_query("SELECT * FROM field_data_endpoints WHERE endpoints_entity_id IN (" .implode(',', $entity_id) .")");
+
 		$all_author_nodes = array();
 		if($get_author_nodes->rowCount() > 0) {
 			foreach ($get_author_nodes as $value) {
@@ -114,7 +133,7 @@ function get_profile_by_cwid($args) {
 		}
 
 		if(count($all_author_nodes) > 0) {
-			print '<div><a href="/publications/list?f[0]=publication_year:['.date('Y', strtotime($date_range->start_date)) . ' TO ' . date('Y', strtotime($date_range->end_date)).']&f[1]=publication_author_names:'.$author_id->first_name.' ' . $author_id->last_name . $author_appt_current.'">'.count($all_author_nodes).' Publications</a></div>';
+			print '<div><a href="/publications/list?f[0]=publication_year:['.date('Y', strtotime($date_range->start_date)) . ' TO ' . date('Y', strtotime($date_range->end_date)).']&f[1]=publication_author_names:'.$first_name.' ' . $last_name . $author_appt_current.'">'.count($all_author_nodes).' Publications</a></div>';
 		}
 
 		print '<hr>';
@@ -132,16 +151,16 @@ function get_profile_by_cwid($args) {
 
 
 
-        if($author_id->vivo_uri != '') {
-            print '<div class="callout-btns btn-vivo"><a href="'.$author_id->vivo_uri.'" target="_blank">VIVO</a></div>';
+        if($vivo_uri != '') {
+            print '<div class="callout-btns btn-vivo"><a href="'.$vivo_uri.'" target="_blank">VIVO</a></div>';
         }
 
-		if($author_id->pops_uri != '') {
-		    print '<div class="callout-btns btn-pops"><a href="'.$author_id->pops_uri.'" target="_blank">POPS</a></div>';
+		if($pops_uri != '') {
+		    print '<div class="callout-btns btn-pops"><a href="'.$pops_uri.'" target="_blank">POPS</a></div>';
 		}
 
-        if($author_id->webdir_uri != '') {
-            print '<div class="callout-btns btn-directory"><a href="' . $author_id->webdir_uri . '" target="_blank">Directory</a></div>';
+        if($webdir_uri != '') {
+            print '<div class="callout-btns btn-directory"><a href="' . $webdir_uri . '" target="_blank">Directory</a></div>';
         }
 		print '</div>';
 
