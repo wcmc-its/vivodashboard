@@ -141,7 +141,7 @@ function _citations_query_join_helper($db_query, $new_table, $new_alias = null, 
 }
 
 
-function _citations_chart_data($view) {
+function _citations_chart_data($view, $active_facets) {
   global $user_access;
 
   $publications = &drupal_static(spl_object_hash($view));
@@ -176,13 +176,19 @@ function _citations_chart_data($view) {
 
     //
     // filter through user department ID's
-    if($user_access['permission'] == 'chair' && count($user_access['dept'] > 0)) {
-      $subquery = $query->createFilter('OR');
-      foreach ($user_access['dept'] as $key => $value) {
-        $subquery->condition('organizations', $value, '=');
+      $facet_search = false;
+      foreach ($active_facets as $facet) {
+          if (in_array('publication_author_names', $facet['facets']) || in_array('publication_article_type', $facet['facets']) || in_array('publication_category', $facet['facets'])) {
+              $facet_search = true;
+          }
       }
-      $query->filter($subquery);
-    }
+      if ($user_access['permission'] == 'chair' && count($user_access['dept'] > 0) && !$facet_search) {
+          $subquery = $query->createFilter('OR');
+          foreach ($user_access['dept'] as $key => $value) {
+              $subquery->condition('organizations', $value, '=');
+          }
+          $query->filter($subquery);
+      }
       $subquery = $query->createFilter('OR');
       $subquery->condition('publication_article_type', 'Review', '=');
       $subquery->condition('publication_article_type', 'Academic Article', '=');
@@ -582,7 +588,7 @@ function citations_chart($type) {
   $view->execute();
   
   if(!empty($active_facets)) {
-    $data = _citations_chart_data($view);
+    $data = _citations_chart_data($view, $active_facets);
   }
   
   foreach ($adapter->getAllActiveItems() as $item) {      
