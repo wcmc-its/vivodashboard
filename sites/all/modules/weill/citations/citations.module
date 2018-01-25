@@ -796,7 +796,7 @@ function citations_block_view_alter(&$data, $block)
         //And dont allow access to the required fields one of them are in use alreay (including itself)
         if(in_array($field_name, $mutually_exclusive_required)) {
           if( array_intersect($mutually_exclusive_required, $using_params) ) {
-            $data['content']['#access'] = FALSE;          
+            $data['content']['#access'] = TRUE;          
           }
         }      
       }
