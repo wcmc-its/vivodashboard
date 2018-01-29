@@ -870,4 +870,18 @@ function citations_facetapi_facet_info_alter(&$facet_info, $searcher_info)
 }
 
 
+function citations_facet_items_alter(&$build, &$settings) {
+    global $user_access;
 
+    if($_GET['q'] == 'citations/main') {
+        if ($settings->facet == "organizations") {
+            if ($user_access['permission'] == 'chair') {
+                foreach ($build as $key => $item) {
+                    if (!in_array($item['#markup'], $user_access['dept'])) {
+                        unset($build[$key]);
+                    }
+                }
+            }
+        }
+    }
+}
