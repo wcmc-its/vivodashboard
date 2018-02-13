@@ -718,6 +718,10 @@ function relation_delete_multiple($rids) {
   foreach ($relations as $rid => $relation) {
     db_delete('relation')->condition('rid', $rid)->execute();
     db_delete('relation_revision')->condition('rid', $rid)->execute();
+    //Added for deletion from migrate map tables in case external author becomes internal author
+    if(db_table_exists('migrate_map_authorships')) {
+        db_delete('migrate_map_authorships')->condition('destid1', $rid)->execute();
+    }
     module_invoke_all('entity_delete', $relation, 'relation');
     module_invoke('rules', 'invoke_event', 'relation_delete', $relation);
     field_attach_delete('relation', $relation);
