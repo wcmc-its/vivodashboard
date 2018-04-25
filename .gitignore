@@ -1,6 +1,6 @@
-# Directories #
-private/simplesamlphp-1.13.2/config/config.php
-sites/default/settings.php
-private/simplesamlphp-1.13.2/config/authsources.php
-sites/default/files/css
-sites/default/files/js
+# Ignore configuration files that may contain sensitive information.
+sites/*/settings*.php
+
+# Ignore paths that contain user-generated content.
+sites/*/files
+sites/*/private

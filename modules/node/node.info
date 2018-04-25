@@ -8,3 +8,8 @@ files[] = node.test
 required = TRUE
 configure = admin/structure/types
 stylesheets[all][] = node.css
+
+; Information added by Drupal.org packaging script on 2018-04-25
+version = "7.59"
+project = "drupal"
+datestamp = "1524673284"
