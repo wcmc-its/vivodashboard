@@ -16,7 +16,7 @@ VIVO Dashboard is a Drupal-based application for analyzing publication metadata 
 What it looks like
 -----------
 
-- Weill Cornell Medicine: https://vivodashboard.weill.cornell.edu/
+- Weill Cornell Medicine: https://vivodashboard.weill.cornell.edu/ Unfortunately, this URL is not publicly available, but please have a look at the YouTube demo: https://www.youtube.com/watch?v=Ok3SuWo5n3Y.)
 
 
 How it works
