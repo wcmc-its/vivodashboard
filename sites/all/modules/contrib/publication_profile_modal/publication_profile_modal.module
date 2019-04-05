@@ -105,8 +105,10 @@ function get_profile_by_cwid($args) {
 		$author_appts = '';
 		$author_appt_current = '';
 		$count_appts = 0;
-		$author_appointments = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a 
-			LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = '".$args."' AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate School') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC");
+		/*$author_appointments = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a 
+			LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = '".$args."' AND u.dept_name NOT IN('Weill Cornell Medical College', 'Weill Cornell Graduate School') GROUP BY u.dept_name ORDER BY a.weillCornellEduEndDate DESC, a.weillCornellEduStartDate DESC");*/
+
+		$author_appointments = db_query("SELECT u.dept_name, MIN(a.weillCornellEduStartDate) as weillCornellEduStartDate, MAX(a.weillCornellEduEndDate) as weillCornellEduEndDate FROM violin_appointments a LEFT JOIN violin_org_units u ON a.weillCornellEduDepartment = u.dept_id WHERE weillCornellEduCWID = '".$args."' GROUP BY u.dept_name ORDER BY u.rank ASC, a.weillCornellEduEndDate DESC");
 
 		if($author_appointments->rowCount() > 0){
 			foreach ($author_appointments as $appointment) {
